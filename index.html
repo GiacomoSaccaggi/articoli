@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+<title>ML e statistic</title>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+
+
+
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-147261423-1');
+</script>
+	
+<link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<style>
+
+
+.accordion {
+    background-color: #FFFFFF; /*#eee;*/
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    
+    border: 1px solid #eee; /*#006500;*/
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    transition: 0.4s;
+}
+
+.active, .accordion:hover {
+    background-color: hsl(120, 100%, 99%); /*#ccc*/
+}
+
+.panel {
+    padding: 0 18px;
+    display: none;
+    background-color: white;
+     overflow: hidden;
+}
+
+
+* {
+  box-sizing: border-box;
+}
+
+#myInput {
+background-position: 10px 12px;
+  background-repeat: no-repeat;
+  width: 100%;
+  font-size: 16px;
+  border-radius: 4px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+ ul {
+ list-style-type: none;
+ }
+#myUL {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+#myUL li a {
+  
+  margin-top: -1px; /* Prevent double borders */
+  overflow: hidden;
+  white-space:pre;
+  padding: 12px;
+  text-decoration: none;
+  font-size: 18px;
+  color: black;
+  /*display: block;
+  background-color: #f6f6f6;
+  border: 1px solid #ddd;*/
+}
+
+#myInput li a:hover:not(.header) {
+  background-color: #eee
+}
+
+
+
+
+
+</style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                  
+                    <li>
+                        <a href="https://giacomosaccaggi.github.io/all.html">All projects</a>
+                    </li>
+                    <li>
+                        <a href="https://giacomosaccaggi.github.io/contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('http://www.freeanwar.net/wp-content/uploads/2016/06/Mulheres-de-negócio.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Data Science</h2>
+                        <hr class="small">
+                        <h5>Articoli di approfondimento</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+            
+        <br>
+        <p>Spesso quando si parla di Machine learning o statistica si ha la percezione che le persone possano risolvere tutti i problemi del mondo con delle scatole magiche chiamate algoritmi che nessuno sa bene come funzionano.<br></p>
+        <img src="algoritmopercezione.png" width="100%">
+        <p>Questa raccolta di articoli non vuole avere l'ambizioni di spiegare tutto lo scibile della statistica e del Machine learning e neanche spiegare i principali argomenti che compongono questo vasto mondo ma semplicemente racchiude alcuni argomenti che reputo importanti e interessanti cercando di mantenere in ogni articolo un'impronta applicativa.</p>
+
+
+
+
+        <br>
+            <h2>Articoli</h2>
+            <br>
+            <input type=text id="myInput" onkeyup="myFunction()" placeholder= " Cerca un argomento "  title="Type in a name"><div id="myUL">
+            <ul>
+                <button class=accordion><li><a href="#f1">Evoluzione della statistica e dei dati</a></li></button>
+                <div class=panel><p>
+                Dalla statistica classica al Machine Learning evoluzione dei dati.
+                <br>
+                <a href="Evoluzione_della_statistica.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f2">Data science?</a></li></button>
+                <div class=panel><p>
+                Che cosa è il data science.
+                <br>
+                <a href="Datascience.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f3">Ensemble learning</a></li></button>
+                <div class=panel><p>
+                I modelli Stacked.
+                <br>
+                <a href="Ensemble_learning.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f4">Test esatto di Fisher</a></li></button>
+                <div class=panel><p>
+                Il test esatto di Fisher è un test per la verifica d’ipotesi utilizzato nell’ambito della statistica non parametrica in situazioni con due variabili nominali dicotomiche.
+                <br>
+                <a href="Test_esatto_fisher.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            
+            <ul>
+                <button class=accordion><li><a href="#f5">Large scale testing</a></li></button>
+                <div class=panel><p>
+                Il problema dei multiple testing.
+                <br>
+                <a href="Large_scale_testing.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f6">Le componenti UCM</a></li></button>
+                <div class=panel><p>
+                Quattro componenti di base di questi modelli: Trend:, Ciclo, Stagionalità, Rumore (WN).<br>Inserito anche piccolo approfondimento sull'utilizzo dei regressori in questi modelli.
+                <br>
+                <a href="UCM.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f7">Boosting</a></li></button>
+                <div class=panel><p>
+                Il boosting è una tecnica di machine learning che rientra nella categoria dell'Apprendimento ensemble. L'idea del Boosting è quella di unire classificatori "deboli" ai fini di creare un classificatore avente migliore accuratezza. 
+                <br>
+                <a href="boosting.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f8">Regression Splines</a></li></button>
+                <div class=panel><p>
+                È una tecnica di regressione non parametrica e può essere vista come un'estensione di modelli lineari che modella automaticamente non linearità e interazioni tra variabili
+                <br>
+                <a href="splines.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f12">Record Linkage</a></li></button>
+                <div class=panel><p>
+                Record Linkage e Knowledge Discovery
+                <br>
+                <a href="Record_linkage.html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+
+
+
+
+
+            <br>
+            <h2>Working in progress</h2>
+            <br>
+            
+            <ul>
+                <button class=accordion><li><a href="#f9">Cos'è il Machine Learning?</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f10">Gli steps di una buona analisi</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f11">Metodi supervisionati e non supervisionati, cosa si intende?</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f13">Alberi decisionali</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f14">Random Forest</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f15">Bagging</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f16">Shrinkage Methods</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f17">Variable importance</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f18">Variable Selection</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f19">Analisi discriminante</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f20">Cluster</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f21">Analisi fattoriale: PCA</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f22">LASSO</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f23">Ridge Regression</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f24">Reti neurali</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f25">Convolutional Neural Network</a></li></button>
+                <div class=panel><p>
+                Reti neurali convoluzionali per il riconoscimento di immagini.
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f26">Metodo di Torgerson: scala psicometrica</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+            <ul>
+                <button class=accordion><li><a href="#f27">Modello di Fishbein: Valutazione VS Performance</a></li></button>
+                <div class=panel><p>
+                Testo
+                <br>
+                <a href=".html">Link dell'articolo</a>
+                </p></div>
+            </ul>
+
+            <script>
+            function myFunction() {
+                
+                var input, filter, ul, li, a, i, button;
+                input = document.getElementById("myInput");
+                filter = input.value.toUpperCase();
+                ul = document.getElementById("myUL");
+                li = ul.getElementsByTagName("button");
+                for (i = 0; i < li.length; i++) {
+                    a = li[i].getElementsByTagName("a")[0];
+                    if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                        li[i].style.display = "";
+                    } else {
+                        li[i].style.display = "none";
+
+                    }
+                }
+            }
+            </script>
+            <script>
+            var acc = document.getElementsByClassName("accordion");
+            var i;
+
+            for (i = 0; i < acc.length; i++) {
+                acc[i].addEventListener("click", function() {
+                
+                    this.classList.toggle("active");
+                    var panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                        
+                    } else {
+                        panel.style.display = "block";
+                    }
+                });
+            }
+            </script>
+            <br><br><br><br>
+  </div>
+
+
+
+   <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
