@@ -1,0 +1,89 @@
+---
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(shiny)
+library(rpart)
+```
+
+
+```{r, echo=F}
+
+
+
+
+
+
+
+
+hr()
+        sliderInput("B", "Numero di alberi:", 
+                    min=2,
+                    max=200,
+                     value = 10,
+                    sep = "",width = "100%"
+                  )
+        
+        helpText("Select number of tree.")
+        
+        sliderInput("np", "Numero di split:", 
+                    min=1,
+                    max=30,
+                     value = 1,
+                    sep = "",width = "100%"
+                  )
+        
+        helpText("Select number of split.")
+        
+        sliderInput("sp", "Parametro di restringimento:", 
+                    min=0.0001,
+                    max=0.05,
+                     value = 0.01,
+                    sep = "",width = "100%"
+                  )
+        
+        helpText("Select shrinkage parameter.")
+        
+hr()
+
+
+
+
+renderPlot({
+  set.seed(123)
+n = 100
+x=sort(runif(n)*2*pi)
+  h<-sin(x)+rnorm(n, sd=0.5)
+  B = as.numeric(input$B[1])
+  d = as.numeric(input$np[1])
+lambda = as.numeric(input$sp[1])
+# 1.
+r = h - mean(h)
+fx = matrix(NA, nrow=n, ncol=B)
+fx[,1] = rep(mean(h),n)
+# 2.
+for (b in 2:B){
+  # a
+  fxb = rpart(r~x, control=rpart.control(maxdepth = d))
+  # b
+  fx[,b] = fx[,b-1] + lambda*predict(fxb)
+  # c
+  r = r - lambda*predict(fxb)
+}
+# 3.
+f.boost = fx[,B]
+op <- par(mfrow = c(1, 2))
+plot(x,r)
+fxb = rpart(r~x, control=rpart.control(maxdepth = d))
+lines(x,predict(fxb))
+plot(x,h)
+curve(sin(x), min(x),max(x), col="red", add=T)
+lines(x,f.boost, type="s", col="blue")
+par(op)
+
+})
+```
+

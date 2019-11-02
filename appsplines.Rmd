@@ -1,0 +1,58 @@
+---
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r , echo=FALSE}
+
+library(splines)
+set.seed(123)
+x = sort(runif(500))
+mu = sin(2*(4*x-2)) + 2*exp(-(16^2)*((x-.5)^2))
+y = rnorm(500, mu, .3)
+
+hr()
+        sliderInput("k", "Knots:", 
+                    min=1,
+                    max=200,
+                     value = c(1, 200),
+                    sep = "",width = "100%"
+                  )
+        
+        helpText("Select knots.")
+        
+        
+        sliderInput("d", "Degree:", 
+                    min=1,
+                    max=200,
+                     value = c(1, 200),
+                    sep = "",width = "100%"
+                  )
+        
+        helpText("Select degree.")
+        hr()
+```
+
+
+```{r pressure, echo=FALSE}
+
+
+
+
+splitLayout( 
+renderPlot({
+  plot(x,y ,col="lightgray")
+lines(x, mu, col=2, lwd=4)
+lines(x, fitted( lm(y ~ bs(x, degree=input$d[1], knots=c(-1/input$k[1]+(1:input$k[1])/input$k[1]))) ), col=4, lwd=2)
+}),
+renderPlot({
+  plot(x,y ,col="lightgray")
+lines(x, mu, col=2, lwd=4)
+lines(x, fitted( lm(y ~ bs(x, degree=input$d[2], knots=c(-1/input$k[2]+(1:input$k[2])/input$k[2]))) ), col=4, lwd=2)
+}))
+```
