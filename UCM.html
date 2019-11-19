@@ -588,7 +588,7 @@ lines(reg_tot$fitted.values, col=&quot;red&quot;)</code></pre>
 ## F-statistic: 649.4 on 12 and 131 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 <div id="regressori" class="section level1">
-<h1>Regressori</h1>
+<h1>Regressori nei modelli UCM</h1>
 <p>Regressore (o variabile esplicativa), in statistica, è il termine con cui si indica ognuna delle variabili indipendenti che si individuano come variabili significative per spiegare un fenomeno in un modello.</p>
 <p><span class="math display">\[Y_t= \mu_t+\gamma_t+\psi_t + \underline{\delta}_t^T \space \underline{X}_t + \epsilon_t \]</span></p>
 <p>Non è necessario avere una relazione di cointegrazione tra <span class="math inline">\(Y_t\)</span> e <span class="math inline">\(X_t\)</span> e possiamo inserirli nelle equazioni delle componenti non osservabili.</p>
@@ -605,15 +605,19 @@ lines(reg_tot$fitted.values, col=&quot;red&quot;)</code></pre>
 </div>
 <div id="regressori-dinamici" class="section level2">
 <h2>Regressori dinamici</h2>
-<p>Il modello von i regressori statici presuppone che <span class="math inline">\(X\)</span> al tempo <span class="math inline">\(t\)</span> abbia effetto solo su <span class="math inline">\(Y\)</span> al tempo <span class="math inline">\(t\)</span> e che il suo effetto sia nullo nei tempi successivi. Si tratta di una situazione riduttiva perché ad es. un investimento in pubblicità ha sia effetti immediati che duraturi, anche se si affievoliscono nel tempo.Potrebbe quindi essere utile introdurre dei ritardi.</p>
+<p>Il modello con i regressori statici presuppone che <span class="math inline">\(X\)</span> al tempo <span class="math inline">\(t\)</span> abbia effetto solo su <span class="math inline">\(Y\)</span> al tempo <span class="math inline">\(t\)</span> e che il suo effetto sia nullo nei tempi successivi. Si tratta di una situazione riduttiva perché ad es. un investimento in pubblicità ha sia effetti immediati che duraturi, anche se si affievoliscono nel tempo. Potrebbe quindi essere utile introdurre dei ritardi.</p>
 <div id="regressione-dinamica-funzione-di-trasferimento" class="section level3">
-<h3>Regressione dinamica (funzione di trasferimento):</h3>
 <p><span class="math display">\[ Y_t= \space ... + \delta_0^T X_t + \delta_1^T X_{t-1} + \delta_2^T X_{t-2} + \space ...\]</span></p>
 </div>
 <div id="problematicita" class="section level3">
 <h3>Problematicità</h3>
 <p>Il problema di questo metodo è che se l’effetto è molto lungo si devono considerare molti regressori e stimare molti coefficienti di regressione, quindi si perdono altrettanti gradi di libertà (le stime dei coefficienti non saranno precise perché il numero di osservazioni per coefficiente diventa troppo basso). Inoltre se si avesse un effetto di <span class="math inline">\(X_t\)</span> permanente non sarebbe possibile inserire infiniti regressori nel modello perché con un numero finito di dati non si possono stimare infiniti coefficienti.</p>
+<h3>Regressione dinamica (funzione di trasferimento):</h3>
 <p>Per ovviare a questi problemi si utilizza può utilizzare in questi casi un modello simile a quello dei modelli ARIMA dove la parte MA è responsabile di movimenti autodipendenti di breve periodo e la parte AR è responsabile dei movimenti di lungo periodo.</p>
+<p><span class="math display">\[ Y_t= \space ... + \delta_1^T Y_{t-1} + ... + \delta_r^T Y_{t-r} + \omega_0^T X_{t} + \omega_1^T X_{t-1} + ... + \omega_s^T X_{t-s} + \space ...\]</span></p>
+<p>Un modello che si utilizza spesso per misurare l'effetto di una campagna pubblicitaria è con r=1 e s=0:<p>
+<p><span class="math display">\[ Y_t= \delta_1^T Y_{t-1} + \omega_0^T X_{t} \]</span></p>
+In questo modello la funzione di risposta all'impulso risulta essere decrescente ossia permette di modellare una campagna publlicitaria in quanto con <span class="math inline">\(\delta_1^T Y_{t-1}\)</span>, la componente AR, modelliamo l'effetto di lungo periodo in quale si affievolisce pian piano mentre con <span class="math inline">\(\omega_0^T X_{t}\)</span>, la componente (pseudo-)MA, modeliamo la componente di breve periodo della campagna publicitaria.
 </div>
 </div>
 </div>
