@@ -242,8 +242,8 @@ model1 &lt;- fitSSM(mod1, c(log_sigma2_nu, log_sigma2_zeta, log_sigma2_omega, lo
 model1$optim.out$convergence</code></pre>
 <pre><code>## [1] 0</code></pre>
 
-Q_vera&lt;-matrix(c(sigma2_nu,0,0,0,sigma2_zeta,0,0,0,sigma2_omega),ncol=3)
-<pre class="r"><code>cat(&quot;\n \n  Matrice Q \n&quot;);Q_vera;cat(&quot;\n \n Matrice Q prevista \n&quot;);model1$model$Q</code></pre>
+<pre class="r"><code>Q_vera&lt;-matrix(c(sigma2_nu,0,0,0,sigma2_zeta,0,0,0,sigma2_omega),ncol=3)
+cat(&quot;\n \n  Matrice Q \n&quot;);Q_vera;cat(&quot;\n \n Matrice Q prevista \n&quot;);model1$model$Q</code></pre>
 <pre><code>## 
 ##  
 ##   Matrice Q</code></pre>
