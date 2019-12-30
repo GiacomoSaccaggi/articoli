@@ -15,6 +15,26 @@ p {
 p a {
   text-decoration: underline;
 }
+
+
+
+img{
+  width: 100%;
+  height: auto;
+}
+
+
+table{
+  width: 100%;
+}
+
+
+
+
+
+
+
+
 h1,
 h2,
 h3,
