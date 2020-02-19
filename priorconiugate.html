@@ -305,7 +305,7 @@ body {
 <p><span class="math display">\[b(\sigma^2) = -\frac{1}{2 \space \sigma^2}\\ c(\sigma^2) = \frac{1}{2} \log(\sigma^2) \\ \bigg{|} \frac{\partial \space b \space ( \sigma^2) }{ \partial \space \sigma^2 } \bigg{|}= \frac{1}{(\sigma^2)^2}\]</span></p>
 <p>Creiamo la prior coniugata:</p>
 <p><span class="math display">\[\pi(\sigma^2) \propto \exp{ \{\eta_{\space 1} \space \space b \space ( \sigma^2) - \eta_{\space 2} \space \space c \space ( \sigma^2) \}} \space | \partial \space b \space ( \sigma^2) / \partial \space \sigma^2 | = \\ = \exp{ \{-\eta_{\space 1} \space \space \frac{1}{2 \space \sigma^2} - \eta_{\space 2} \space \space \frac{1}{2} \log(\sigma^2)  \}} \space \frac{1}{(\sigma^2)^2} = \\ = (\sigma^2)^{- \frac{1}{2} \eta_{\space 2}} \space (\sigma^2)^{-2}\exp{ \{- \space \space \frac{\eta_{\space 1}}{2 \space \sigma^2}}\} = \\ = (\sigma^2)^{-2- \frac{1}{2} \eta_{\space 2}}\exp{ \{- \space \space \frac{\eta_{\space 1}}{2 \space \sigma^2}}\}\]</span></p>
-<p>Questo è il nucleo di una <span class="math inline">\(GammaInv(-1- \frac{1}{2} \eta_{\space 2}, \space \space \space - \frac{\eta_{\space 1}}{2})\)</span></p>
+<p>Questo è il nucleo di una <span class="math inline">\(GammaInv(1+ \frac{1}{2} \eta_{\space 2}, \space \space \space  \frac{\eta_{\space 1}}{2})\)</span></p>
 </div>
 <div id="adesso-calcoliamo-la-posterior-applicando-il-teorema-di-bayes-visto-nellintroduzione-1" class="section level5">
 <h5>Adesso calcoliamo la posterior applicando il teorema di Bayes visto nell’introduzione:</h5>
