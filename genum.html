@@ -191,7 +191,7 @@ body {
 </div>
 <div id="riflessioni-sulla-generazione-di-numeri-casuali" class="section level3">
 <h3>Riflessioni sulla generazione di numeri casuali</h3>
-<p>La generazione di numeri casuali non è altro che la generazione di valori da una uniforme in quanto in questa distribuzione tutti i valori sono indipendenti e hanno la stessa probabilità; quindi per testare un algoritmo di generazione di numeri casuali si può fare una test empirico per verificare l’uniformità e un test del chi-quadro per verificare l’indipendenza</p>
+<p>La generazione di numeri casuali non è altro che la generazione di valori da una uniforme in quanto in questa distribuzione tutti i valori sono indipendenti e hanno la stessa probabilità; quindi per testare un algoritmo di generazione di numeri casuali si può fare un test empirico per verificare l’uniformità e un test del chi-quadro per verificare l’indipendenza</p>
 </div>
 </div>
 <div id="generazione-di-numeri-pseudo-casuali" class="section level2">
@@ -207,7 +207,7 @@ body {
 </div>
 <div id="algoritmo-di-accettazione-rifiuto-ar" class="section level3">
 <h3>ALGORITMO DI ACCETTAZIONE-RIFIUTO (AR)</h3>
-<p>L’algoritmo di accettazione-rifiuto fu realizzato nel 1951 da Von Neuman e afferma che, quando si vuole generare valori da una v.c. <span class="math inline">\(Y\)</span> con funzione di densità “complicata” e si supponga di poter generare solo da una v.c. <span class="math inline">\(X\)</span> “semplice” con densità <span class="math inline">\(g_x(x)\)</span> e da una v.c. <span class="math inline">\(U(0,1)\)</span> e t.c. il supporto di <span class="math inline">\(Y\)</span> sia contenuto in quello di <span class="math inline">\(g_x( . )\)</span> allora si possono generare da <span class="math inline">\(g_x(x)\)</span> valori casuali di <span class="math inline">\(Y\)</span> se e solo se, per <span class="math inline">\(n\gg0\)</span>,gli <span class="math inline">\(n\)</span> valori generati da una <span class="math inline">\(U(0,1)\)</span> moltiplicati per un coefficiente <span class="math inline">\(b\)</span> e per gli <span class="math inline">\(n\)</span> valori generati dalla v.c. <span class="math inline">\(X\)</span> attraverso <span class="math inline">\(g_x(x)\)</span> sono minori o uguali degli <span class="math inline">\(n\)</span> valori generati dalla v.c. <span class="math inline">\(X\)</span> inseriti all’interno della funzione di densità di <span class="math inline">\(Y\)</span>, ossia:</p>
+<p>L’algoritmo di accettazione-rifiuto fu realizzato nel 1951 da Von Neuman e afferma che, quando si vuole generare valori da una v.c. <span class="math inline">\(Y\)</span> con funzione di densità “complicata” e si supponga di poter generare solo da una v.c. <span class="math inline">\(X\)</span> “semplice” con densità <span class="math inline">\(g_x(x)\)</span> e da una v.c. <span class="math inline">\(U(0,1)\)</span> e t.c. il supporto di <span class="math inline">\(Y\)</span> sia contenuto in quello di <span class="math inline">\(g_x( . )\)</span> allora si possono generare da <span class="math inline">\(g_x(x)\)</span> valori casuali di <span class="math inline">\(Y\)</span> se e solo se, per <span class="math inline">\(n\gg0\)</span>, gli <span class="math inline">\(n\)</span> valori generati da una <span class="math inline">\(U(0,1)\)</span> moltiplicati per un coefficiente <span class="math inline">\(b\)</span> e per gli <span class="math inline">\(n\)</span> valori generati dalla v.c. <span class="math inline">\(X\)</span> attraverso <span class="math inline">\(g_x(x)\)</span> sono minori o uguali degli <span class="math inline">\(n\)</span> valori generati dalla v.c. <span class="math inline">\(X\)</span> inseriti all’interno della funzione di densità di <span class="math inline">\(Y\)</span>, ossia:</p>
 <p><span class="math inline">\(n \gg 0\)</span></p>
 <p><span class="math inline">\(i = 1, ..., n\)</span></p>
 <p><span class="math inline">\(u_i \sim U(0,1)\)</span></p>
@@ -229,25 +229,25 @@ body {
 </div>
 <div id="metodo-delle-coordinate-polari-o-di-box-muller-1958" class="section level3">
 <h3>Metodo delle coordinate polari o di Box-Muller (1958)</h3>
-<p>Metodo per generare da una normale bivariata a componenti indipendenti, questo algoritmo si struttura i 4 fasi:</p>
+<p>Metodo per generare da una normale bivariata a componenti indipendenti, questo algoritmo si struttura in 4 fasi:</p>
 <ol style="list-style-type: decimal">
-<li>Cosidero <span class="math inline">\(R^2 \sim Exp(1/2)\)</span> e <span class="math inline">\(\Theta \sim U(0,2\pi)\)</span> indipendenti tra loro</li>
-<li>siano <span class="math inline">\(U_1, \space U_2 \space \space \space iid \space \sim U(0,1)\)</span> allora con ITM so che <span class="math inline">\(R=(-2 \space \log U_1)^{\frac{1}{2}}\)</span> e <span class="math inline">\(\Theta =2\pi U_2\)</span></li>
+<li>Si considerano <span class="math inline">\(R^2 \sim Exp(1/2)\)</span> e <span class="math inline">\(\Theta \sim U(0,2\pi)\)</span> indipendenti tra loro</li>
+<li>Siano <span class="math inline">\(U_1, \space U_2 \space \space \space iid \space \sim U(0,1)\)</span> allora con ITM so che <span class="math inline">\(R=(-2 \space \log U_1)^{\frac{1}{2}}\)</span> e <span class="math inline">\(\Theta =2\pi U_2\)</span></li>
 <li>Testo se <span class="math inline">\(S=V_1^2 + V_2^2 \geq 1\)</span> allora rifiuto e ritorno al punto 1. Altrimenti se accetto, <span class="math inline">\((V_1,V_2)\)</span> è uniforme nel cerchio unitario.</li>
 <li>Infine trovo: <span class="math inline">\(Z_1=R \space \cos{(\Theta)}\)</span> e <span class="math inline">\(Z_2=R \space \sin{(\Theta)}\)</span></li>
 </ol>
-<p>Dove <span class="math inline">\(Z_1, Z_2\)</span> sono due <span class="math inline">\(N(0,1)\)</span> indipendenti</p>
+<p>Dove <span class="math inline">\(Z_1, Z_2\)</span> sono due <span class="math inline">\(N(0,1)\)</span> indipendenti.</p>
 </div>
 <div id="rejection-polar-methods" class="section level3">
 <h3>Rejection Polar Methods</h3>
-<p>Metodo per generare da una normale bivariata a componenti indipendenti, questo algoritmo si struttura i 4 fasi:</p>
+<p>Metodo per generare da una normale bivariata a componenti indipendenti, questo algoritmo si struttura in 4 fasi:</p>
 <ol style="list-style-type: decimal">
-<li>Cosidero <span class="math inline">\(U_1, \space U_2 \space \space \space iid \space \sim U(0,1)\)</span></li>
-<li>Pongo <span class="math inline">\(V_i = 2 \space U_i - 1 \sim U(-1, 1)\)</span> con <span class="math inline">\(i=1,2\)</span></li>
+<li>Si considerano <span class="math inline">\(U_1, \space U_2 \space \space \space iid \space \sim U(0,1)\)</span></li>
+<li>Si pone <span class="math inline">\(V_i = 2 \space U_i - 1 \sim U(-1, 1)\)</span> con <span class="math inline">\(i=1,2\)</span></li>
 <li>Testo se <span class="math inline">\(S=V_1^2 + V_2^2 \geq 1\)</span> allora rifiuto e ritorno al punto 1. Altrimenti se accetto, <span class="math inline">\((V_1,V_2)\)</span> è uniforme nel cerchio unitario.</li>
 <li>Condizionatamente all’accettazione della condizione al punto 3, si pone: <span class="math inline">\(Z_1=V_1 \space \sqrt{-2 \space S^{-1} \log{S}}\)</span> e <span class="math inline">\(Z_2=V_2 \space \sqrt{-2 \space S^{-1} \log{S}}\)</span></li>
 </ol>
-<p>Dove <span class="math inline">\(Z_1, Z_2\)</span> sono due <span class="math inline">\(N(0,1)\)</span> indipendenti</p>
+<p>Dove <span class="math inline">\(Z_1, Z_2\)</span> sono due <span class="math inline">\(N(0,1)\)</span> indipendenti.</p>
 </div>
 </div>
 
