@@ -1,2 +1,2 @@
 # articoli
-Articoli di approfondimento
+In-depth Articles
