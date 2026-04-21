@@ -38,19 +38,19 @@
     <script src="Plotimpo_files/plotly-main-1.46.1/plotly-latest.min.js"></script>
 
     <style>
-        /* Struttura Base */
+        /* Base Structure */
         * { box-sizing: border-box; }
         body { overflow-x: hidden; }
         code { white-space: pre; }
         pre:not([class]) { background-color: white; }
 
-        /* Titoli */
+        /* Titles */
         h1 { font-size: 34px; } h1.title { font-size: 38px; }
         h2 { font-size: 30px; } h3 { font-size: 24px; }
         h4 { font-size: 18px; }
         .table th:not([align]) { text-align: left; }
 
-        /* Menu a Fisarmonica (Accordion) */
+        /* Accordion Menu */
         .accordion {
             background-color: #FFFFFF;
             color: #444;
@@ -66,7 +66,7 @@
         .active, .accordion:hover { background-color: hsl(120, 100%, 99%); }
         .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
 
-        /* Barra di Ricerca */
+        /* Search Bar */
         #myInput {
             width: 100%;
             font-size: 16px;
@@ -76,7 +76,7 @@
             margin-bottom: 12px;
         }
 
-        /* Liste Indice */
+        /* Index Lists */
         ul { list-style-type: none; }
         #myUL { list-style-type: none; padding: 0; margin: 0; }
         #myUL li a {
@@ -138,7 +138,7 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="site-heading">
-                        <h2>Test della personalità di Myers Briggs</h2>
+                        <h2>Myers Briggs Personality Test</h2>
                         <hr class="small">
                         <h5>In-depth Articles</h5>
                     </div>
@@ -148,160 +148,160 @@
     </header>
 
     <div class="container">
-    <p>La psicometria si occupa della teoria e della tecnica della misura in psicologia. Nelle ricerche di mercato questa disciplina interviene in modo importante in operazioni di Targeting nelle quali bisogna distinguere i comportamenti di differenti soggetti. L'ambito in cui queste tecniche sono più utilizzate ovviamente sono il programmatic advertising e il programmatic Marketing.<p>
-    <p>In questo articolo volevo introdurre un indicatore che ho trovato molto interessante non solo perchè è semplice e abbastanza pratico ma il fatto che sia uno degli indicatori più utilizzati permette di conoscerele frequenze che corrispondono ad ogni categoria di personalità sulla popolazione modiale (come viene detto nel sito della Fondazione www.myersbriggs.org). Questa caratteristica, dal punto di vista statistico non è da sottovalutare in quanto permette di conoscere la funzione di ripartizione (una binomiale con le frequenze specificate nel sito ufficiale della fondazione). Conoscendo la funzione di ripartizione si possono operare interessanti progetti anche utilizzando tecniche di Bootstrap parametrico.</p>
-    <p>L'Indicatore di personalità di Myers-Briggs, a volte abbreviato con MBTI (dall'inglese Myers-Briggs Type Indicator), individua una serie di caratteristiche psicologiche, identificate attraverso appositi questionari psicometrici, e nasce con l'idea di comprendere e schematizzare il modo in cui una persona si rapporta e si comporta nei confronti del mondo e della vita in generale. Fortemente basato sulla teoria dei tipi psicologici di Carl Gustav Jung, l'indicatore discrimina tra sedici possibili tipi di personalità, individuati da quattro diverse caratteristiche che possono presentarsi ognuna in due modi alternativi. <br>
-    Le due pioniere di questo tipo di ricerche furono Katharine Cook Briggs e sua figlia Isabel Briggs Myers, che cominciarono a pensare all'indicatore durante la seconda guerra mondiale con l'intento di aiutare le donne (che stavano allora entrando per la prima volta nel mondo dell'industria per sopperire alla mancanza di operai uomini, impegnati in guerra) a capire il tipo di lavoro più adatto per loro e in cui potessero essere più utili. Il questionario iniziale raggiunse la sua forma definitiva nel 1962, anno in cui fu pubblicato.<br>Le quattro coppie di caratteristiche sono schematizzate nella tabella seguente: <br><br><center>
-    <b>Dicotomie <table width="100%" cellspacing=0 border=1><tr><th align="center">
-    Estroversione (E) </th><th align="center"> (I) Introversione </th></tr><tr><th align="center">
-    Sensitività (S) </th><th align="center"> (N) Intuizione </th></tr><tr><th align="center">
-    Ragionamento (T) </th><th align="center"> (F) Sentimento </th></tr><tr><th align="center">
-    Giudizio (J) </th><th align="center"> (P) Percezione </th></tr></table>
+    <p>Psychometrics deals with the theory and technique of measurement in psychology. In market research, this discipline plays an important role in Targeting operations in which it is necessary to distinguish the behaviors of different subjects. The area in which these techniques are most used is obviously programmatic advertising and programmatic Marketing.<p>
+    <p>In this article I wanted to introduce an indicator that I found very interesting not only because it is simple and quite practical, but also because the fact that it is one of the most used indicators allows us to know the frequencies that correspond to each personality category in the world population (as stated on the Foundation website www.myersbriggs.org). This characteristic, from a statistical point of view, should not be underestimated as it allows us to know the distribution function (a binomial with the frequencies specified on the official foundation website). Knowing the distribution function, interesting projects can be carried out also using parametric Bootstrap techniques.</p>
+    <p>The Myers-Briggs Type Indicator, sometimes abbreviated as MBTI (from the English Myers-Briggs Type Indicator), identifies a series of psychological characteristics, identified through special psychometric questionnaires, and was born with the idea of understanding and schematizing the way in which a person relates and behaves towards the world and life in general. Strongly based on Carl Gustav Jung's theory of psychological types, the indicator discriminates between sixteen possible personality types, identified by four different characteristics that can each present themselves in two alternative ways. <br>
+    The two pioneers of this type of research were Katharine Cook Briggs and her daughter Isabel Briggs Myers, who began thinking about the indicator during World War II with the intent of helping women (who were then entering the world of industry for the first time to make up for the lack of male workers, engaged in war) to understand the type of work most suitable for them and in which they could be most useful. The initial questionnaire reached its final form in 1962, the year it was published.<br>The four pairs of characteristics are schematized in the following table: <br><br><center>
+    <b>Dichotomies <table width="100%" cellspacing=0 border=1><tr><th align="center">
+    Extraversion (E) </th><th align="center"> (I) Introversion </th></tr><tr><th align="center">
+    Sensitivity (S) </th><th align="center"> (N) Intuition </th></tr><tr><th align="center">
+    Thinking (T) </th><th align="center"> (F) Feeling </th></tr><tr><th align="center">
+    Judgment (J) </th><th align="center"> (P) Perception </th></tr></table>
     </b></center><br><br>
-    Le lettere fra parentesi fanno riferimento ai corrispondenti termini inglesi: extraversion/introversion, sensitivity/intuition, thinking/feeling, judgment/perception. </p>
+    The letters in parentheses refer to the corresponding English terms: extraversion/introversion, sensitivity/intuition, thinking/feeling, judgment/perception. </p>
 
 
-    <p>Qui di seguito ho deciso di implementare un esempio "simpatico" di questionario molto breve che permette di associare in modo abbastanza approssimato la tua personalità e di associare la personalità a dei supereroi presenti nel universo Marvel e DC Comics e a personaggi presenti nei modi Fantasy di Harry Potter e Il signore degli anelli.<br> Ho deciso di specificare tre categoria di domande per le quattro diverse dicotomie:</p><br><br>
+    <p>Here below I have decided to implement a "nice" example of a very short questionnaire that allows you to associate your personality in a fairly approximate way and to associate the personality with superheroes present in the Marvel and DC Comics universe and with characters present in the Fantasy worlds of Harry Potter and The Lord of the Rings.<br> I have decided to specify three categories of questions for the four different dichotomies:</p><br><br>
     <b>
-				<u>Tabella</u> :- Domande Questionario
+				<u>Table</u> :- Questionnaire Questions
 			</b>
 			<hr>
 				<table cellspacing=0 border=1>
 					<tr>
-						<td style=min-width:50px>Numero domanda</td>
-						<td style=min-width:50px>Dicotomie</td>
-						<td style=min-width:50px>Categorie</td>
-						<td style=min-width:50px>Domanda</td>
-						<td style=min-width:50px>Risposta 1</td>
-						<td style=min-width:50px>Risposta 2</td>
+						<td style=min-width:50px>Question Number</td>
+						<td style=min-width:50px>Dichotomies</td>
+						<td style=min-width:50px>Categories</td>
+						<td style=min-width:50px>Question</td>
+						<td style=min-width:50px>Answer 1</td>
+						<td style=min-width:50px>Answer 2</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda1</td>
-						<td style=min-width:50px>Introverso/Estroverso</td>
-						<td style=min-width:50px>Autoconsapevolezza</td>
-						<td style=min-width:50px>Hai la tendenza a:</td>
-						<td style=min-width:50px>Consolidare amicizie che hai già</td>
-						<td style=min-width:50px>Creare nuove amicizie</td>
+						<td style=min-width:50px>Introvert/Extrovert</td>
+						<td style=min-width:50px>Self-awareness</td>
+						<td style=min-width:50px>You tend to:</td>
+						<td style=min-width:50px>Consolidate friendships you already have</td>
+						<td style=min-width:50px>Create new friendships</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda2</td>
-						<td style=min-width:50px>Introverso/Estroverso</td>
-						<td style=min-width:50px>Rapporti</td>
-						<td style=min-width:50px>E' stata una giornata faticosa, cosa preferisci fare?</td>
-						<td style=min-width:50px>Ti sdrai sul divano e ti riposi davanti un bel film.</td>
-						<td style=min-width:50px>Senti qualche tuo amico per vedere se ha voglia di fare qualcosa.</td>
+						<td style=min-width:50px>Introvert/Extrovert</td>
+						<td style=min-width:50px>Relationships</td>
+						<td style=min-width:50px>It's been a tiring day, what do you prefer to do?</td>
+						<td style=min-width:50px>You lie on the couch and rest watching a good movie.</td>
+						<td style=min-width:50px>You contact some friends to see if they want to do something.</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda3</td>
-						<td style=min-width:50px>Introverso/Estroverso</td>
-						<td style=min-width:50px>Piani/Progetti</td>
-						<td style=min-width:50px>In un viaggio è piu importante la compagnia o la meta?</td>
-						<td style=min-width:50px>Compagnia</td>
-						<td style=min-width:50px>Meta</td>
+						<td style=min-width:50px>Introvert/Extrovert</td>
+						<td style=min-width:50px>Plans/Projects</td>
+						<td style=min-width:50px>In a trip, what is more important, the company or the destination?</td>
+						<td style=min-width:50px>Company</td>
+						<td style=min-width:50px>Destination</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda4</td>
-						<td style=min-width:50px>Osservatore/Intuitivo</td>
-						<td style=min-width:50px>Autoconsapevolezza</td>
-						<td style=min-width:50px>Qual è la tua migliore qualità?</td>
-						<td style=min-width:50px>Essere sistematico</td>
-						<td style=min-width:50px>Essere Fantasioso</td>
+						<td style=min-width:50px>Observer/Intuitive</td>
+						<td style=min-width:50px>Self-awareness</td>
+						<td style=min-width:50px>What is your best quality?</td>
+						<td style=min-width:50px>Being systematic</td>
+						<td style=min-width:50px>Being imaginative</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda5</td>
-						<td style=min-width:50px>Osservatore/Intuitivo</td>
-						<td style=min-width:50px>Rapporti</td>
-						<td style=min-width:50px>Siete in tre amici che volete andare in vacanza. Un tuo amico vuole andare al mare e l'altro in montagna, lo spareggio è affidato a te. Cosa fai?</td>
-						<td style=min-width:50px>Provi a trovare una soluzione che possa accomodare un po tutti.</td>
-						<td style=min-width:50px>Prendi la tua decisione su dove preferisci andare.</td>
+						<td style=min-width:50px>Observer/Intuitive</td>
+						<td style=min-width:50px>Relationships</td>
+						<td style=min-width:50px>There are three friends who want to go on vacation. One friend wants to go to the sea and the other to the mountains, the tiebreaker is up to you. What do you do?</td>
+						<td style=min-width:50px>You try to find a solution that can accommodate everyone.</td>
+						<td style=min-width:50px>You make your decision on where you prefer to go.</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda6</td>
-						<td style=min-width:50px>Osservatore/Intuitivo</td>
-						<td style=min-width:50px>Piani/Progetti</td>
-						<td style=min-width:50px>Quando organizzi di solito le vacanze?</td>
-						<td style=min-width:50px>Con molto anticipo.</td>
-						<td style=min-width:50px>Un po all'ultimo</td>
+						<td style=min-width:50px>Observer/Intuitive</td>
+						<td style=min-width:50px>Plans/Projects</td>
+						<td style=min-width:50px>When do you usually organize vacations?</td>
+						<td style=min-width:50px>Well in advance.</td>
+						<td style=min-width:50px>A bit at the last minute</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda7</td>
-						<td style=min-width:50px>Riflessivo/Sensibile</td>
-						<td style=min-width:50px>Autoconsapevolezza</td>
-						<td style=min-width:50px>Nel prendere una decisione ti fidi di più</td>
-						<td style=min-width:50px>Dei pensieri</td>
-						<td style=min-width:50px>Dei sentimenti</td>
+						<td style=min-width:50px>Reflective/Sensitive</td>
+						<td style=min-width:50px>Self-awareness</td>
+						<td style=min-width:50px>When making a decision you trust more</td>
+						<td style=min-width:50px>Your thoughts</td>
+						<td style=min-width:50px>Your feelings</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda8</td>
-						<td style=min-width:50px>Riflessivo/Sensibile</td>
-						<td style=min-width:50px>Rapporti</td>
-						<td style=min-width:50px>Parli spesso dei tuoi problemi con le persone a te care?</td>
+						<td style=min-width:50px>Reflective/Sensitive</td>
+						<td style=min-width:50px>Relationships</td>
+						<td style=min-width:50px>Do you often talk about your problems with people close to you?</td>
 						<td style=min-width:50px>NO</td>
 						<td style=min-width:50px>SI</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda9</td>
-						<td style=min-width:50px>Riflessivo/Sensibile</td>
-						<td style=min-width:50px>Piani/Progetti</td>
-						<td style=min-width:50px>Se ti viene affidato un compito ti pesa di più</td>
-						<td style=min-width:50px>Scoprire di aver fatto un errore che potevi evitare.</td>
-						<td style=min-width:50px>Scoprire di aver deluso una persona cui tieni.</td>
+						<td style=min-width:50px>Reflective/Sensitive</td>
+						<td style=min-width:50px>Plans/Projects</td>
+						<td style=min-width:50px>If you are given a task, what weighs more on you</td>
+						<td style=min-width:50px>Discovering you made a mistake you could have avoided.</td>
+						<td style=min-width:50px>Discovering you disappointed someone you care about.</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda10</td>
-						<td style=min-width:50px>Giudizioso/Percettivo</td>
-						<td style=min-width:50px>Autoconsapevolezza</td>
-						<td style=min-width:50px>Preferisci affrontare un lavoro</td>
-						<td style=min-width:50px>Organizzandolo nei dettagli</td>
-						<td style=min-width:50px>Lasciando margine all'improvvisazione</td>
+						<td style=min-width:50px>Judicious/Perceptive</td>
+						<td style=min-width:50px>Self-awareness</td>
+						<td style=min-width:50px>You prefer to approach a job</td>
+						<td style=min-width:50px>By organizing it in detail</td>
+						<td style=min-width:50px>Leaving room for improvisation</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda11</td>
-						<td style=min-width:50px>Giudizioso/Percettivo</td>
-						<td style=min-width:50px>Rapporti</td>
-						<td style=min-width:50px>Riesci a gestire con maggior facilità:</td>
-						<td style=min-width:50px>Problemi concreti</td>
-						<td style=min-width:50px>Problemi astratti</td>
+						<td style=min-width:50px>Judicious/Perceptive</td>
+						<td style=min-width:50px>Relationships</td>
+						<td style=min-width:50px>You can manage more easily:</td>
+						<td style=min-width:50px>Concrete problems</td>
+						<td style=min-width:50px>Abstract problems</td>
 					</tr>
 					<tr>
 						<td style=min-width:50px>Domanda12</td>
-						<td style=min-width:50px>Giudizioso/Percettivo</td>
-						<td style=min-width:50px>Piani/Progetti</td>
-						<td style=min-width:50px>Ti capita più spesso di essere affascinato da</td>
-						<td style=min-width:50px>Un oggetto interessante</td>
-						<td style=min-width:50px>Un pensiero interessante</td>
+						<td style=min-width:50px>Judicious/Perceptive</td>
+						<td style=min-width:50px>Plans/Projects</td>
+						<td style=min-width:50px>You more often find yourself fascinated by</td>
+						<td style=min-width:50px>An interesting object</td>
+						<td style=min-width:50px>An interesting thought</td>
 					</tr>
 				</table>
 				<hr>
   <br><br>
 
-    <h1>Esempio</h1>
+    <h1>Example</h1>
 
 
     <form id="TestMB">
-        <h3>Hai la tendenza a:</h3><br><input type="radio" name="Domanda1" value="i">Consolidare amicizie che hai già<br><input type="radio" name="Domanda1" value="e">Creare nuove amicizie<br><br>
-        <h3>E' stata una giornata faticosa, cosa preferisci fare?</h3><br><input type="radio" name="Domanda2" value="i">Ti sdrai sul divano e ti riposi davanti un bel film.<br><input type="radio" name="Domanda2" value="e">Senti qualche tuo amico per vedere se ha voglia di fare qualcosa.<br><br>
-        <h3>In un viaggio è piu importante la compagnia o la meta?</h3><br><input type="radio" name="Domanda3" value="i">Compagnia<br><input type="radio" name="Domanda3" value="e">Meta<br><br>
-        <h3>Qual è la tua migliore qualità?</h3><br><input type="radio" name="Domanda4" value="s">Essere sistematico<br><input type="radio" name="Domanda4" value="n">Essere Fantasioso<br><br>
-        <h3>Siete in tre amici che volete andare in vacanza. Un tuo amico vuole andare al mare e l'altro in montagna, lo spareggio è affidato a te. Cosa fai?</h3><br><input type="radio" name="Domanda5" value="s">Provi a trovare una soluzione che possa accomodare un po tutti.<br><input type="radio" name="Domanda5" value="n">Prendi la tua decisione su dove preferisci andare.<br><br>
-        <h3>Quando organizzi di solito le vacanze?</h3><br><input type="radio" name="Domanda6" value="s">Con molto anticipo.<br><input type="radio" name="Domanda6" value="n">Un po all'ultimo<br><br>
-        <h3>Nel prendere una decisione ti fidi di più</h3><br><input type="radio" name="Domanda7" value="t">Dei pensieri<br><input type="radio" name="Domanda7" value="f">Dei sentimenti<br><br>
-        <h3>Parli spesso dei tuoi problemi con le persone a te care?</h3><br><input type="radio" name="Domanda8" value="t">NO<br><input type="radio" name="Domanda8" value="f">SI<br><br>
-        <h3>Se ti viene affidato un compito ti pesa di più</h3><br><input type="radio" name="Domanda9" value="t">Scoprire di aver fatto un errore che potevi evitare.<br><input type="radio" name="Domanda9" value="f">Scoprire di aver deluso una persona cui tieni.<br><br>
-        <h3>Preferisci affrontare un lavoro</h3><br><input type="radio" name="Domanda10" value="j">Organizzandolo nei dettagli<br><input type="radio" name="Domanda10" value="p">Lasciando margine all'improvvisazione<br><br>
-        <h3>Riesci a gestire con maggior facilità:</h3><br><input type="radio" name="Domanda11" value="j">Problemi concreti<br><input type="radio" name="Domanda11" value="p">Problemi astratti<br><br>
-        <h3>Ti capita più spesso di essere affascinato da</h3><br><input type="radio" name="Domanda12" value="j">Un oggetto interessante<br><input type="radio" name="Domanda12" value="p">Un pensiero interessante<br><br>
+        <h3>You tend to:</h3><br><input type="radio" name="Domanda1" value="i">Consolidate friendships you already have<br><input type="radio" name="Domanda1" value="e">Create new friendships<br><br>
+        <h3>It's been a tiring day, what do you prefer to do?</h3><br><input type="radio" name="Domanda2" value="i">You lie on the couch and rest watching a good movie.<br><input type="radio" name="Domanda2" value="e">You contact some friends to see if they want to do something.<br><br>
+        <h3>In a trip, what is more important, the company or the destination?</h3><br><input type="radio" name="Domanda3" value="i">Company<br><input type="radio" name="Domanda3" value="e">Destination<br><br>
+        <h3>What is your best quality?</h3><br><input type="radio" name="Domanda4" value="s">Being systematic<br><input type="radio" name="Domanda4" value="n">Being imaginative<br><br>
+        <h3>There are three friends who want to go on vacation. One friend wants to go to the sea and the other to the mountains, the tiebreaker is up to you. What do you do?</h3><br><input type="radio" name="Domanda5" value="s">You try to find a solution that can accommodate everyone.<br><input type="radio" name="Domanda5" value="n">You make your decision on where you prefer to go.<br><br>
+        <h3>When do you usually organize vacations?</h3><br><input type="radio" name="Domanda6" value="s">Well in advance.<br><input type="radio" name="Domanda6" value="n">A bit at the last minute<br><br>
+        <h3>When making a decision you trust more</h3><br><input type="radio" name="Domanda7" value="t">Your thoughts<br><input type="radio" name="Domanda7" value="f">Your feelings<br><br>
+        <h3>Do you often talk about your problems with people close to you?</h3><br><input type="radio" name="Domanda8" value="t">NO<br><input type="radio" name="Domanda8" value="f">SI<br><br>
+        <h3>If you are given a task, what weighs more on you</h3><br><input type="radio" name="Domanda9" value="t">Discovering you made a mistake you could have avoided.<br><input type="radio" name="Domanda9" value="f">Discovering you disappointed someone you care about.<br><br>
+        <h3>You prefer to approach a job</h3><br><input type="radio" name="Domanda10" value="j">By organizing it in detail<br><input type="radio" name="Domanda10" value="p">Leaving room for improvisation<br><br>
+        <h3>You can manage more easily:</h3><br><input type="radio" name="Domanda11" value="j">Concrete problems<br><input type="radio" name="Domanda11" value="p">Abstract problems<br><br>
+        <h3>You more often find yourself fascinated by</h3><br><input type="radio" name="Domanda12" value="j">An interesting object<br><input type="radio" name="Domanda12" value="p">An interesting thought<br><br>
     </form>
 
     <p id="val"></p>
-    <button onclick="calcola()">Calcola</button>
+    <button onclick="calcola()">Calculate</button>
 
 
     <br><br><br><br>
     <h3><center>
-    Il tuo profilo di personalità è:<br>
+    Your personality profile is:<br>
     <p id="categ"></p><br><br>
-    I personaggi fantasy più simili a te sono:<br>
+    The fantasy characters most similar to you are:<br>
     <p id="nome"></p>
     </center></h3> 
     <br><br><br><br>

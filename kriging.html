@@ -38,19 +38,19 @@
     <script src="Plotimpo_files/plotly-main-1.46.1/plotly-latest.min.js"></script>
 
     <style>
-        /* Struttura Base */
+        /* Base Structure */
         * { box-sizing: border-box; }
         body { overflow-x: hidden; }
         code { white-space: pre; }
         pre:not([class]) { background-color: white; }
 
-        /* Titoli */
+        /* Titles */
         h1 { font-size: 34px; } h1.title { font-size: 38px; }
         h2 { font-size: 30px; } h3 { font-size: 24px; }
         h4 { font-size: 18px; }
         .table th:not([align]) { text-align: left; }
 
-        /* Menu a Fisarmonica (Accordion) */
+        /* Accordion Menu */
         .accordion {
             background-color: #FFFFFF;
             color: #444;
@@ -66,7 +66,7 @@
         .active, .accordion:hover { background-color: hsl(120, 100%, 99%); }
         .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
 
-        /* Barra di Ricerca */
+        /* Search Bar */
         #myInput {
             width: 100%;
             font-size: 16px;
@@ -76,7 +76,7 @@
             margin-bottom: 12px;
         }
 
-        /* Liste Indice */
+        /* Index Lists */
         ul { list-style-type: none; }
         #myUL { list-style-type: none; padding: 0; margin: 0; }
         #myUL li a {
@@ -152,43 +152,43 @@
 
 
 <div id="previsione-spaziale" class="section level1">
-<h1>Previsione spaziale</h1>
-<p>L’obbiettivo dell’Analysis spaziale è prevedere valori non osservati di una grandezza misurabile in predefinite locazioni spaziali a partire dalle sue misurazioni campionarie rilevate su un numero finito di siti <span class="math inline">\(s_1,...,s_n\)</span>.</p>
-<p>Si suppone che il fenomeno sia definito in un regione di studio <span class="math inline">\(D\)</span> e che possa essere rappresentato da delle coordinate spaziali <span class="math inline">\(s\)</span>.</p>
+<h1>Spatial Prediction</h1>
+<p>The objective of spatial analysis is to predict unobserved values of a measurable quantity at predefined spatial locations starting from its sample measurements collected at a finite number of sites <span class="math inline">\(s_1,...,s_n\)</span>.</p>
+<p>It is assumed that the phenomenon is defined in a study region <span class="math inline">\(D\)</span> and can be represented by spatial coordinates <span class="math inline">\(s\)</span>.</p>
 <p><span class="math display">\[ Y(s):s \in D \]</span></p>
-<p>Quindi <span class="math inline">\(Y(s_1),...,Y(s_n)\)</span> sono i valori osservati in un insieme di di siti noti (<span class="math inline">\(s_1,...s_n\)</span>), solitamente <span class="math inline">\(s_i\)</span> corrisponde una coppia ordinata (ascissa, ordinata) per esempio (longitudine, latitudine).</p>
-<p>La previsione può essere puntuale (o intervallare), binaria rispetto a soglie di riferimento e su aree nella regione di studio.</p>
-Esistono due approcci per la preisione spaziale:
+<p>Thus <span class="math inline">\(Y(s_1),...,Y(s_n)\)</span> are the observed values at a set of known sites (<span class="math inline">\(s_1,...s_n\)</span>), usually <span class="math inline">\(s_i\)</span> corresponds to an ordered pair (abscissa, ordinate) for example (longitude, latitude).</p>
+<p>The prediction can be point-wise (or interval-based), binary with respect to reference thresholds, and over areas in the study region.</p>
+There are two approaches for spatial prediction:
 <ul>
 <li>
-Previsione stocastica
+Stochastic prediction
 </li>
 <li>
-Previsione non stocastica
+Non-stochastic prediction
 </li>
 </ul>
-<p>Nella previsione di tipo stocastico si assume l’esistenza di un modello probabilistico, mentre nella previsione di tipo non stocastico non si suppone l’esistenza di un tale modello sottostante. In questo articolo ci occuperemo solo dell’approcio stocastico.</p>
+<p>In stochastic prediction, the existence of a probabilistic model is assumed, while in non-stochastic prediction, the existence of such an underlying model is not assumed. In this article we will only deal with the stochastic approach.</p>
 </div>
 <div id="kriging" class="section level1">
 <h1>Kriging</h1>
-<p>Il Kriging è un metodo utilizzato la previsione spaziale introdotto da Matheron e Gandin nei primi anni ’60 formalizzando studi precedenti condotti da Krige (1951).</p>
-<p>L’obbiettivo princiaple di questo metodo è quello di ottenere una mappa del processo.</p>
-<p>Nella classe dei previsori lineari, il Kriging è quello che minimizza l’errore quadratico medio di previsione e, per tal motivo, è considerato un metodo di previsione ottimo (lineare). Il Kriging può essere classificato in tre tipologie a seconda delle assunzioni sulla funzione media del processo spaziale che definisce la variabile regionalizzata. In particolare, se il trend è noto il Kriging utilizzato è detto semplice, se è ignoto ma costante il metodo di previsione è detto Kriging ordinario mentre se è una funzione delle locazioni (quindi ignoto e non costante) si parla di Kriging universale.</p>
+<p>Kriging is a method used for spatial prediction introduced by Matheron and Gandin in the early 1960s, formalizing previous studies conducted by Krige (1951).</p>
+<p>The main objective of this method is to obtain a map of the process.</p>
+<p>In the class of linear predictors, Kriging is the one that minimizes the mean squared prediction error and, for this reason, is considered an optimal (linear) prediction method. Kriging can be classified into three types depending on the assumptions about the mean function of the spatial process that defines the regionalized variable. In particular, if the trend is known, the Kriging used is called simple; if it is unknown but constant, the prediction method is called ordinary Kriging; while if it is a function of locations (therefore unknown and non-constant), it is called universal Kriging.</p>
 <ul>
 <li>
-Kriging semplice (SK): <span class="math inline">\(\mu(s)\)</span> nota
+Simple Kriging (SK): <span class="math inline">\(\mu(s)\)</span> known
 </li>
 <li>
-Kriging ordinario (OK): <span class="math inline">\(\mu(s)=\mu\)</span> ignota
+Ordinary Kriging (OK): <span class="math inline">\(\mu(s)=\mu\)</span> unknown
 </li>
 <li>
-Kriging universale (UK): <span class="math inline">\(\mu(s)\)</span> funzione non nota di <span class="math inline">\(s\)</span>
+Universal Kriging (UK): <span class="math inline">\(\mu(s)\)</span> unknown function of <span class="math inline">\(s\)</span>
 </li>
 </ul>
-<p>Il Kriging è un metodo di regressione usato nell’ambito dell’Analysis spaziale (Geostatistics) che permette di interpolare una grandezza nello spazio, minimizzando l’errore quadratico medio.</p>
-<p>Un punto di forza di questo tipo di interpolazione è che non solo genera un modello spaziale interpolato, ma genera anche una stima dell’incertezza di ogni punto in quel modello. A differenza della regressione lineare o dell’interpolazione ponderata per la distanza inversa,l’interpolazione di Kriging si basa principalmente su osservazioni empiriche, i punti dati del campione osservato, piuttosto che su un modello preassunto. L’interpolazione attribuisce maggiore peso ai punti campione nelle vicinanze di una posizione rispetto a quelli più importanti e, al fine di ridurre la distorsionedi campionamento, pesa i cluster meno pesantemente dei singoli punti. Il valore di ogni punto viene calcolato in modo tale da ridurre al minimo l’errore previsto per quel particolare punto.</p>
-<p>Ipotizioamo</p>
-<p><span class="math display">\[Y(s)=\mu(s)+Z(s)\]</span> dove:</p>
+<p>Kriging is a regression method used in the field of spatial analysis (Geostatistics) that allows interpolation of a quantity in space, minimizing the mean squared error.</p>
+<p>A strength of this type of interpolation is that it not only generates an interpolated spatial model, but also generates an estimate of the uncertainty of each point in that model. Unlike linear regression or inverse distance weighted interpolation, Kriging interpolation is primarily based on empirical observations, the observed sample data points, rather than on a pre-assumed model. The interpolation assigns greater weight to sample points in the vicinity of a location compared to more distant ones and, in order to reduce sampling bias, weights clusters less heavily than individual points. The value of each point is calculated in such a way as to minimize the predicted error for that particular point.</p>
+<p>Let us assume</p>
+<p><span class="math display">\[Y(s)=\mu(s)+Z(s)\]</span> where:</p>
 <ul>
 <li>
 <span class="math inline">\(s \in D\)</span>
@@ -197,13 +197,13 @@ Kriging universale (UK): <span class="math inline">\(\mu(s)\)</span> funzione no
 <span class="math inline">\(E[Y(s)]=\mu(s)\)</span>
 </li>
 <li>
-<span class="math inline">\(Z(s)=Y(s)-\mu(s)\)</span>, Un PPS (gaussiano) a media nulla
+<span class="math inline">\(Z(s)=Y(s)-\mu(s)\)</span>, A (Gaussian) SSP with zero mean
 </li>
 </ul>
-<p>Si ipotizzi che il processo abbia un variogramma pari a <span class="math inline">\(2\gamma(h)\)</span> (e di conseguenza semivariograma <span class="math inline">\(\gamma(h)\)</span>).</p>
-<p>Per semplicità di trascrizione in questo articolo ipotizzeremo che <span class="math inline">\(H\)</span> sia la mtrice di distanze tra tutte le coordinate <span class="math inline">\(s\)</span> e che <span class="math inline">\(\Gamma\)</span> sia il semivariogramma calcolato su tutte le distanze di <span class="math inline">\(H\)</span>.</p>
-<p>Nel si vuole prevedere il valore della variabile regionalizzata in <span class="math inline">\(s_0\)</span> date alcune osservazioni <span class="math inline">\(Y(s_1),..., Y(s_n)\)</span>.</p>
-<p>Nel <strong><em>Kriging ordinario (OK)</em></strong> per ottenere i coefficienti per le coordinate <span class="math inline">\(s_0\)</span> calcolo:</p>
+<p>Assume that the process has a variogram equal to <span class="math inline">\(2\gamma(h)\)</span> (and consequently a semivariogram <span class="math inline">\(\gamma(h)\)</span>).</p>
+<p>For simplicity of notation in this article, we will assume that <span class="math inline">\(H\)</span> is the matrix of distances between all coordinates <span class="math inline">\(s\)</span> and that <span class="math inline">\(\Gamma\)</span> is the semivariogram calculated on all distances of <span class="math inline">\(H\)</span>.</p>
+<p>We want to predict the value of the regionalized variable at <span class="math inline">\(s_0\)</span> given some observations <span class="math inline">\(Y(s_1),..., Y(s_n)\)</span>.</p>
+<p>In <strong><em>Ordinary Kriging (OK)</em></strong> to obtain the coefficients for coordinates <span class="math inline">\(s_0\)</span> we calculate:</p>
 <p><span class="math display">\[\Gamma_0 = \left(\begin{array}{cc} 
 \Gamma &amp; 1\\ 
 1 &amp; 0
@@ -215,13 +215,13 @@ Kriging universale (UK): <span class="math inline">\(\mu(s)\)</span> funzione no
 \gamma(||s_n-s_n||)\\
 1
 \end{array}\right)\]</span></p>
-<p>Infine stimo i coefficienti:</p>
+<p>Finally, we estimate the coefficients:</p>
 <p><span class="math display">\[ \alpha_0=\Gamma_0^{^{-1}} \gamma_0 \]</span></p>
-<p>e trovo <span class="math display">\[\hat Y(s_0)=\sum_{i=1}^n \alpha_{0 i}\space\space s_{0 i}\]</span></p>
-<p>Nel <strong><em>Kriging semplice (SK)</em></strong> si pone come assunzione che il processo stocastico sia un PPS con media uguale a <span class="math inline">\(\mu(s)\)</span> nota quindi si applica lo stesso ragionamento fatto per il Kriging ordinario ma su <span class="math inline">\(Z(s)=Y(s)-\mu(s)\)</span> e quando poi occorre fare previsioni si aggiunge alla stima della componente di piccola scala quella di larga scala nota.</p>
-<p>Nel <strong><em>Kriging universale (UK)</em></strong> occoore prima stimare <span class="math inline">\(\mu(s)\)</span> con una regressione polinomiale di grado <span class="math inline">\(p\)</span></p>
+<p>and we find <span class="math display">\[\hat Y(s_0)=\sum_{i=1}^n \alpha_{0 i}\space\space s_{0 i}\]</span></p>
+<p>In <strong><em>Simple Kriging (SK)</em></strong> it is assumed that the stochastic process is an SSP with mean equal to known <span class="math inline">\(\mu(s)\)</span>, so the same reasoning applied for Ordinary Kriging is used but on <span class="math inline">\(Z(s)=Y(s)-\mu(s)\)</span> and when predictions need to be made, the known large-scale component is added to the estimate of the small-scale component.</p>
+<p>In <strong><em>Universal Kriging (UK)</em></strong> it is necessary to first estimate <span class="math inline">\(\mu(s)\)</span> with a polynomial regression of degree <span class="math inline">\(p\)</span></p>
 <p><span class="math display">\[Y(s)=f_1(s)+...f_p(s)+Z(s)\]</span></p>
-<p>creiamo la matrice <span class="math inline">\(X\)</span> calcolando per ogni i-esima coordinata e per ogni j-esimo grado del polinomio, la funzione <span class="math inline">\(f_{j-1-n}(s_i)\)</span></p>
+<p>we create the matrix <span class="math inline">\(X\)</span> by calculating for each i-th coordinate and for each j-th degree of the polynomial, the function <span class="math inline">\(f_{j-1-n}(s_i)\)</span></p>
 <p><span class="math display">\[\Gamma_0 = \left(\begin{array}{cc} 
 \Gamma &amp; X\\ 
 X^T &amp; 0
@@ -236,10 +236,10 @@ f_1(s_0)\\
 ...\\
 f_p(s_0)
 \end{array}\right)\]</span></p>
-<p>Infine stimo i coefficienti:</p>
+<p>Finally, we estimate the coefficients:</p>
 <p><span class="math display">\[ \alpha_0=\Gamma_0^{^{-1}} \gamma_0 \]</span></p>
-<p>e trovo <span class="math display">\[\hat Y(s_0)=\sum_{i=1}^n (\alpha_{0 i}\space\space \gamma(s_{0 i}-s_i))+\sum_{i=n+1}^{n+p+1} (\alpha_{0 i}\space\space f_{i-n-1}( s_{0 i}))\]</span></p>
-<pre class="r"><code># Importo i dati
+<p>and we find <span class="math display">\[\hat Y(s_0)=\sum_{i=1}^n (\alpha_{0 i}\space\space \gamma(s_{0 i}-s_i))+\sum_{i=n+1}^{n+p+1} (\alpha_{0 i}\space\space f_{i-n-1}( s_{0 i}))\]</span></p>
+<pre class="r"><code># Import data
 require(geoR)</code></pre>
 <pre><code>## Loading required package: geoR</code></pre>
 <pre><code>## --------------------------------------------------------------
@@ -272,11 +272,11 @@ summary(obj)</code></pre>
 
 
 
-# Stimo vaoigramma con WLS
+# Estimate variogram with WLS
 soja.geo &lt;- as.geodata(obj,coords.col=1:2,data.col=3)
 soja.var &lt;- variog(soja.geo, estimator.type=&quot;classical&quot;)</code></pre>
 <pre><code>## variog: computing omnidirectional variogram</code></pre>
-<pre class="r"><code>plot(soja.var, main=&quot;variogramma empirico&quot;)     
+<pre class="r"><code>plot(soja.var, main=&quot;empirical variogram&quot;)     
 soja.var.fit &lt;-variofit(soja.var,ini.cov.pars=c(25,35),weights=&quot;cressie&quot;, 
                         cov.model=&quot;exponential&quot;, fix.nugget=FALSE,nugget=20)</code></pre>
 <pre><code>## variofit: covariance model used is exponential 

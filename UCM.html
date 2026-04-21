@@ -38,19 +38,19 @@
     <script src="Plotimpo_files/plotly-main-1.46.1/plotly-latest.min.js"></script>
 
     <style>
-        /* Struttura Base */
+        /* Base Structure */
         * { box-sizing: border-box; }
         body { overflow-x: hidden; }
         code { white-space: pre; }
         pre:not([class]) { background-color: white; }
 
-        /* Titoli */
+        /* Titles */
         h1 { font-size: 34px; } h1.title { font-size: 38px; }
         h2 { font-size: 30px; } h3 { font-size: 24px; }
         h4 { font-size: 18px; }
         .table th:not([align]) { text-align: left; }
 
-        /* Menu a Fisarmonica (Accordion) */
+        /* Accordion Menu */
         .accordion {
             background-color: #FFFFFF;
             color: #444;
@@ -66,7 +66,7 @@
         .active, .accordion:hover { background-color: hsl(120, 100%, 99%); }
         .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
 
-        /* Barra di Ricerca */
+        /* Search Bar */
         #myInput {
             width: 100%;
             font-size: 16px;
@@ -76,7 +76,7 @@
             margin-bottom: 12px;
         }
 
-        /* Liste Indice */
+        /* Index Lists */
         ul { list-style-type: none; }
         #myUL { list-style-type: none; padding: 0; margin: 0; }
         #myUL li a {
@@ -272,7 +272,7 @@ abline(reg1, col=&quot;red&quot;)</code></pre>
 <p>Se <span class="math inline">\(s\)</span> è il numero delle stagioni, la stagionalità deterministica è: <span class="math display">\[\gamma_t = -\gamma_{t-1}-\gamma_{t-2}-...-\gamma_{t-(s-1)} + \omega_t \space \space con \space \space \omega_t \sim WN(0, \sigma^2_{\omega})\]</span></p>
 </div>
 <div id="esempio-trend-stagionalita-sotto-forma-di-dummy-stocastiche" class="section level4">
-<h4>Esempio trend + stagionalità sotto forma di dummy stocastiche</h4>
+<h4>Example trend + stagionalità sotto forma di dummy stocastiche</h4>
 <p>Modello:</p>
 <p><span class="math display">\[Y_t= \mu_t+ \gamma_t+\epsilon_t \\.\\
 Dove: \\ 
@@ -345,7 +345,7 @@ lines(reg2$fitted.values, col=&quot;red&quot;)</code></pre>
 <p>Questa formula che sembra complicata in realtà è abbastanza semplice e di fatto si va a posizionare dei picchi (uno alto e uno in basso) per ogni stagione così da poter catturare le variazioni cicliche.</p>
 </div>
 <div id="esempio-trend-stagioni-con-sinusoidi-stocastiche" class="section level4">
-<h4>Esempio trend + stagioni con sinusoidi stocastiche</h4>
+<h4>Example trend + stagioni con sinusoidi stocastiche</h4>
 <p>Modello:</p>
 <p><span class="math display">\[Y_t= \mu_t+ \gamma_t +\epsilon_t \\.\\
 Dove: \\ 
@@ -505,7 +505,7 @@ lines(reg4$fitted.values, col=&quot;red&quot;)</code></pre>
 </div>
 </div>
 <div id="esempio-finale" class="section level1">
-<h1>Esempio finale</h1>
+<h1>Example finale</h1>
 <p>In questo esempio finale mettiamo insieme tutte le componenti per creare un modello UCM completo.</p>
 <p><span class="math display">\[Y_t= \mu_t+\gamma_t+\psi_t + \epsilon_t \\.\\
 Dove: \\ 
