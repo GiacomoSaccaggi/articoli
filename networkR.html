@@ -38,19 +38,19 @@
     <script src="Plotimpo_files/plotly-main-1.46.1/plotly-latest.min.js"></script>
 
     <style>
-        /* Struttura Base */
+        /* Base Structure */
         * { box-sizing: border-box; }
         body { overflow-x: hidden; }
         code { white-space: pre; }
         pre:not([class]) { background-color: white; }
 
-        /* Titoli */
+        /* Titles */
         h1 { font-size: 34px; } h1.title { font-size: 38px; }
         h2 { font-size: 30px; } h3 { font-size: 24px; }
         h4 { font-size: 18px; }
         .table th:not([align]) { text-align: left; }
 
-        /* Menu a Fisarmonica (Accordion) */
+        /* Accordion Menu */
         .accordion {
             background-color: #FFFFFF;
             color: #444;
@@ -66,7 +66,7 @@
         .active, .accordion:hover { background-color: hsl(120, 100%, 99%); }
         .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
 
-        /* Barra di Ricerca */
+        /* Search Bar */
         #myInput {
             width: 100%;
             font-size: 16px;
@@ -76,7 +76,7 @@
             margin-bottom: 12px;
         }
 
-        /* Liste Indice */
+        /* Index Lists */
         ul { list-style-type: none; }
         #myUL { list-style-type: none; padding: 0; margin: 0; }
         #myUL li a {
@@ -152,7 +152,7 @@
 
 
 <div id="caricamento-dei-dati" class="section level2">
-<h2>Caricamento dei dati</h2>
+<h2>Data Loading</h2>
 <pre class="r"><code>library(readxl)
 library(igraph)</code></pre>
 <pre><code>## 
@@ -187,7 +187,7 @@ d&lt;-which(df$Freq==0)
 if(length(d)&gt;0){df&lt;-df[-d,]}</code></pre>
 </div>
 <div id="creazione-network" class="section level2">
-<h2>Creazione network</h2>
+<h2>Network Creation</h2>
 <pre class="r"><code># create data:
 links &lt;- data.frame(
   source=df$From,

@@ -38,19 +38,19 @@
     <script src="Plotimpo_files/plotly-main-1.46.1/plotly-latest.min.js"></script>
 
     <style>
-        /* Struttura Base */
+        /* Base Structure */
         * { box-sizing: border-box; }
         body { overflow-x: hidden; }
         code { white-space: pre; }
         pre:not([class]) { background-color: white; }
 
-        /* Titoli */
+        /* Titles */
         h1 { font-size: 34px; } h1.title { font-size: 38px; }
         h2 { font-size: 30px; } h3 { font-size: 24px; }
         h4 { font-size: 18px; }
         .table th:not([align]) { text-align: left; }
 
-        /* Menu a Fisarmonica (Accordion) */
+        /* Accordion Menu */
         .accordion {
             background-color: #FFFFFF;
             color: #444;
@@ -66,7 +66,7 @@
         .active, .accordion:hover { background-color: hsl(120, 100%, 99%); }
         .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
 
-        /* Barra di Ricerca */
+        /* Search Bar */
         #myInput {
             width: 100%;
             font-size: 16px;
@@ -76,7 +76,7 @@
             margin-bottom: 12px;
         }
 
-        /* Liste Indice */
+        /* Index Lists */
         ul { list-style-type: none; }
         #myUL { list-style-type: none; padding: 0; margin: 0; }
         #myUL li a {
@@ -153,10 +153,10 @@
 <div id="multiple-testing" class="section level1">
 <h1>Multiple testing</h1>
 <ul>
-<li><p>Problema:<br> Ipotiziamo una collezione di ipotesi nulle <span class="math inline">\(\mathcal{H}=\{H_1, \ldots, H_m\}\)</span> che vogliamo rigettare. Un numero sconosciuto <span class="math inline">\(m_0\)</span> di queste risultano essere vere mentre altre <span class="math inline">\(m_1= m-m_0\)</span> sono false. Chiamiamo l’insieme di ipotesi vere <span class="math inline">\(\mathcal{T} \subseteq \mathcal{H}\)</span> e la rimenente collezione di ipotesi false <span class="math inline">\(\mathcal{F} = \mathcal{H} \setminus \mathcal{T}\)</span>, la proporzione delle ipotesi vere sarà quindi <span class="math inline">\(\pi_0 = m_0/m\)</span>.</p></li>
-<li><p>Obbiettivo:<br> L’obbiettivo della <em>multiple testing procedure</em> è quello di scegliere <span class="math inline">\(\mathcal{R} \subseteq \mathcal{H}\)</span> di ipotesi da rigettare</p></li>
-<li><p>Risoluzione teorica:<br> Se abbiamo dei <span class="math inline">\(p\)</span>-values <span class="math inline">\(p_1,\ldots,p_m\)</span> per ogni ipotesi <span class="math inline">\(H_1,\ldots,H_m\)</span> ci verrebbe da selezionare in modo intuitivo quei test che: <span class="math display">\[\mathcal{R} = \{H_i: p_{i}\leq T\}\]</span> rigettano tutte le ipotesi con un <span class="math inline">\(p\)</span>-value minore di una soglia pari a <span class="math inline">\(T\)</span>. A livello teorico il set delle ipotesi rifiutate <span class="math inline">\(\mathcal{R}\)</span> dovrebbe essere coerente <span class="math inline">\(\mathcal{F}\)</span> il piu possibile</p></li>
-<li><p>Due tipi di errore:<br>I falsi positivi, o gli errori di tipo I, sono le ipotesi rifiutate che non sono false, i.e. <span class="math inline">\(\mathcal{R} \cap \mathcal{T}\)</span>; falsi negativi o errori di tipo II sono le false ipotesi che non siamo riusciti a rifiutare, i.e. <span class="math inline">\(\mathcal{F} \setminus \mathcal{R}\)</span>. Le ipotesi rifiutate sono talvolta denominate <em>scoperte</em>, quindi i termini <em>true discovery</em> e <em>false discovery</em> vengono talvolta utilizzati per respingimenti corretti e scorretti.<br>Possiamo riassumere il numero di errori che si verificano in una procedura di verifica delle ipotesi in una tabella di contingenza. Possiamo osservare <span class="math inline">\(m\)</span> e <span class="math inline">\(R\)</span>, ma <i>tutte le quantità nelle prime due colonne della tabella non sono osservabili</i>.</p></li>
+<li><p>Problem:<br> Let's assume a collection of null hypotheses <span class="math inline">\(\mathcal{H}=\{H_1, \ldots, H_m\}\)</span> that we want to reject. An unknown number <span class="math inline">\(m_0\)</span> of these turn out to be true while others <span class="math inline">\(m_1= m-m_0\)</span> are false. We call the set of true hypotheses <span class="math inline">\(\mathcal{T} \subseteq \mathcal{H}\)</span> and the remaining collection of false hypotheses <span class="math inline">\(\mathcal{F} = \mathcal{H} \setminus \mathcal{T}\)</span>, the proportion of true hypotheses will therefore be <span class="math inline">\(\pi_0 = m_0/m\)</span>.</p></li>
+<li><p>Objective:<br> The objective of the <em>multiple testing procedure</em> is to choose <span class="math inline">\(\mathcal{R} \subseteq \mathcal{H}\)</span> hypotheses to reject</p></li>
+<li><p>Theoretical resolution:<br> If we have <span class="math inline">\(p\)</span>-values <span class="math inline">\(p_1,\ldots,p_m\)</span> for each hypothesis <span class="math inline">\(H_1,\ldots,H_m\)</span> we would intuitively select those tests that: <span class="math display">\[\mathcal{R} = \{H_i: p_{i}\leq T\}\]</span> reject all hypotheses with a <span class="math inline">\(p\)</span>-value less than a threshold equal to <span class="math inline">\(T\)</span>. Theoretically, the set of rejected hypotheses <span class="math inline">\(\mathcal{R}\)</span> should be as consistent as possible with <span class="math inline">\(\mathcal{F}\)</span></p></li>
+<li><p>Two types of errors:<br>False positives, or type I errors, are rejected hypotheses that are not false, i.e. <span class="math inline">\(\mathcal{R} \cap \mathcal{T}\)</span>; false negatives or type II errors are false hypotheses that we failed to reject, i.e. <span class="math inline">\(\mathcal{F} \setminus \mathcal{R}\)</span>. Rejected hypotheses are sometimes called <em>discoveries</em>, so the terms <em>true discovery</em> and <em>false discovery</em> are sometimes used for correct and incorrect rejections.<br>We can summarize the number of errors that occur in a hypothesis testing procedure in a contingency table. We can observe <span class="math inline">\(m\)</span> and <span class="math inline">\(R\)</span>, but <i>all quantities in the first two columns of the table are unobservable</i>.</p></li>
 </ul>
 <style type="text/css">
     table.tableizer-table {
@@ -185,20 +185,20 @@
 <th>
 </th>
 <th>
-true (Ipotesi nulla <span class="math inline">\(H_0\)</span> è vera)
+true (Null hypothesis <span class="math inline">\(H_0\)</span> is true)
 </th>
 <th>
-false (Ipotesi alternativa <span class="math inline">\(H_A\)</span> è vera)
+false (Alternative hypothesis <span class="math inline">\(H_A\)</span> is true)
 </th>
 <th>
-Totale
+Total
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <th class="tableizer-firstrow">
-rejected (Test viene dichiarato significativo)
+rejected (Test is declared significant)
 </th>
 <td>
 <span class="math inline">\(V\)</span>
@@ -212,7 +212,7 @@ rejected (Test viene dichiarato significativo)
 </tr>
 <tr>
 <th class="tableizer-firstrow">
-not rejected (Test viene dichiarato non significativo)
+not rejected (Test is declared not significant)
 </th>
 <td>
 <span class="math inline">\(m_0-V\)</span>
@@ -226,7 +226,7 @@ not rejected (Test viene dichiarato non significativo)
 </tr>
 <tr>
 <th class="tableizer-firstrow">
-Totale
+Total
 </th>
 <td>
 <span class="math inline">\(m_0\)</span>
@@ -240,26 +240,26 @@ Totale
 </tr>
 </tbody>
 </table>
-<p><br> dove:<br></p>
+<p><br> where:<br></p>
 <ul>
-<li><span class="math inline">\(m\)</span> è il numero totale delle ipotesi testate</li>
-<li><span class="math inline">\(m_0\)</span> è il numero delle ipotesi nulle vere</li>
-<li><span class="math inline">\(m_1=m-m_0\)</span> è il numero delle ipotesi alternative vere</li>
-<li><span class="math inline">\(V\)</span> è il numero di falsi positivi (errore di tipo I) (chiamato anche “false scoperte”)</li>
-<li><span class="math inline">\(U\)</span> è il numero di veri positivi (chiamato anche “vere scoperte”)</li>
-<li><span class="math inline">\(m_1-U\)</span> è il numero di falsi negativi (errore di tipo II)</li>
-<li><span class="math inline">\(m_0-V\)</span> è il numero di veri negativi</li>
-<li><span class="math inline">\(R = V + U\)</span> è il numero di ipotesi di nulle rifiutate (chiamato anche “scoperte”, true o false)</li>
+<li><span class="math inline">\(m\)</span> is the total number of hypotheses tested</li>
+<li><span class="math inline">\(m_0\)</span> is the number of true null hypotheses</li>
+<li><span class="math inline">\(m_1=m-m_0\)</span> is the number of true alternative hypotheses</li>
+<li><span class="math inline">\(V\)</span> is the number of false positives (type I error) (also called "false discoveries")</li>
+<li><span class="math inline">\(U\)</span> is the number of true positives (also called "true discoveries")</li>
+<li><span class="math inline">\(m_1-U\)</span> is the number of false negatives (type II error)</li>
+<li><span class="math inline">\(m_0-V\)</span> is the number of true negatives</li>
+<li><span class="math inline">\(R = V + U\)</span> is the number of rejected null hypotheses (also called "discoveries", true or false)</li>
 </ul>
 </center>
-<p><b>Gli errori di tipo I e di tipo II sono in concorrenza diretta e occorre un compromesso tra i due. Se rifiutiamo più ipotesi, di solito abbiamo più errori di tipo I ma meno errori di tipo II e viceversa.</b></p>
-<p>ESEMPIO:</p>
+<p><b>Type I and type II errors are in direct competition and a compromise between the two is necessary. If we reject more hypotheses, we usually have more type I errors but fewer type II errors and vice versa.</b></p>
+<p>EXAMPLE:</p>
 <ul>
-<li><p><span class="math inline">\(Z_i \sim N(\mu_i,1)\)</span> è la statistica test</p></li>
+<li><p><span class="math inline">\(Z_i \sim N(\mu_i,1)\)</span> is the test statistic</p></li>
 <li><p><span class="math inline">\(H_i: \mu_i = 0\)</span> vs <span class="math inline">\(\bar{H}_i: \mu_i &gt; 0\)</span></p></li>
-<li><p>Rifiutiamo <span class="math inline">\(H_i\)</span> if <span class="math inline">\(Z_i \geq z_{1-\alpha}\)</span> o equivalentemente quando <span class="math inline">\(p_i = 1-\Phi(Z_i) \leq \alpha\)</span></p></li>
+<li><p>We reject <span class="math inline">\(H_i\)</span> if <span class="math inline">\(Z_i \geq z_{1-\alpha}\)</span> or equivalently when <span class="math inline">\(p_i = 1-\Phi(Z_i) \leq \alpha\)</span></p></li>
 </ul>
-<p>dove <span class="math inline">\(z_{1-\alpha}\)</span> il quantile di ordine <span class="math inline">\(1-\alpha\)</span> di una <span class="math inline">\(N(0,1)\)</span> e <span class="math inline">\(\Phi\)</span> è la cdf (funzione di ripartizione) di una <span class="math inline">\(N(0,1)\)</span></p>
+<p>where <span class="math inline">\(z_{1-\alpha}\)</span> is the quantile of order <span class="math inline">\(1-\alpha\)</span> of a <span class="math inline">\(N(0,1)\)</span> and <span class="math inline">\(\Phi\)</span> is the cdf (cumulative distribution function) of a <span class="math inline">\(N(0,1)\)</span></p>
 <pre class="r"><code>set.seed(123)
 alpha = 0.05
 m = 100
@@ -277,29 +277,29 @@ true = 1:m %in% setT)</code></pre>
 ## rejected FALSE TRUE
 ##    FALSE     3   75
 ##    TRUE     17    5</code></pre>
-<p>17 + 5 = 22 sono l’ipotesi rifiutata mentre 3 + 75 sono l’ipotesi accettata. Ci sono 5 errori di tipo I (5 sbagliati respinti su 22) e 3 errori di tipo II</p>
+<p>17 + 5 = 22 are the rejected hypotheses while 3 + 75 are the accepted hypotheses. There are 5 type I errors (5 wrongly rejected out of 22) and 3 type II errors</p>
 <div id="familywise-error-rate" class="section level2">
 <h2>Familywise error rate</h2>
-<p>Numerosi metodi di prova cercano di respingere il maggior numero possibile di ipotesi mantenendo nel contempo una certa misura degli errori di tipo I. Il modo più classico di controllo per test multipli è il Familywise error rate (FWER). Il FWER è la probabilità che il set rifiutato contenga errori:</p>
+<p>Numerous testing methods seek to reject as many hypotheses as possible while maintaining a certain measure of type I errors. The most classic way of controlling for multiple tests is the Familywise error rate (FWER). The FWER is the probability that the rejected set contains errors:</p>
 <p><span class="math display">\[\mathrm{FWER} = \mathrm{P}(V &gt; 0)\]</span></p>
-<p>Il FWER è <em>controllato</em> al livello $ $ quando il set $  $ (cioè la soglia $ T $) viene scelto in modo tale che: <span class="math display">\[ \mathrm {FWER} \leq \alpha \]</span></p>
+<p>The FWER is <em>controlled</em> at level $ $ when the set $  $ (i.e., the threshold $ T $) is chosen such that: <span class="math display">\[ \mathrm {FWER} \leq \alpha \]</span></p>
 </div>
 <div id="bonferroni" class="section level2">
 <h2>Bonferroni</h2>
-<p>Il metodo di Bonferroni controlla FWER al livello <span class="math inline">\(\alpha\)</span> rifiutando le ipotesi solo se hanno un valore p inferiore a <span class="math inline">\(\alpha / m\)</span>:</p>
+<p>The Bonferroni method controls FWER at level <span class="math inline">\(\alpha\)</span> by rejecting hypotheses only if they have a p-value less than <span class="math inline">\(\alpha / m\)</span>:</p>
 <p><span class="math display">\[\mathcal{R} = \left\{H_i: p_{i}\leq \frac{\alpha}{m}\right\}\]</span></p>
-<p>Questo aggiustamento a steps singoli della soglia di significatività è il metodo di test multiplo più semplice (non richiede alcuna ipotesi).</p>
-<p>Il p-value aggiustato secondo la procedura di Bonferroni corrisponde:</p>
+<p>This single-step adjustment of the significance threshold is the simplest multiple testing method (requires no assumptions).</p>
+<p>The adjusted p-value according to the Bonferroni procedure corresponds to:</p>
 <p><span class="math display">\[\tilde{p}_i = \min(mp_i, 1)\]</span></p>
-<p>e il metodo Bonferroni rifiuta le ipotesi nulle che hanno un p-value aggiustato più piccolo di <span class="math inline">\(\alpha\)</span>:</p>
+<p>and the Bonferroni method rejects null hypotheses that have an adjusted p-value smaller than <span class="math inline">\(\alpha\)</span>:</p>
 <p><span class="math display">\[\mathcal{R} = \{H_i: \tilde{p}_{i}\leq \alpha \}\]</span></p>
-<p><b>Bonferroni proof</b> <br> Le assunzioni sui <span class="math inline">\(p\)</span>-values valgono spesso solo sulle ipotesi vere che chiamiamo $ q_1, , q_{m_0} $, se le loro ipotesi corrispondenti sono vere, questi <span class="math inline">\(p\)</span>-values sono distribuiti uniformemente tra 0 e 1, oppure possono essere stocasticamente maggiori di uniformi: <span class="math display">\[
+<p><b>Bonferroni proof</b> <br> The assumptions on <span class="math inline">\(p\)</span>-values often hold only for true hypotheses which we call $ q_1, , q_{m_0} $, if their corresponding hypotheses are true, these <span class="math inline">\(p\)</span>-values are uniformly distributed between 0 and 1, or they can be stochastically greater than uniform: <span class="math display">\[
 \mathrm{Pr}(q_i \leq u ) \leq u
 \]</span></p>
-<p>Per motivare correttamente il metodo Bonferroni, dovremmo considerarlo come un corollario alla disuguaglianza di Boole, che dice che per ogni raccolta di eventi $ E_1,  ldots, E_k $, abbiamo:</p>
+<p>To properly motivate the Bonferroni method, we should consider it as a corollary to Boole's inequality, which states that for any collection of events $ E_1,  ldots, E_k $, abbiamo:</p>
 <p><span class="math display">\[\mathrm{P}\big(\bigcup_{i=1}^k E_i\big) \leq \sum_{i=1}^k \mathrm{P}(E_i)\]</span></p>
-<p>Dalla diseguaglianza di Boole deriva la probabilità che esiste qualche <span class="math inline">\(i\)</span> per il quale <span class="math inline">\(q_i \leq \alpha/m\)</span> is given by <span class="math display">\[\Pr\big(\bigcup_{i=1}^{m_0} \{ q_i \leq \alpha/m \}\big) \leq \sum_{i=1}^{m_0} \mathrm{P}( q_i \leq \alpha/m ) \leq m_0\frac{\alpha}{m} \leq \alpha\]</span></p>
-<p>Questo metodo commette errori solo del I tipo se <span class="math inline">\(q_i \leq \alpha/m\)</span> per qualche <span class="math inline">\(i\)</span>, questo dimostra il controllo FWER al livello <span class="math inline">\(\alpha\)</span> per il metodo Bonferroni.</p>
+<p>From Boole's inequality, the probability that there exists some <span class="math inline">\(i\)</span> for which <span class="math inline">\(q_i \leq \alpha/m\)</span> is given by <span class="math display">\[\Pr\big(\bigcup_{i=1}^{m_0} \{ q_i \leq \alpha/m \}\big) \leq \sum_{i=1}^{m_0} \mathrm{P}( q_i \leq \alpha/m ) \leq m_0\frac{\alpha}{m} \leq \alpha\]</span></p>
+<p>This method commits only type I errors if <span class="math inline">\(q_i \leq \alpha/m\)</span> for some <span class="math inline">\(i\)</span>, this proves FWER control at level <span class="math inline">\(\alpha\)</span> for the Bonferroni method.</p>
 <pre class="r"><code>set.seed(123)
 alpha = 0.05
 m = 100
@@ -317,14 +317,14 @@ true = 1:m %in% setT)</code></pre>
 ## rejected FALSE TRUE
 ##    FALSE    16   80
 ##    TRUE      4    0</code></pre>
-<p>Ora abbiamo errore di tipo I 0 ma 16 errori di tipo II, questi ultimi sono aumentati.</p>
-<p><b>Magnitude of Bonferroni’s threshold (Attrazione della soglia di Bonferroni)</b></p>
+<p>Now we have 0 type I errors but 16 type II errors, the latter have increased.</p>
+<p><b>Magnitude of Bonferroni's threshold</b></p>
 <p><span class="math inline">\(Z_i \sim N(\mu_i,1)\)</span> is the test statistic</p>
 <p><span class="math inline">\(H_i: \mu_i = 0\)</span> vs <span class="math inline">\(\bar{H}_i: \mu_i &gt; 0\)</span></p>
-<p>Bonferroni rifiuta <span class="math inline">\(H_i\)</span> se <span class="math inline">\(Z_i \geq z_{1-\alpha/m}\)</span>.</p>
+<p>Bonferroni rejects <span class="math inline">\(H_i\)</span> if <span class="math inline">\(Z_i \geq z_{1-\alpha/m}\)</span>.</p>
 <ul>
-<li><p>Ponendo <span class="math inline">\(\alpha\)</span> fisso, possiamo mostrare che per un <span class="math inline">\(m &gt; &gt; 0\)</span> <span class="math display">\[z_{1-\alpha/m} \approx \sqrt{2\log m}\]</span></p></li>
-<li><p>Non c'è asintoticamente alcuna dipendenza da <span class="math inline">\(\alpha\)</span></p></li>
+<li><p>Setting <span class="math inline">\(\alpha\)</span> fixed, we can show that for a <span class="math inline">\(m &gt; &gt; 0\)</span> <span class="math display">\[z_{1-\alpha/m} \approx \sqrt{2\log m}\]</span></p></li>
+<li><p>There is asymptotically no dependence on <span class="math inline">\(\alpha\)</span></p></li>
 </ul>
 <hr />
 <pre class="r"><code>alpha = 0.05

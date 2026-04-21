@@ -38,19 +38,19 @@
     <script src="Plotimpo_files/plotly-main-1.46.1/plotly-latest.min.js"></script>
 
     <style>
-        /* Struttura Base */
+        /* Base Structure */
         * { box-sizing: border-box; }
         body { overflow-x: hidden; }
         code { white-space: pre; }
         pre:not([class]) { background-color: white; }
 
-        /* Titoli */
+        /* Titles */
         h1 { font-size: 34px; } h1.title { font-size: 38px; }
         h2 { font-size: 30px; } h3 { font-size: 24px; }
         h4 { font-size: 18px; }
         .table th:not([align]) { text-align: left; }
 
-        /* Menu a Fisarmonica (Accordion) */
+        /* Accordion Menu */
         .accordion {
             background-color: #FFFFFF;
             color: #444;
@@ -66,7 +66,7 @@
         .active, .accordion:hover { background-color: hsl(120, 100%, 99%); }
         .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
 
-        /* Barra di Ricerca */
+        /* Search Bar */
         #myInput {
             width: 100%;
             font-size: 16px;
@@ -76,7 +76,7 @@
             margin-bottom: 12px;
         }
 
-        /* Liste Indice */
+        /* Index Lists */
         ul { list-style-type: none; }
         #myUL { list-style-type: none; padding: 0; margin: 0; }
         #myUL li a {
@@ -138,7 +138,7 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="site-heading">
-                        <h2>Modelli UCM in forma state space in KFAS</h2>
+                        <h2>UCM Models in State Space Form in KFAS</h2>
                         <hr class="small">
                         <h5>In-depth Articles</h5>
                     </div>
@@ -151,29 +151,29 @@
  
 
 <div id="modelli-state-space-in-kfas" class="section level1">
-<h1>Modelli state space in KFAS</h1>
+<h1>State Space Models in KFAS</h1>
 <div id="definizione-generale" class="section level2">
-<h2>Definizione generale</h2>
-<p>La forma state space utilizzata da KFAS è leggermente diversa da quella che abbiamo usato fino ad ora. In particolare non è possibile utilizzare i vettori ct e dt e la matrice di covarianza dei disturbi del vettore di stato è specificata utilizzando il prodotto di due matrici diverse. KFAS usa le seguente forma state space:</p>
+<h2>General Definition</h2>
+<p>The state space form used by KFAS is slightly different from what we have used so far. In particular, it is not possible to use the vectors ct and dt, and the covariance matrix of the state vector disturbances is specified using the product of two different matrices. KFAS uses the following state space form:</p>
 <ul>
-<li><strong>Equazioni di misurazione (o di osservazione)</strong>: mettono in relazione lineare una serie storica (o un vettore di serie storiche) con <span class="math inline">\(m\)</span> variabili di stato che contengono le componenti non osservabili nel caso degli UCM e altre componenti che aiutano a costruirle.<span class="math display">\[ \underline{Y}_t =  \underline{Z}_t \space \underline{\alpha}_t + \underline{\epsilon}_t \space, \space \space con \space \space \underline{\epsilon}_t \sim WN(\underline{0}, H_t) \]</span> con <span class="math inline">\(\alpha_t\)</span> vettore di stato che non deve avere necessariamente la dimensione della serie storica.</li>
-<li><strong>Equazioni di stato (o di transizione)</strong>: informano circa la legge del moto, cioè come <span class="math inline">\(\alpha_t\)</span> evolve nel tempo (si tratta di un VAR(1) con coefficienti che possono evolvere nel tempo).<span class="math display">\[ \underline{\alpha}_{t+1} =  \underline{T}_t \space \underline{\alpha}_t + \underline{\nu}_t \space, \space \space con \space \space \underline{\nu}_t = \underline{R}_t  \underline{\eta}_t \sim WN(\underline{0}, Q_t) \]</span>Tale forma è chiamata forma futura perchè a sinistra c’è solo il tempo <span class="math inline">\(t+1\)</span> e a destra il tempo <span class="math inline">\(t\)</span>. Solitamente si scrive <span class="math inline">\(\ni_{t+1}\)</span> ma trattandosi di un WN non cambia nulla. Il compito della matrice <span class="math inline">\(R\)</span> è quello di attribuire i due disturbi alle equazioni di transizioni giuste: ad esempio associare il primo disturbo alla seconda equazione e il secondo disturbo alla terza equazione.</li>
+<li><strong>Measurement (or Observation) Equations</strong>: establish a linear relationship between a time series (or a vector of time series) and <span class="math inline">\(m\)</span> state variables that contain the unobservable components in the case of UCMs and other components that help construct them.<span class="math display">\[ \underline{Y}_t =  \underline{Z}_t \space \underline{\alpha}_t + \underline{\epsilon}_t \space, \space \space con \space \space \underline{\epsilon}_t \sim WN(\underline{0}, H_t) \]</span> where <span class="math inline">\(\alpha_t\)</span> is a state vector that does not necessarily have to have the same dimension as the time series.</li>
+<li><strong>State (or Transition) Equations</strong>: inform about the law of motion, that is, how <span class="math inline">\(\alpha_t\)</span> evolves over time (it is a VAR(1) with coefficients that can evolve over time).<span class="math display">\[ \underline{\alpha}_{t+1} =  \underline{T}_t \space \underline{\alpha}_t + \underline{\nu}_t \space, \space \space con \space \space \underline{\nu}_t = \underline{R}_t  \underline{\eta}_t \sim WN(\underline{0}, Q_t) \]</span>This form is called the future form because on the left there is only time <span class="math inline">\(t+1\)</span> and on the right time <span class="math inline">\(t\)</span>. Usually one writes <span class="math inline">\(\ni_{t+1}\)</span> but since it is a WN it doesn't change anything. The task of matrix <span class="math inline">\(R\)</span> is to assign the two disturbances to the correct transition equations: for example, associating the first disturbance with the second equation and the second disturbance with the third equation.</li>
 </ul>
 <p>La forma state-space è completata dalla specificazione dei primi due momenti di <span class="math inline">\(\alpha_1\)</span>: <span class="math display">\[ \underline{a}_{1|0} = E(\underline\alpha_1) \\
 P_{1|0}=E[(\underline\alpha_1-\underline\alpha_{1|0})(\underline\alpha_1-\underline\alpha_{1|0})^T \space]\]</span></p>
 <p>Nel caso di componenti stazionarie si inseriscono la media e la varianza di tali componenti, nel caso invece di componenti non stazionarie (come trend o la stagionalità) si possono inserire condizioni diffuse, cioè una media arbitraria e delle varianze infinite (c’è infinita incertezza rispetto al valore che la v.c. puÃ² assumere). La possibilità di porre condizioni diffuse garantisce che definire <span class="math inline">\(\alpha_{1|0}\)</span> e <span class="math inline">\(P_{1|0}\)</span> non sia un limite ma anche l’algoritmo usato non lo consente si puÃ² fissare una varianza così alta da esse indistinguibile da infinito da punto di vista pratico.</p>
-<p>Condizioni tecniche:</p>
+<p>Technical conditions:</p>
 <ul>
-<li>Prima condizione: <span class="math inline">\(E(\underline\epsilon_t \space \underline\nu_t^T)=G_t\)</span> e si suppone che <span class="math inline">\(G_t=0\)</span> per semplicità;</li>
-<li>Seconda condizione: <span class="math inline">\(E(\underline\epsilon_t \space \underline\nu_s^T)=0\)</span> per ogni <span class="math inline">\(t \neq s\)</span>;</li>
-<li>Terza condizione: <span class="math inline">\(E[(\underline\alpha_1-\underline\alpha_{1|0})\space \underline\epsilon_t^T]=0\)</span>;</li>
-<li>Quarta condizione: <span class="math inline">\(E[(\underline\alpha_1-\underline\alpha_{1|0})\space \underline\nu_t^T]=0\)</span>.</li>
+<li>First condition: <span class="math inline">\(E(\underline\epsilon_t \space \underline\nu_t^T)=G_t\)</span> and it is assumed that <span class="math inline">\(G_t=0\)</span> for simplicity;</li>
+<li>Second condition: <span class="math inline">\(E(\underline\epsilon_t \space \underline\nu_s^T)=0\)</span> for every <span class="math inline">\(t \neq s\)</span>;</li>
+<li>Third condition: <span class="math inline">\(E[(\underline\alpha_1-\underline\alpha_{1|0})\space \underline\epsilon_t^T]=0\)</span>;</li>
+<li>Fourth condition: <span class="math inline">\(E[(\underline\alpha_1-\underline\alpha_{1|0})\space \underline\nu_t^T]=0\)</span>.</li>
 </ul>
 </div>
 </div>
 <div id="definizione-ucm-in-kfas" class="section level1">
-<h1>Definizione UCM in KFAS</h1>
-<p>Il pacchetto <em>R</em> che utilizzeremo nella stima di modelli in forma state space è <em>KFAS</em>, che potete scaricare dal CRAN come tutti i principali pacchetti R. Il pacchetto contiene degli ottimi algoritmi per fare inferenza sulle variabili di stato (filtro di Kalman e smoothers). Il pacchetto KFAS definisce una classe di oggetti di nome <em>SSModel</em>, che di fatto è una lista contenente tutte le informazioni della forma state space. Il costruttore, cioè la funzione che genera oggetti di tipo SSModel, si chiama a sua volta <strong><em>SSModel()</em></strong> e, ai nostri fini, necessita di soli tre parametri formali: formula, data e H. Quindi, per generare una forma state space e assegnarla alla variabile modello scriveremo:</p>
+<h1>UCM Definition in KFAS</h1>
+<p>The <em>R</em> package that we will use for estimating models in state space form is <em>KFAS</em>, which you can download from CRAN like all major R packages. The package contains excellent algorithms for performing inference on state variables (Kalman filter and smoothers). The KFAS package defines a class of objects called <em>SSModel</em>, which is in fact a list containing all the information of the state space form. The constructor, that is the function that generates objects of type SSModel, is itself called <strong><em>SSModel()</em></strong> and, for our purposes, requires only three formal parameters: formula, data, and H. Therefore, to generate a state space form and assign it to the model variable we will write:</p>
 <p><strong><em>modello &lt;- SSModel(formula, data, H)</em></strong></p>
 <p>Il secondo e il terzo parametro formale sono molto banali: <em>data</em> deve contenere un data.frame con i dati necessarialmodello,cioè la o le variabili dipendenti e gli eventuali regressori(se le variabili sono disponibili nel global environment il parametro formale data puÃ² essere omesso); H deve contenere la matrice di covarianza (o l’array di matrici di covarianza se queste evolvono nel tempo) dell’errore di osservazione. Al parametro formale <em>formula</em> deve essere passato un oggetto di tipo formula comune in R per gestire variabili esogene ed endogene. Per generare una forma state space partendo direttamente dalle matrici di sistema si deve utilizzare all’interno del parametro formula la funzione:</p>
 <p><strong><em>SSMcustom(Z, T, R, Q, a1, P1, P1inf)</em></strong></p>
@@ -181,11 +181,11 @@ P_{1|0}=E[(\underline\alpha_1-\underline\alpha_{1|0})(\underline\alpha_1-\underl
 <p>Nella prossima parte vedremo nel dettaglio la specificazione delle varie componenti dei modelli UCM nello specifico.</p>
 <div id="rw-noise" class="section level2">
 <h2>RW + noise</h2>
-<p><span class="math display">\[T=1, \space \space Q=\sigma_\eta^2, \space \space H=\sigma_\epsilon^2, \space \space Z=1 \]</span> Quindi il modello state space diventa:</p>
+<p><span class="math display">\[T=1, \space \space Q=\sigma_\eta^2, \space \space H=\sigma_\epsilon^2, \space \space Z=1 \]</span> Therefore the state space model becomes:</p>
 <ul>
-<li><strong>Equazioni di misurazione (o di osservazione)</strong>:</li>
+<li><strong>Measurement (or Observation) Equations</strong>:</li>
 </ul>
-<p><span class="math display">\[ Y_t =  \alpha_t + \epsilon_t \space, \space \space con \space \space \epsilon_t \sim WN(0, \sigma_\epsilon^2) \]</span> - <strong>Equazioni di stato (o di transizione)</strong>:</p>
+<p><span class="math display">\[ Y_t =  \alpha_t + \epsilon_t \space, \space \space con \space \space \epsilon_t \sim WN(0, \sigma_\epsilon^2) \]</span> - <strong>State (or Transition) Equations</strong>:</p>
 <p><span class="math display">\[ \alpha_{t+1} =  \alpha_t + \nu_t \space, \space \space con \space \space \nu_t \sim WN(0, \sigma_\eta^2) \]</span></p>
 <pre class="r"><code>library(KFAS)
 y&lt;-AirPassengers
@@ -218,11 +218,11 @@ modelloRW$T</code></pre>
 </div>
 <div id="rwd-noise-local-linear-trend" class="section level2">
 <h2>RWD + noise (local linear trend)</h2>
-<p><span class="math display">\[T=\bigg[\begin{array}{cc} 1  &amp;1 \\0&amp;1\end{array} \bigg], \space \space Q=\bigg[\begin{array}{cc} \sigma_\eta^2&amp;1 \\0&amp;1\end{array} \bigg], \space \space H=1, \space \space Z=\big[\begin{array}{cc} 0&amp;1\end{array} \big] \]</span> Quindi il modello state space diventa:</p>
+<p><span class="math display">\[T=\bigg[\begin{array}{cc} 1  &amp;1 \\0&amp;1\end{array} \bigg], \space \space Q=\bigg[\begin{array}{cc} \sigma_\eta^2&amp;1 \\0&amp;1\end{array} \bigg], \space \space H=1, \space \space Z=\big[\begin{array}{cc} 0&amp;1\end{array} \big] \]</span> Therefore the state space model becomes:</p>
 <ul>
-<li><strong>Equazioni di misurazione (o di osservazione)</strong>:</li>
+<li><strong>Measurement (or Observation) Equations</strong>:</li>
 </ul>
-<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 0&amp;1\end{array} \big] \bigg[\begin{array}{cc} \alpha_{1,t+1} \\ \alpha_{2,t+1} \end{array} \bigg] + \epsilon_t \space, \space \space con \space \space \epsilon_t \sim WN(0, 1) \]</span> - <strong>Equazioni di stato (o di transizione)</strong>:</p>
+<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 0&amp;1\end{array} \big] \bigg[\begin{array}{cc} \alpha_{1,t+1} \\ \alpha_{2,t+1} \end{array} \bigg] + \epsilon_t \space, \space \space con \space \space \epsilon_t \sim WN(0, 1) \]</span> - <strong>State (or Transition) Equations</strong>:</p>
 <p><span class="math display">\[ \bigg[\begin{array}{cc} \alpha_{1,t+1} \\ \alpha_{2,t+1} \end{array} \bigg] =  \bigg[\begin{array}{cc} \alpha_{1,t} \\ \alpha_{2,t}\end{array} \bigg]+ \bigg[\begin{array}{cc} \nu_t \\0 \end{array}\bigg] \space, \space \space con \space \space \nu_t \sim WN(0, \sigma_\eta^2) \]</span></p>
 <pre class="r"><code>library(KFAS)
 y&lt;-AirPassengers
@@ -257,11 +257,11 @@ modelloRWD$T</code></pre>
 </div>
 <div id="rw-ciclo" class="section level2">
 <h2>RW + ciclo</h2>
-<p><span class="math display">\[T=\begin{bmatrix}1  &amp;0&amp;0 \\0&amp; \cos \frac{2 \space \pi}{periodo} &amp; \sin \frac{2 \space \pi}{periodo}   \\0 &amp; -\sin \frac{2 \space \pi}{periodo} &amp; \cos \frac{2 \space \pi}{periodo}\end{bmatrix} , \space \space Q=\begin{bmatrix} \sigma_\eta^2&amp;0&amp;0\\0&amp; \sigma_k^2&amp;0\\0&amp;0&amp; \sigma_k^2 \end{bmatrix} , \space \space H=0, \space \space Z=\big[\begin{array}{cc} 1&amp;1&amp;0\end{array} \big] \]</span> Quindi il modello state space diventa:</p>
+<p><span class="math display">\[T=\begin{bmatrix}1  &amp;0&amp;0 \\0&amp; \cos \frac{2 \space \pi}{periodo} &amp; \sin \frac{2 \space \pi}{periodo}   \\0 &amp; -\sin \frac{2 \space \pi}{periodo} &amp; \cos \frac{2 \space \pi}{periodo}\end{bmatrix} , \space \space Q=\begin{bmatrix} \sigma_\eta^2&amp;0&amp;0\\0&amp; \sigma_k^2&amp;0\\0&amp;0&amp; \sigma_k^2 \end{bmatrix} , \space \space H=0, \space \space Z=\big[\begin{array}{cc} 1&amp;1&amp;0\end{array} \big] \]</span> Therefore the state space model becomes:</p>
 <ul>
-<li><strong>Equazioni di misurazione (o di osservazione)</strong>:</li>
+<li><strong>Measurement (or Observation) Equations</strong>:</li>
 </ul>
-<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;1&amp;0\end{array}\big] \begin{bmatrix} \alpha_{t+1} \\ cycle_{t+1} \\ cycle_{t+1}^* \end{bmatrix}   \]</span> - <strong>Equazioni di stato (o di transizione)</strong>:</p>
+<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;1&amp;0\end{array}\big] \begin{bmatrix} \alpha_{t+1} \\ cycle_{t+1} \\ cycle_{t+1}^* \end{bmatrix}   \]</span> - <strong>State (or Transition) Equations</strong>:</p>
 <p><span class="math display">\[ \begin{bmatrix} \alpha_{t+1} \\ cycle_{t+1} \\ cycle_{t+1}^* \end{bmatrix}  = \begin{bmatrix}1  &amp;0&amp;0 \\0&amp; \cos \frac{2 \space \pi}{periodo} &amp; \sin \frac{2 \space \pi}{periodo}   \\0 &amp; -\sin \frac{2 \space \pi}{periodo} &amp; \cos \frac{2 \space \pi}{periodo}\end{bmatrix} \begin{bmatrix} \alpha_{t} \\ cycle_{t} \\ cycle_{t}^* \end{bmatrix} +\begin{bmatrix} \nu_t \\k_t\\k_t \end{bmatrix} \space, \\ \space \space con \space \space \nu_t \sim WN(0, \sigma_\eta^2) \\ \space \space \space con \space \space k_t \sim WN(0, \sigma_k^2) \]</span></p>
 <pre class="r"><code>library(KFAS)
 y&lt;-AirPassengers
@@ -300,11 +300,11 @@ modelloRWcycle$T</code></pre>
 <div id="rwd-ciclo" class="section level2">
 <h2>RWD + ciclo</h2>
 <p><span class="math display">\[T=\begin{bmatrix} 1  &amp;1&amp;0 &amp;0 \\ 0&amp;1&amp;0&amp;0 \\0&amp;0&amp; \cos \frac{2 \space \pi}{periodo} &amp; \sin \frac{2 \space \pi}{periodo}   \\0&amp;0 &amp; -\sin \frac{2 \space \pi}{periodo} &amp; \cos \frac{2 \space \pi}{periodo}\end{bmatrix} , \space \space Q=\begin{bmatrix} \sigma_\eta^2&amp;0&amp;0&amp;0\\0&amp;0&amp;0&amp;0\\0&amp;0&amp; \sigma_k^2&amp;0\\0&amp;0&amp;0&amp; \sigma_k^2 \end{bmatrix} , \space \space H=0, \space \space Z=\big[\begin{array}{cc} 1&amp;0&amp;1&amp;0\end{array} \big] \]</span></p>
-<p>N.B. La matrice <span class="math inline">\(T\)</span> contiene al suo interno la matrice di rotazione:<span class="math inline">\(R(y)\)</span> Quindi il modello state space diventa:</p>
+<p>N.B. La matrice <span class="math inline">\(T\)</span> contiene al suo interno la matrice di rotazione:<span class="math inline">\(R(y)\)</span> Therefore the state space model becomes:</p>
 <ul>
-<li><strong>Equazioni di misurazione (o di osservazione)</strong>:</li>
+<li><strong>Measurement (or Observation) Equations</strong>:</li>
 </ul>
-<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;0&amp;1&amp;0\end{array}\big] \begin{bmatrix} \alpha_{1,t+1} \\ \alpha_{2,t+1} \\ cycle_{t+1} \\ cycle_{t+1}^* \end{bmatrix}   \]</span> - <strong>Equazioni di stato (o di transizione)</strong>:</p>
+<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;0&amp;1&amp;0\end{array}\big] \begin{bmatrix} \alpha_{1,t+1} \\ \alpha_{2,t+1} \\ cycle_{t+1} \\ cycle_{t+1}^* \end{bmatrix}   \]</span> - <strong>State (or Transition) Equations</strong>:</p>
 <p><span class="math display">\[ \begin{bmatrix} \alpha_{1,t+1} \\ \alpha_{2,t+1}\\ cycle_{t+1} \\ cycle_{t+1}^* \end{bmatrix}  = \begin{bmatrix} 1  &amp;1&amp;0 &amp;0 \\ 0&amp;1&amp;0&amp;0 \\0&amp;0&amp; \cos \frac{2 \space \pi}{periodo} &amp; \sin \frac{2 \space \pi}{periodo}   \\0&amp;0 &amp; -\sin \frac{2 \space \pi}{periodo} &amp; \cos \frac{2 \space \pi}{periodo}\end{bmatrix} \begin{bmatrix} \alpha_{1,t} \\ \alpha_{2,t}\\ cycle_{t} \\ cycle_{t}^* \end{bmatrix} +\begin{bmatrix} \nu_t\\0 \\k_t\\k_t \end{bmatrix} \space, \\ \space \space con \space \space \nu_t \sim WN(0, \sigma_\eta^2) \\ \space \space \space con \space \space k_t \sim WN(0, \sigma_k^2) \]</span></p>
 <pre class="r"><code>library(KFAS)
 y&lt;-AirPassengers
@@ -346,11 +346,11 @@ modelloRWDcycle$T</code></pre>
 <h2>RW + stagionalità a dummy</h2>
 <p>Con le dummy vengono delle matrici impegnative perche lunghe quanto il numero dell dummy meno uno piu gli altri elementi del modello, quindi faremo solo l’esempio con 4 dummy stagionali e un random wlak cosi da semplificare la comprensione della componente stagionale nei modelli state space.</p>
 <p><span class="math display">\[T=\begin{bmatrix} 1  &amp;0&amp;0 &amp;0  \\0&amp;-1&amp; -1 &amp; -1  \\0&amp;1 &amp; 0 &amp; 0\\ 0&amp;0&amp;1&amp;0\end{bmatrix} , \space \space Q=\begin{bmatrix} \sigma_\eta^2&amp;0\\0&amp;\sigma_\gamma^2  \end{bmatrix} , \space \space H=0, \space \space Z=\big[\begin{array}{cc} 1&amp;1&amp;0&amp;0\end{array} \big] \]</span></p>
-<p>N.B. La matrice <span class="math inline">\(T\)</span> contiene al suo interno la matrice di rotazione:<span class="math inline">\(R(y)\)</span> Quindi il modello state space diventa:</p>
+<p>N.B. La matrice <span class="math inline">\(T\)</span> contiene al suo interno la matrice di rotazione:<span class="math inline">\(R(y)\)</span> Therefore the state space model becomes:</p>
 <ul>
-<li><strong>Equazioni di misurazione (o di osservazione)</strong>:</li>
+<li><strong>Measurement (or Observation) Equations</strong>:</li>
 </ul>
-<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;1&amp;0&amp;0\end{array}\big]  \begin{bmatrix} \alpha_{t+1} \\ dummy1_{t+1}\\ dummy2_{t+1} \\ dummy3_{t+1} \end{bmatrix}  \]</span> - <strong>Equazioni di stato (o di transizione)</strong>:</p>
+<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;1&amp;0&amp;0\end{array}\big]  \begin{bmatrix} \alpha_{t+1} \\ dummy1_{t+1}\\ dummy2_{t+1} \\ dummy3_{t+1} \end{bmatrix}  \]</span> - <strong>State (or Transition) Equations</strong>:</p>
 <p><span class="math display">\[ \begin{bmatrix} \alpha_{t+1} \\ dummy1_{t+1}\\ dummy2_{t+1} \\ dummy3_{t+1} \end{bmatrix}  = \begin{bmatrix} 1  &amp;0&amp;0 &amp;0  \\0&amp;-1&amp; -1 &amp; -1  \\0&amp;1 &amp; 0 &amp; 0\\ 0&amp;0&amp;1&amp;0\end{bmatrix}  \begin{bmatrix} \alpha_{t} \\ dummy1_{t}\\ dummy2_{t} \\ dummy3_{t} \end{bmatrix} +\begin{bmatrix} \nu_t\\\gamma_t \\\gamma_t\\\gamma_t \end{bmatrix} \space, \\ \space \space con \space \space \nu_t \sim WN(0, \sigma_\eta^2) \\ \space \space \space con \space \space \gamma_t \sim WN(0, \sigma_\gamma^2) \]</span></p>
 <pre class="r"><code>library(KFAS)
 y&lt;-AirPassengers
@@ -391,11 +391,11 @@ modelloRWdummy$T</code></pre>
 <h2>RW + stagionalità trigonometrica stocastica</h2>
 <p>Con le dummy vengono delle matrici impegnative perche lunghe quanto il numero dell dummy meno uno piu gli altri elementi del modello, quindi faremo solo l’esempio con 6 dummy stagionali e un random wlak cosi da semplificare la comprensione della componente stagionale nei modelli state space.</p>
 <p><span class="math display">\[T=\begin{bmatrix} 1  &amp;0&amp;0 &amp;0&amp;0&amp;0  \\0&amp;\cos\bigg(\frac{2\pi}{periodo} \bigg)&amp; \sin\bigg(\frac{2\pi}{periodo} \bigg) &amp; 0&amp;0&amp;0  \\0&amp;\sin\bigg(\frac{2\pi}{periodo} \bigg) &amp; \cos\bigg(\frac{2\pi}{periodo} \bigg) &amp; 0&amp;0&amp;0\\0&amp;0&amp;0&amp;\cos\bigg(\frac{4\pi}{periodo} \bigg)&amp; \sin\bigg(\frac{4\pi}{periodo} \bigg) &amp; 0  \\0&amp;0&amp;0&amp;\sin\bigg(\frac{4\pi}{periodo} \bigg) &amp; \cos\bigg(\frac{4\pi}{periodo} \bigg) &amp; 0\\ 0&amp;0&amp;0&amp;0&amp;0&amp;\cos\bigg(\frac{6\pi}{periodo} \bigg)\end{bmatrix} ,\\ \space \space Q=\begin{bmatrix} \sigma_\eta^2&amp;0&amp;0&amp;0&amp;0&amp;0\\0&amp;\sigma_\gamma^2&amp;0&amp;0&amp;0&amp;0 \\0&amp;0&amp;\sigma_\gamma^2&amp;0&amp;0&amp;0\\0&amp;0&amp;0&amp;\sigma_\gamma^2&amp;0&amp;0\\0&amp;0&amp;0&amp;0&amp;\sigma_\gamma^2&amp;0\\0&amp;0&amp;0&amp;0&amp;0&amp;\sigma_\gamma^2 \end{bmatrix} , \space \space H=0, \space \space Z=\big[\begin{array}{cc}  1&amp;1&amp;0&amp;1&amp;0 \end{array} \big] \]</span></p>
-<p>N.B. La matrice <span class="math inline">\(T\)</span> contiene al suo interno la matrice di rotazione:<span class="math inline">\(R(y)\)</span> Quindi il modello state space diventa:</p>
+<p>N.B. La matrice <span class="math inline">\(T\)</span> contiene al suo interno la matrice di rotazione:<span class="math inline">\(R(y)\)</span> Therefore the state space model becomes:</p>
 <ul>
-<li><strong>Equazioni di misurazione (o di osservazione)</strong>:</li>
+<li><strong>Measurement (or Observation) Equations</strong>:</li>
 </ul>
-<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;1&amp;0&amp;1&amp;0\end{array}\big]   \begin{bmatrix} \alpha_{t+1} \\ sinous1_{t+1}\\ sinous2_{t+1} \\ sinous3_{t+1}\\ sinous4_{t+1} \\ sinous5_{t+1} \end{bmatrix}  \]</span> - <strong>Equazioni di stato (o di transizione)</strong>:</p>
+<p><span class="math display">\[ Y_t = \big[\begin{array}{cc} 1&amp;1&amp;0&amp;1&amp;0\end{array}\big]   \begin{bmatrix} \alpha_{t+1} \\ sinous1_{t+1}\\ sinous2_{t+1} \\ sinous3_{t+1}\\ sinous4_{t+1} \\ sinous5_{t+1} \end{bmatrix}  \]</span> - <strong>State (or Transition) Equations</strong>:</p>
 <p><span class="math display">\[ \begin{bmatrix} \alpha_{t+1} \\ sinous1_{t+1}\\ sinous2_{t+1} \\ sinous3_{t+1}\\ sinous4_{t+1} \\ sinous5_{t+1} \end{bmatrix}  = \begin{bmatrix} 1  &amp;0&amp;0 &amp;0&amp;0&amp;0  \\0&amp;\cos\bigg(\frac{2\pi}{periodo} \bigg)&amp; \sin\bigg(\frac{2\pi}{periodo} \bigg) &amp; 0&amp;0&amp;0  \\0&amp;\sin\bigg(\frac{2\pi}{periodo} \bigg) &amp; \cos\bigg(\frac{2\pi}{periodo} \bigg) &amp; 0&amp;0&amp;0\\0&amp;0&amp;0&amp;\cos\bigg(\frac{4\pi}{periodo} \bigg)&amp; \sin\bigg(\frac{4\pi}{periodo} \bigg) &amp; 0  \\0&amp;0&amp;0&amp;\sin\bigg(\frac{4\pi}{periodo} \bigg) &amp; \cos\bigg(\frac{4\pi}{periodo} \bigg) &amp; 0\\ 0&amp;0&amp;0&amp;0&amp;0&amp;\cos\bigg(\frac{6\pi}{periodo} \bigg)\end{bmatrix} \begin{bmatrix} \alpha_{t} \\ sinous1_{t}\\ sinous2_{t} \\ sinous3_{t} \\ sinous4_{t} \\ sinous5_{t} \end{bmatrix} +\begin{bmatrix} \nu_t\\\gamma_t \\\gamma_t\\\gamma_t\\\gamma_t\\\gamma_t \end{bmatrix} \space, \\ \space \space con \space \space \nu_t \sim WN(0, \sigma_\eta^2) \\ \space \space \space con \space \space \gamma_t \sim WN(0, \sigma_\gamma^2) \]</span></p>
 <pre class="r"><code>library(KFAS)
 y&lt;-AirPassengers

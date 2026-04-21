@@ -38,19 +38,19 @@
     <script src="Plotimpo_files/plotly-main-1.46.1/plotly-latest.min.js"></script>
 
     <style>
-        /* Struttura Base */
+        /* Base Structure */
         * { box-sizing: border-box; }
         body { overflow-x: hidden; }
         code { white-space: pre; }
         pre:not([class]) { background-color: white; }
 
-        /* Titoli */
+        /* Titles */
         h1 { font-size: 34px; } h1.title { font-size: 38px; }
         h2 { font-size: 30px; } h3 { font-size: 24px; }
         h4 { font-size: 18px; }
         .table th:not([align]) { text-align: left; }
 
-        /* Menu a Fisarmonica (Accordion) */
+        /* Accordion Menu */
         .accordion {
             background-color: #FFFFFF;
             color: #444;
@@ -66,7 +66,7 @@
         .active, .accordion:hover { background-color: hsl(120, 100%, 99%); }
         .panel { padding: 0 18px; display: none; background-color: white; overflow: hidden; }
 
-        /* Barra di Ricerca */
+        /* Search Bar */
         #myInput {
             width: 100%;
             font-size: 16px;
@@ -76,7 +76,7 @@
             margin-bottom: 12px;
         }
 
-        /* Liste Indice */
+        /* Index Lists */
         ul { list-style-type: none; }
         #myUL { list-style-type: none; padding: 0; margin: 0; }
         #myUL li a {
@@ -138,7 +138,7 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                     <div class="site-heading">
-                        <h2>Processi stocastici Multivariate</h2>
+                        <h2>Multivariate Stochastic Processes</h2>
                         <hr class="small">
                         <h5>In-depth Articles</h5>
                     </div>
@@ -157,36 +157,36 @@
 
 <HR WIDTH="100%">
 <HR WIDTH="100%">
-<H1><BR><font color=black>PROCESSI STOCASTICI Multivariate</font><BR></H1>
+<H1><BR><font color=black>MULTIVARIATE STOCHASTIC PROCESSES</font><BR></H1>
 <HR WIDTH="100%">
 <p>
-<ul><strong>DEFINIZIONE</strong></ul>
-Una serie storica multivariata (<u>x</u><sub>1</sub>, ... , <u>x</u><sub>t</sub>, ... , <u>x</u><sub>n</sub>) con <u>x</u><sub>t</sub> = [ x<sub>1t</sub>, ... , x<sub>kt</sub>] è una realizzazione finita di un processo stocastico multivariato {<u>X</u><sub>t</sub>}<sub>t&isin;[0,&#8734;]</sub> dove <u>X</u><sub>t</sub> è un vettore casuale definito in un opportuno spazio probabilistico (&Omega;, &Beta;<sub>R</sub>, P), con valore atteso pari a:<br>
+<ul><strong>DEFINITION</strong></ul>
+A multivariate time series (<u>x</u><sub>1</sub>, ... , <u>x</u><sub>t</sub>, ... , <u>x</u><sub>n</sub>) with <u>x</u><sub>t</sub> = [ x<sub>1t</sub>, ... , x<sub>kt</sub>] is a finite realization of a multivariate stochastic process {<u>X</u><sub>t</sub>}<sub>t&isin;[0,&#8734;]</sub> where <u>X</u><sub>t</sub> is a random vector defined on an appropriate probability space (&Omega;, &Beta;<sub>R</sub>, P), with expected value equal to:<br>
 E[<u>x</u><sub>t</sub>]=<u>&mu;</u><sub>t</sub>=[ &mu;<sub>1t</sub>, ... , &mu;<sub>kt</sub>]<br>
-e matrice di autocovarianza pari a:<br>
+and autocovariance matrix equal to:<br>
 E[<u>x</u><sub>t</sub>, <u>x</u><sub>t-j</sub>]=
-E[(<u>x</u><sub>t</sub>-<u>&mu;</u><sub>t</sub>) (<u>x</u><sub>t-j</sub>-<u>&mu;</u><sub>t-j</sub>)'] ----> per j &ne; 0<br>
+E[(<u>x</u><sub>t</sub>-<u>&mu;</u><sub>t</sub>) (<u>x</u><sub>t-j</sub>-<u>&mu;</u><sub>t-j</sub>)'] ----> for j &ne; 0<br>
 E[<u>x</u><sub>t</sub>, <u>x</u><sub>t-j</sub>]=
-Var(<u>x</u><sub>t</sub>-<u>&mu;</u><sub>t</sub>) ----> per j = 0<br>
-<ul><strong>PROPRIETA'</strong></ul>
+Var(<u>x</u><sub>t</sub>-<u>&mu;</u><sub>t</sub>) ----> for j = 0<br>
+<ul><strong>PROPERTIES</strong></ul>
 
-Stationarity forte:<br>
-<ul>Un processo stocastico si dice fortemente stazionario se la funzione di ripartizione del processo risulta invariante a trasformazioni.</ul><br>
+Strong Stationarity:<br>
+<ul>A stochastic process is said to be strongly stationary if the distribution function of the process remains invariant to transformations.</ul><br>
 
-Stationarity debole:<br>
-<ul>Un processo stocastico si dice debolmente stazionario se il valore atteso e la matrice di autocovarianza non variano al variare di t.</ul><br>
+Weak Stationarity:<br>
+<ul>A stochastic process is said to be weakly stationary if the expected value and autocovariance matrix do not vary as t varies.</ul><br>
 
-Ergodicità:<br>
-<ul>Un processo stocastico multivariato si dice ergodico se la media delle realizzazioni trasformate per una funzione g(.) tende in probabilità al valore atteso della trasformazione applicata al processo:<br><br>
+Ergodicity:<br>
+<ul>A multivariate stochastic process is said to be ergodic if the mean of the transformed realizations for a function g(.) converges in probability to the expected value of the transformation applied to the process:<br><br>
 n<sup>-1</sup>&sum;(g(<u>x</u><sub>t</sub>))---<sub>P</sub>--->E[g(<u>x</u><sub>t</sub>)]</ul><br>
 
-Invertibilità:<br>
-<ul>Un processo stocastico si dice invertibile se è possibile esprimere ciascun elemento in funzione del suo passato e di una componente casuale contemporanea (WN):<br><br><u>x</u><sub>t</sub>=f(<u>x</u><sub>t-1</sub>,<u>x</u><sub>t-2</sub>, ... ,<u>u</u><sub>t</sub>)</ul><br><br>
+Invertibility:<br>
+<ul>A stochastic process is said to be invertible if it is possible to express each element as a function of its past and a contemporary random component (WN):<br><br><u>x</u><sub>t</sub>=f(<u>x</u><sub>t-1</sub>,<u>x</u><sub>t-2</sub>, ... ,<u>u</u><sub>t</sub>)</ul><br><br>
 
 
-<ul><strong>WHITE NOISE MULTIVARIATO</strong></ul>
-Un processo white-noise è un processo stazionario in senso debole che ha media zero ed è incorrelato nel tempo. Si definisce white noise multivariato il processo stocastico {u<sub>t</sub> = [u<sub>1t</sub>,...,u<sub>kt</sub>]}<sub>t&isin;[0,&#8734;]</sub> costituito da una successione di variabili casuali k-dimensionali, fra loro incorrelate quando sono riferite a istanti temporali diversi.<BR>
-In altre parole, il fatto che un processo multivariato sia un white noise esclude la correlazione fra ogni elemento del processo e la storia passata di tutto il processo, ma non esclude che possa esserci correlazione fra elementi contemporanei.
+<ul><strong>MULTIVARIATE WHITE NOISE</strong></ul>
+A white-noise process is a weakly stationary process that has zero mean and is uncorrelated over time. A multivariate white noise is defined as the stochastic process {u<sub>t</sub> = [u<sub>1t</sub>,...,u<sub>kt</sub>]}<sub>t&isin;[0,&#8734;]</sub> consisting of a sequence of k-dimensional random variables that are uncorrelated when referring to different time instants.<BR>
+In other words, the fact that a multivariate process is white noise excludes correlation between each element of the process and the past history of the entire process, but does not exclude that there may be correlation between contemporary elements.
 
 
 
@@ -197,14 +197,14 @@ In altre parole, il fatto che un processo multivariato sia un white noise esclud
 
 <HR WIDTH="100%">
 <HR WIDTH="100%">
-<H1><BR><font color=black>MODELLI VARMA</font><BR></H1>
+<H1><BR><font color=black>VARMA MODELS</font><BR></H1>
 <HR WIDTH="100%">
 <p>
-Una classe di processi stocastici stazionari, applicabili a più fenomeni considerati congiuntamente è costituita dai modelli VARMA(p,q). I modelli in questione costituiscono una generalizzazione dei modelli ARMA utilizzati in ambito univariato.<BR>
-Un modello VARMA(p,q) è esprimibile nella forma:<br><br>
+A class of stationary stochastic processes, applicable to multiple phenomena considered jointly, is constituted by VARMA(p,q) models. These models represent a generalization of ARMA models used in the univariate context.<BR>
+A VARMA(p,q) model can be expressed in the form:<br><br>
 X<sub>t</sub> = c + &Phi;<sub>1</sub>X<sub>t-1</sub> + ... + &Phi;<sub>p</sub>X<sub>t-p</sub> + u<sub>t</sub> + &Theta;<sub>1</sub>u<sub>t-1</sub> + ... + &Theta;<sub>q</sub>u<sub>t-q</sub><br><br>
-<ul><li>u<sub>t</sub> è il processo white noise multivariato;</li><li> c indica un vettore di kx1 costanti deterministiche;</li><li>  &Phi;<sub>j</sub> è una matrice kxk di coefficienti autoregressivi;</li><li> &Theta;<sub>i</sub> sono i coefficienti per la parte a somma mobile.</li></ul> <br><br>
-I modelli VARMA risultano essere poco utilizzati in ambito empirico, e questo per due ragioni. Innanzitutto la completezza di tale modello crea non pochi problemi per quanto riguarda la precisione di stima dei parametri del processo. Inoltre, poichè  in molte circostanze la parte autoregressiva spiega in maniera esaustiva la serie storica in esame (la parte media mobile ha una rilevanza trascurabile nell'evolversi del fenomeno, poichè  è dovuta a shock transitori che svaniscono nel tempo), spesso risulta preferibile trascurare la componente a somma mobile, ottenendo in questo modo un caso particolare di modello VARMA, chiamato VAR (vectorial autoregressive models).
+<ul><li>u<sub>t</sub> is the multivariate white noise process;</li><li> c indicates a kx1 vector of deterministic constants;</li><li>  &Phi;<sub>j</sub> is a kxk matrix of autoregressive coefficients;</li><li> &Theta;<sub>i</sub> are the coefficients for the moving average part.</li></ul> <br><br>
+VARMA models are rarely used in empirical applications for two reasons. First, the completeness of such a model creates significant problems regarding the precision of estimating the process parameters. Moreover, since in many circumstances the autoregressive part exhaustively explains the time series under examination (the moving average part has negligible relevance in the phenomenon's evolution, as it is due to transitory shocks that vanish over time), it is often preferable to neglect the moving average component, thus obtaining a particular case of the VARMA model, called VAR (vector autoregressive models).
 
 
 <br>
@@ -212,20 +212,20 @@ I modelli VARMA risultano essere poco utilizzati in ambito empirico, e questo pe
 
 <HR WIDTH="100%">
 <HR WIDTH="100%">
-<H1><BR><font color=black>MODELLI VAR</font><BR></H1>
+<H1><BR><font color=black>VAR MODELS</font><BR></H1>
 <HR WIDTH="100%">
 <p>
-<ul><strong>DEFINIZIONE</strong></ul>
-Si considera ora un caso particolare di modello VARMA(p,q) dove tutti i coefficienti della parte a somma mobile &Theta;<sub>j</sub> sono posti uguali a zero. Il modello che si ottiene è detto modello VAR(p) (dotato della caratteristica di invertibilità) la cui espressione analitica è:<br><br>
+<ul><strong>DEFINITION</strong></ul>
+We now consider a particular case of the VARMA(p,q) model where all coefficients of the moving average part &Theta;<sub>j</sub> are set equal to zero. The resulting model is called the VAR(p) model (endowed with the invertibility property) whose analytical expression is:<br><br>
 (X<sub>t</sub> -  &mu;) = &Phi;<sub>1</sub>(X<sub>t-1</sub> -  &mu;) + ... + &Phi;<sub>p</sub>(X<sub>t-p</sub> -  &mu;) + u<sub>t</sub><br><br>
 
-equivalentemente:<br><br>
+equivalently:<br><br>
 (I<sub>k</sub> - &Phi;<sub>1</sub>L- ... - &Phi;<sub>p</sub>L<sup>p</sup>)(X<sub>t</sub> - &mu;) = u<sub>t</sub> <br><br>
 
-o in forma compatta:<br><br>
+or in compact form:<br><br>
 &Phi;(L)(X<sub>t</sub> - &mu;) = u<sub>t</sub><br><br>
 
-dove ut è un white noise. Se si pone p = 1 si ottiene il modello VAR(1):<br><br> (X<sub>t</sub> - &mu;) = &Phi;1(X<sub>t- 1</sub> - &mu;) + u<sub>t</sub> 
+where ut is a white noise. If we set p = 1 we obtain the VAR(1) model:<br><br> (X<sub>t</sub> - &mu;) = &Phi;1(X<sub>t- 1</sub> - &mu;) + u<sub>t</sub> 
 <br><br>
 <ul><strong>VAR IN FORMA COMPAGNA</strong></ul>
 La rappresentazione in forma compagna permette di rappresentare ogni modello VAR(p) sotto forma di VAR(1). Partendo dal seguente modello:<br>
