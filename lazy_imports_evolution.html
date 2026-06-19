@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The Evolution of Lazy Imports in Python: From Manual Workarounds to a First-Class Language Feature">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>The Evolution of Lazy Imports in Python</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .timeline-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .timeline-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .timeline-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .timeline-table tr:hover { background: #f9f9f9; }
+        .benchmark-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .benchmark-table th { background: #4a90d9; color: white; padding: 10px; }
+        .benchmark-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .benchmark-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #fff3cd; }
+        .pep-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .pep-box h4 { margin-top: 0; color: #2d3032; }
+        .verdict { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
+        .verdict-accepted { background: #d4edda; color: #155724; }
+        .verdict-rejected { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>The Evolution of Lazy Imports in Python</h2>
+                        <hr class="small">
+                        <h5>From Manual Workarounds to a First-Class Language Feature — June 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">The Evolution of Lazy Imports in Python</h1>
+<p style="text-align:center;"><em>"The best import is the one that never runs."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">June 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>The Problem: Import-Time Tax</h2>
+
+<p>Every <code>import</code> statement in Python is an <strong>imperative action</strong>. It finds a module, executes all its top-level code, and binds the result to a name. For heavy libraries, this means your CLI tool pays seconds of startup cost just to print <code>--help</code>.</p>
+
+<pre><span class="comment"># This script takes 2+ seconds to start, even for --help</span>
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np          <span class="comment"># ~150ms</span>
+<span class="keyword">import</span> pandas <span class="keyword">as</span> pd         <span class="comment"># ~300ms</span>
+<span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf     <span class="comment"># ~2000ms</span>
+
+<span class="keyword">def</span> <span class="function">main</span>(args):
+    <span class="keyword">if</span> args.command == <span class="string">"train"</span>:
+        <span class="comment"># Only THIS path needs tf</span>
+        tf.keras.models.load_model(args.path)
+    <span class="keyword">elif</span> args.command == <span class="string">"stats"</span>:
+        <span class="comment"># Only THIS path needs pandas</span>
+        pd.read_csv(args.file).describe()
+</pre>
+
+<p>The user running <code>mycli stats data.csv</code> pays for TensorFlow loading even though it's never used. This is the <strong>import-time tax</strong>.</p>
+
+<h2>Benchmark: Quantifying the Cost</h2>
+
+<p>We created a simulated "heavy" module (150ms initialization + 10MB allocation) and measured three strategies:</p>
+
+<table class="benchmark-table">
+<tr><th>Strategy</th><th colspan="2">Module Used</th><th colspan="2">Module NOT Used</th></tr>
+<tr><td></td><td><strong>Time (ms)</strong></td><td><strong>Memory (MB)</strong></td><td><strong>Time (ms)</strong></td><td><strong>Memory (MB)</strong></td></tr>
+<tr><td>Eager (top-level)</td><td>210</td><td>10.68</td><td class="highlight-row"><strong>341</strong></td><td class="highlight-row"><strong>10.68</strong></td></tr>
+<tr><td>Manual Lazy (inline)</td><td>213</td><td>10.68</td><td>177</td><td>0.40</td></tr>
+<tr><td>Smart Lazy (LazyLoader)</td><td>209</td><td>10.69</td><td>176</td><td>0.45</td></tr>
+</table>
+
+<p><strong>Key finding:</strong> When the module is NOT used, lazy imports save <strong>164ms (48%)</strong> and <strong>10.2MB (96%)</strong>. When it IS used, all strategies converge — you pay the same cost regardless.</p>
+
+<hr>
+
+<h2>The Evolution: Python Version by Version</h2>
+
+<!-- ===== PYTHON 3.4-3.6 ===== -->
+<h3>Python 3.4–3.6 (2014–2016): The Dark Ages</h3>
+
+<p>The only options were inline imports inside functions or manually wiring <code>importlib.util.LazyLoader</code>:</p>
+
+<pre><span class="comment"># Option A: Inline import (works on any Python version)</span>
+<span class="keyword">def</span> <span class="function">process_data</span>(path):
+    <span class="keyword">import</span> pandas <span class="keyword">as</span> pd   <span class="comment"># Only loaded when function is called</span>
+    <span class="keyword">return</span> pd.read_csv(path)
+
+<span class="comment"># Option B: LazyLoader (Python 3.4+)</span>
+<span class="keyword">import</span> importlib.util
+<span class="keyword">import</span> sys
+
+<span class="keyword">def</span> <span class="function">_lazy_import</span>(name):
+    spec = importlib.util.<span class="function">find_spec</span>(name)
+    loader = importlib.util.<span class="builtin">LazyLoader</span>(spec.loader)
+    spec.loader = loader
+    module = importlib.util.<span class="function">module_from_spec</span>(spec)
+    sys.modules[name] = module
+    loader.<span class="function">exec_module</span>(module)  <span class="comment"># Does NOT run module code yet!</span>
+    <span class="keyword">return</span> module
+
+<span class="comment"># Module object exists, but code runs only on first attribute access</span>
+pd = _lazy_import(<span class="string">"pandas"</span>)
+</pre>
+
+<p><strong>Problems:</strong> 15+ lines of boilerplate per module. <code>LazyLoader</code> doesn't support <code>from X import Y</code>. Invisible to type checkers and IDEs. No standard pattern — every project invented its own.</p>
+
+<!-- ===== PYTHON 3.7 ===== -->
+<h3>Python 3.7 (2018): PEP 562 — The Breakthrough</h3>
+
+<div class="pep-box">
+<h4>PEP 562 — Module <code>__getattr__</code> and <code>__dir__</code> <span class="verdict verdict-accepted">ACCEPTED</span></h4>
+<p>Introduced the ability to define <code>__getattr__</code> at the module level, intercepting attribute access on the module object itself. This enabled the first clean lazy loading pattern.</p>
+</div>
+
+<pre><span class="comment"># mypackage/__init__.py</span>
+<span class="comment"># Submodules are loaded ONLY when accessed: mypackage.heavy_sub</span>
+
+<span class="keyword">def</span> <span class="function">__getattr__</span>(name):
+    <span class="keyword">if</span> name == <span class="string">"heavy_sub"</span>:
+        <span class="keyword">from</span> mypackage <span class="keyword">import</span> heavy_sub
+        <span class="builtin">globals</span>()[<span class="string">"heavy_sub"</span>] = heavy_sub  <span class="comment"># Cache it</span>
+        <span class="keyword">return</span> heavy_sub
+    <span class="keyword">raise</span> <span class="builtin">AttributeError</span>(<span class="string">f"module has no attribute </span>{name!r}<span class="string">"</span>)
+
+<span class="keyword">def</span> <span class="function">__dir__</span>():
+    <span class="keyword">return</span> [<span class="string">"heavy_sub"</span>, <span class="string">"light_func"</span>, <span class="string">"utils"</span>]
+</pre>
+
+<p><strong>Impact:</strong> Adopted by NumPy, SciPy, and the Scientific Python community as <a href="https://scientific-python.org/specs/spec-0001/">SPEC 1</a>. The <code>lazy_loader</code> PyPI package formalized the pattern. First time lazy imports had a <em>standard</em> approach.</p>
+
+<!-- ===== PYTHON 3.8-3.10 ===== -->
+<h3>Python 3.8–3.10 (2019–2021): Incremental Improvements</h3>
+
+<p>No new lazy import mechanisms, but related improvements:</p>
+
+<table class="timeline-table">
+<tr><th>Version</th><th>Change</th><th>Impact on Imports</th></tr>
+<tr><td>3.8</td><td><code>importlib.metadata</code> added</td><td>Lighter alternative to <code>pkg_resources</code> (which was notoriously slow to import)</td></tr>
+<tr><td>3.9</td><td><code>importlib.resources</code> stabilized</td><td>Standard resource loading without heavy I/O at import time</td></tr>
+<tr><td>3.10</td><td><code>-X importtime</code> refined</td><td>Better profiling to identify <em>which</em> imports to make lazy</td></tr>
+</table>
+
+<pre><span class="comment"># Find your import bottlenecks (Python 3.7+)</span>
+$ python -X importtime -c <span class="string">"import your_app"</span> 2>&1 | sort -t<span class="string">'|'</span> -k2 -n | tail -5
+
+<span class="comment"># Output:</span>
+<span class="comment"># import time: self [us] | cumulative |   imported package</span>
+<span class="comment"># import time:    142857 |     285714 |   tensorflow</span>
+<span class="comment"># import time:     95238 |     190476 |   pandas</span>
+<span class="comment"># import time:     47619 |      71429 |   numpy</span>
+</pre>
+
+<!-- ===== PYTHON 3.11 ===== -->
+<h3>Python 3.11 (2022): The Faster CPython Revolution</h3>
+
+<p>The single biggest performance leap in modern Python. While not adding new lazy mechanisms, it made ALL imports faster:</p>
+
+<ul>
+<li><strong>Frozen core modules:</strong> Interpreter essentials are now statically allocated (bypassing <code>.pyc</code> loading). Startup is <strong>10–15% faster</strong>.</li>
+<li><strong>PEP 659 — Specializing Adaptive Interpreter:</strong> Bytecodes specialize to type-specific fast paths after a few executions.</li>
+<li><strong>Overall:</strong> 10–60% faster than Python 3.10 across the benchmark suite.</li>
+</ul>
+
+<pre><span class="comment"># The adaptive interpreter specializes hot bytecode</span>
+<span class="keyword">import</span> dis
+
+<span class="keyword">def</span> <span class="function">multiply</span>(a, b):
+    <span class="keyword">return</span> a * b
+
+<span class="comment"># After several calls with floats:</span>
+<span class="comment"># BINARY_OP 5 (*) → BINARY_OP_MULTIPLY_FLOAT 5 (*)</span>
+<span class="comment"># This same mechanism will power PEP 810's zero-overhead lazy imports</span>
+</pre>
+
+<!-- ===== PYTHON 3.12 ===== -->
+<h3>Python 3.12 (2023): Cleanup and Foundations</h3>
+
+<ul>
+<li><strong><code>imp</code> module removed:</strong> Forces migration to the faster <code>importlib</code>.</li>
+<li><strong>PEP 684 — Per-Interpreter GIL:</strong> Sub-interpreters get independent GILs (C-API). Lays groundwork for parallel import in sub-interpreters.</li>
+<li><strong>PEP 709 — Comprehension inlining:</strong> Up to 2x faster comprehensions, reducing frame creation overhead during module initialization.</li>
+</ul>
+
+<!-- ===== PYTHON 3.13 ===== -->
+<h3>Python 3.13 (2024): The stdlib Gets Lighter</h3>
+
+<p>The standard library itself underwent an import-time diet:</p>
+
+<ul>
+<li><code>typing</code> module import time reduced by <strong>~1/3</strong> (removed dependencies on <code>re</code> and <code>contextlib</code>)</li>
+<li><code>email.utils</code>, <code>enum</code>, <code>functools</code>, <code>importlib.metadata</code>, <code>threading</code> also faster</li>
+<li><strong>PEP 703 — Free-threaded CPython (experimental):</strong> GIL can be disabled</li>
+<li><strong>PEP 744 — Experimental JIT compiler:</strong> Foundation for future speedups</li>
+</ul>
+
+<p>Meanwhile, <strong>PEP 690</strong> had been rejected in late 2022:</p>
+
+<div class="pep-box">
+<h4>PEP 690 — Lazy Imports <span class="verdict verdict-rejected">REJECTED (Dec 2022)</span></h4>
+<p><strong>Proposal:</strong> Make ALL imports lazy by default, globally, at the interpreter level.</p>
+<p><strong>Championed by:</strong> Meta (Facebook), based on their Cinder CPython fork that had been running lazy imports in production on Instagram's server infrastructure.</p>
+<p><strong>Why rejected:</strong></p>
+<ul>
+<li>Silent breakage of libraries relying on import-time side effects (plugin registration, monkey-patching)</li>
+<li>Implementation required modifying Python's <code>dict</code> internals, affecting ALL dictionary operations</li>
+<li>No granular opt-out — all-or-nothing at the interpreter level</li>
+<li>Community fragmentation: "does your library support lazy imports?" becomes a new compatibility axis</li>
+</ul>
+</div>
+
+<!-- ===== PYTHON 3.15 ===== -->
+<h3>Python 3.15 (2026): PEP 810 — The Native Solution</h3>
+
+<div class="pep-box">
+<h4>PEP 810 — Explicit Lazy Imports <span class="verdict verdict-accepted">ACCEPTED (Nov 2025)</span></h4>
+<p>A new <code>lazy</code> soft keyword. Explicit, local, opt-in, zero-overhead after first use. The culmination of 8 years of evolution.</p>
+</div>
+
+<pre><span class="keyword">import</span> sys
+
+<span class="comment"># The lazy keyword defers loading until first use</span>
+<span class="keyword">lazy</span> <span class="keyword">import</span> json
+<span class="keyword">lazy</span> <span class="keyword">from</span> json <span class="keyword">import</span> dumps, loads
+
+<span class="builtin">print</span>(<span class="string">'json'</span> <span class="keyword">in</span> sys.modules)   <span class="comment"># False — not loaded yet!</span>
+
+<span class="comment"># First use triggers "reification" (actual import happens NOW)</span>
+result = <span class="function">dumps</span>({<span class="string">"hello"</span>: <span class="string">"world"</span>})
+
+<span class="builtin">print</span>(<span class="string">'json'</span> <span class="keyword">in</span> sys.modules)   <span class="comment"># True — loaded on first use</span>
+</pre>
+
+<h4>Why PEP 810 succeeded where PEP 690 failed:</h4>
+
+<table class="timeline-table">
+<tr><th>Design Choice</th><th>PEP 690 (Rejected)</th><th>PEP 810 (Accepted)</th></tr>
+<tr><td>Scope</td><td>Global — all imports lazy by default</td><td>Local — only where you write <code>lazy</code></td></tr>
+<tr><td>Visibility</td><td>Implicit — no code change needed</td><td>Explicit — visible at the import site</td></tr>
+<tr><td>Cascading</td><td>Recursive into dependencies</td><td>Non-recursive — only affects that import</td></tr>
+<tr><td>Implementation</td><td>Modified dict internals</td><td>Proxy objects + bytecode specialization</td></tr>
+<tr><td>Adoption</td><td>All-or-nothing</td><td>Incremental, per-import</td></tr>
+</table>
+
+<h4>Zero overhead via adaptive specialization:</h4>
+
+<pre><span class="keyword">lazy</span> <span class="keyword">import</span> json
+
+<span class="keyword">def</span> <span class="function">use_json</span>():
+    <span class="keyword">return</span> json.<span class="function">dumps</span>({})
+
+<span class="comment"># Bytecode BEFORE first call:</span>
+<span class="comment">#   LOAD_GLOBAL  0 (json)       ← checks if lazy proxy</span>
+<span class="comment">#   LOAD_ATTR    2 (dumps)</span>
+
+<span class="comment"># Bytecode AFTER 2-3 calls (adaptive interpreter specializes):</span>
+<span class="comment">#   LOAD_GLOBAL_MODULE  0 (json)  ← direct dict access, ZERO check</span>
+<span class="comment">#   LOAD_ATTR_MODULE    2 (dumps) ← fast path, same as eager</span>
+</pre>
+
+<p>After reification, the lazy import is <strong>indistinguishable</strong> from an eager one — same bytecode, same speed, same module object in <code>sys.modules</code>.</p>
+
+<h4>Backward compatibility bridge:</h4>
+
+<pre><span class="comment"># For libraries supporting Python &lt; 3.15</span>
+<span class="comment"># On 3.15+: these imports become lazy</span>
+<span class="comment"># On older Python: __lazy_modules__ is simply ignored</span>
+__lazy_modules__ = [<span class="string">"numpy"</span>, <span class="string">"pandas"</span>, <span class="string">"scipy"</span>]
+
+<span class="keyword">import</span> numpy
+<span class="keyword">import</span> pandas
+<span class="keyword">from</span> scipy <span class="keyword">import</span> optimize
+</pre>
+
+<hr>
+
+<h2>Summary: The Complete Timeline</h2>
+
+<table class="timeline-table">
+<tr><th>Year</th><th>Python</th><th>Mechanism</th><th>Boilerplate</th></tr>
+<tr><td>2014</td><td>3.4</td><td><code>importlib.util.LazyLoader</code></td><td>~15 lines per module</td></tr>
+<tr><td>2018</td><td>3.7</td><td>PEP 562: module <code>__getattr__</code></td><td>~8 lines per module</td></tr>
+<tr><td>2019–2021</td><td>3.8–3.10</td><td>Same patterns, better profiling</td><td>~8 lines</td></tr>
+<tr><td>2022</td><td>3.11</td><td>Faster CPython (all imports faster)</td><td>~8 lines</td></tr>
+<tr><td>2022</td><td>—</td><td>PEP 690 rejected (implicit global lazy)</td><td>—</td></tr>
+<tr><td>2023–2024</td><td>3.12–3.13</td><td>Stdlib lighter, JIT foundations</td><td>~8 lines</td></tr>
+<tr style="background:#d4edda;"><td><strong>2026</strong></td><td><strong>3.15</strong></td><td><strong>PEP 810: <code>lazy import</code> keyword</strong></td><td><strong>1 keyword</strong></td></tr>
+</table>
+
+<hr>
+
+<h2>Practical Recommendations</h2>
+
+<h3>Today (Python 3.7–3.14)</h3>
+
+<pre><span class="comment"># For CLI tools and applications: inline import</span>
+<span class="keyword">def</span> <span class="function">train_model</span>(data_path):
+    <span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf   <span class="comment"># Only pay the cost here</span>
+    model = tf.keras.models.<span class="function">load_model</span>(<span class="string">"saved_model"</span>)
+    ...
+
+<span class="comment"># For libraries with optional heavy deps: PEP 562 pattern</span>
+<span class="comment"># mylib/__init__.py</span>
+<span class="keyword">def</span> <span class="function">__getattr__</span>(name):
+    <span class="keyword">if</span> name == <span class="string">"plotting"</span>:
+        <span class="keyword">from</span> mylib <span class="keyword">import</span> plotting
+        <span class="builtin">globals</span>()[<span class="string">"plotting"</span>] = plotting
+        <span class="keyword">return</span> plotting
+    <span class="keyword">raise</span> <span class="builtin">AttributeError</span>(<span class="string">f"module has no attribute </span>{name!r}<span class="string">"</span>)
+</pre>
+
+<h3>Tomorrow (Python 3.15+)</h3>
+
+<pre><span class="comment"># Replace ALL of the above with one keyword:</span>
+<span class="keyword">lazy</span> <span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf
+<span class="keyword">lazy</span> <span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">lazy</span> <span class="keyword">from</span> scipy.optimize <span class="keyword">import</span> minimize
+
+<span class="comment"># Clean, explicit, zero-overhead, type-checker friendly</span>
+</pre>
+
+<h3>When NOT to use lazy imports:</h3>
+
+<ul>
+<li><strong>Modules with critical import-time side effects</strong> — plugin registration, logging setup, signal handlers</li>
+<li><strong>Fail-fast validation</strong> — you <em>want</em> <code>ImportError</code> at startup, not hidden in runtime</li>
+<li><strong>Always-used modules</strong> — no benefit, just added complexity</li>
+<li><strong>Circular import resolution</strong> — lazy doesn't help if access happens during module init</li>
+</ul>
+
+<hr>
+
+<h2>References</h2>
+<ul>
+<li><a href="https://peps.python.org/pep-0810">PEP 810 — Explicit Lazy Imports</a> (Accepted, Python 3.15)</li>
+<li><a href="https://peps.python.org/pep-0562">PEP 562 — Module __getattr__ and __dir__</a> (Python 3.7)</li>
+<li><a href="https://peps.python.org/pep-0690">PEP 690 — Lazy Imports</a> (Rejected 2022)</li>
+<li><a href="https://developers.facebook.com/blog/post/2022/06/15/python-lazy-imports-with-cinder/">Meta: Python Lazy Imports with Cinder</a></li>
+<li><a href="https://engineering.fb.com/2024/01/18/developer-tools/lazy-imports-cinder-machine-learning-meta/">Meta: Lazy is the new fast</a></li>
+<li><a href="https://www.hudsonrivertrading.com/hrtbeat/inside-hrts-python-fork/">HRT: Inside HRT's Python Fork</a></li>
+<li><a href="https://scientific-python.org/specs/spec-0001/">SPEC 1 — Lazy Loading for Scientific Python</a></li>
+<li><a href="https://rednafi.com/python/module-getattr/">Quicker startup with module-level __getattr__</a></li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
