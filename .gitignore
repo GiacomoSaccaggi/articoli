@@ -10,3 +10,6 @@ Thumbs.db
 
 # Archives
 *.zip
+
+# Medium articles (drafts)
+medium-articles/
