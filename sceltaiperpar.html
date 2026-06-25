@@ -159,14 +159,14 @@
 <div id="assegnazione-gerarchica" class="section level2">
 <h2>Hierarchical Assignment</h2>
 <p>Multi-phase assignment estimating the parameters with a <strong><em>Hyper Prior</em></strong> which is typically chosen to be non-informative.</p>
-<p>In termini pratici è come se dovessi rifare il ragionamento di scelta della prior una seconda volta ma non sulla <span class="math inline">\(X\)</span> per un parametro <span class="math inline">\(\theta\)</span> bensì sulla v.c <span class="math inline">\(\theta\)</span> (perchè in statistica Bayesiana il parametro è anch’esso una variabile aleatoria) con funzione di densità uguale alla prior <span class="math inline">\(\pi(\theta)\)</span> per un parametro <span class="math inline">\(\alpha\)</span> .</p>
+<p>In practical terms, it is as if we were repeating the prior selection reasoning a second time — but not on <span class="math inline">\(X\)</span> for a parameter <span class="math inline">\(\theta\)</span>, rather on the random variable <span class="math inline">\(\theta\)</span> itself (because in Bayesian statistics the parameter is also a random variable) with density function equal to the prior <span class="math inline">\(\pi(\theta)\)</span> for a hyperparameter <span class="math inline">\(\alpha\)</span>.</p>
 </div>
 <div id="assegnazione-iperparametri-basandosi-sul-campione" class="section level2">
 <h2>Hyperparameters Assignment Based on the Sample</h2>
 <p>I choose the hyperparameters by calculating some moments and setting up a system of equations equating the theoretical moments to those estimated with the sample.</p>
 <p>Therefore:</p>
 <p><span class="math inline">\(hp. \space \space m(x)= \int_{\Theta}{f(\underline{x} | \theta) \pi(\theta)} \space \space d\theta\)</span></p>
-<p><span class="math display">\[Momenti \space teorici\\ E^f[x]= E[x|\theta] =\mu_f(\theta)\\ Var^f(x)=Var(x|\theta)=\sigma^2_f(\theta)\]</span> <span class="math display">\[Momenti \space calcolati \space sul \space campione\\ E^m(x)= \int_{S_x} x \space m(x) \space \space dx = \mu_m \\ Var^m(x)= \int_{S_x} x^2 \space m(x) \space \space dx = \sigma^2_m\]</span> <span class="math display">\[Sistema \space di \space equazioni \\ \begin{cases} \mu_f(\theta) = \mu_m \\ \sigma^2_f(\theta)= \sigma^2_m \end{cases} \]</span></p>
+<p><span class="math display">\[Theoretical \space moments\\ E^f[x]= E[x|\theta] =\mu_f(\theta)\\ Var^f(x)=Var(x|\theta)=\sigma^2_f(\theta)\]</span> <span class="math display">\[Moments \space computed \space from \space the \space sample\\ E^m(x)= \int_{S_x} x \space m(x) \space \space dx = \mu_m \\ Var^m(x)= \int_{S_x} x^2 \space m(x) \space \space dx = \sigma^2_m\]</span> <span class="math display">\[System \space of \space equations \\ \begin{cases} \mu_f(\theta) = \mu_m \\ \sigma^2_f(\theta)= \sigma^2_m \end{cases} \]</span></p>
 <p>In general, when using this method a sufficiently large sample is needed; furthermore, it is advisable to use accurate estimation methods, evaluating where possible the variability of the moments of the parameter(s) <span class="math inline">\(\theta\)</span>, for example with a Double-Bootstrap.</p>
 </div>
 </div>

@@ -13,3 +13,10 @@ Thumbs.db
 
 # Medium articles (drafts)
 medium-articles/
+
+# Vale styles (downloaded)
+.vale/
+/.vale.ini
+/.celebrimbot/palantir_index.json
+/pyproject.toml
+/uv.lock
