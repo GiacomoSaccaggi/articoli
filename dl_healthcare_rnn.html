@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Recurrent Neural Networks for Patient Trajectories in Healthcare">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>RNNs for Patient Trajectories</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Recurrent Neural Networks for Patient Trajectories</h2>
+                        <hr class="small">
+                        <h5>Deep Learning for Healthcare — Part 3: Modeling Sequential Clinical Data — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Recurrent Neural Networks for Sequential EHR Data</h1>
+<p style="text-align:center;"><em>"The past informs the present — in medicine, a patient's history is the key to their future."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>Why RNNs for Healthcare?</h2>
+
+<p>Patient medical records are inherently <strong>sequential</strong>. A patient doesn't arrive at the hospital with a single snapshot of conditions — they have a <em>trajectory</em>: a series of visits over months or years, each containing diagnoses, procedures, medications, and lab results. The order matters: developing hypertension before diabetes tells a different story than the reverse.</p>
+
+<p>In Part 1, we learned to represent medical codes as dense embeddings. In Part 2, we built feedforward networks that take a patient's aggregated medical history and predict outcomes. But there's a fundamental limitation: <strong>feedforward networks ignore temporal structure</strong>.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab4_rnn_naive-rnn.png" alt="Feedforward vs Sequential">
+    <p class="img-caption">Feedforward networks treat visits as a bag — they can't distinguish "diabetes → kidney disease" from "kidney disease → diabetes"</p>
+</div>
+
+<p>Consider predicting heart failure risk. A feedforward network sees:</p>
+<ul>
+    <li>Patient has: hypertension, diabetes, obesity, coronary artery disease</li>
+</ul>
+
+<p>But it <em>doesn't</em> see:</p>
+<ul>
+    <li>Visit 1 (2019): Obesity diagnosed</li>
+    <li>Visit 2 (2020): Hypertension developed</li>
+    <li>Visit 3 (2021): Diabetes diagnosed</li>
+    <li>Visit 4 (2022): Coronary artery disease</li>
+    <li>Visit 5 (2023): ???</li>
+</ul>
+
+<p>The progression pattern — metabolic syndrome evolving into cardiovascular disease — is invisible to a feedforward network. We need a model that can <strong>remember</strong> what happened at previous time steps and use that memory to inform predictions.</p>
+
+<p>Enter Recurrent Neural Networks.</p>
+
+<hr>
+
+<h2>Basic RNN Architecture</h2>
+
+<p>The key idea of RNNs: maintain a <strong>hidden state</strong> that gets updated at each time step and carries information forward through the sequence.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab4_rnn_rnn.svg" alt="Basic RNN structure">
+    <p class="img-caption">RNN maintains hidden state h(t) that carries information across time steps</p>
+</div>
+
+<h3>The Recurrence Relation</h3>
+
+<p>At each time step t, the RNN:</p>
+<ol>
+    <li>Takes the current input x(t) and the previous hidden state h(t-1)</li>
+    <li>Computes a new hidden state h(t)</li>
+    <li>Optionally produces an output o(t)</li>
+</ol>
+
+<div class="formula-box">
+    <h4>RNN Equations</h4>
+    <p class="formula"><strong>Hidden state:</strong> h(t) = f(U · x(t) + W · h(t-1) + b<sub>h</sub>)</p>
+    <p class="formula"><strong>Output:</strong> o(t) = V · h(t) + b<sub>o</sub></p>
+    <p class="formula"><strong>Prediction:</strong> ŷ(t) = g(o(t))</p>
+    <p>Where:</p>
+    <ul>
+        <li><strong>U</strong> ∈ ℝ<sup>d<sub>h</sub>×d<sub>x</sub></sup> — input-to-hidden weight matrix</li>
+        <li><strong>W</strong> ∈ ℝ<sup>d<sub>h</sub>×d<sub>h</sub></sup> — hidden-to-hidden (recurrent) weight matrix</li>
+        <li><strong>V</strong> ∈ ℝ<sup>d<sub>o</sub>×d<sub>h</sub></sup> — hidden-to-output weight matrix</li>
+        <li><strong>f</strong> — activation function (typically tanh)</li>
+        <li><strong>g</strong> — output activation (softmax for classification, linear for regression)</li>
+    </ul>
+</div>
+
+<p>The critical insight: <strong>the same weights (U, W, V) are shared across all time steps</strong>. This is what makes it "recurrent" — the same transformation is applied repeatedly, with the hidden state carrying forward information from previous steps.</p>
+
+
+<h3>RNN Architectures: Many-to-What?</h3>
+
+<p>RNNs are flexible — different tasks require different input/output configurations:</p>
+
+<table class="concept-table">
+<tr><th>Architecture</th><th>Input</th><th>Output</th><th>Healthcare Example</th></tr>
+<tr><td><strong>Many-to-One</strong></td><td>Sequence</td><td>Single value</td><td>Predict heart failure from visit sequence</td></tr>
+<tr><td><strong>Many-to-Many (aligned)</strong></td><td>Sequence</td><td>Sequence (same length)</td><td>Predict next diagnosis at each visit</td></tr>
+<tr><td><strong>Many-to-Many (seq2seq)</strong></td><td>Sequence</td><td>Sequence (different length)</td><td>Treatment recommendation sequence</td></tr>
+<tr><td><strong>One-to-Many</strong></td><td>Single value</td><td>Sequence</td><td>Generate visit sequence from patient profile</td></tr>
+</table>
+
+<p>For heart failure prediction, we'll use <strong>many-to-one</strong>: process all visits, then use the final hidden state for classification.</p>
+
+<hr>
+
+<h2>Forward Computation in Detail</h2>
+
+<p>Let's trace through the forward pass step by step. Consider a patient with 3 visits:</p>
+
+<pre><span class="comment"># Patient visits (each encoded as embedding vector)</span>
+<span class="comment"># Visit 1: [Diabetes] → x₁</span>
+<span class="comment"># Visit 2: [Diabetes, Hypertension] → x₂</span>
+<span class="comment"># Visit 3: [Diabetes, Hypertension, CKD] → x₃</span>
+</pre>
+
+<h3>Step-by-Step Forward Pass</h3>
+
+<div class="formula-box">
+    <h4>Time Step t=1</h4>
+    <p class="formula">z(1) = U · x(1) + W · h(0) + b<sub>h</sub></p>
+    <p class="formula">h(1) = tanh(z(1))</p>
+    <p>Note: h(0) is initialized to zeros (or learned)</p>
+</div>
+
+<div class="formula-box">
+    <h4>Time Step t=2</h4>
+    <p class="formula">z(2) = U · x(2) + W · h(1) + b<sub>h</sub></p>
+    <p class="formula">h(2) = tanh(z(2))</p>
+    <p>Now h(2) contains information from both visit 1 and visit 2</p>
+</div>
+
+<div class="formula-box">
+    <h4>Time Step t=3 (final)</h4>
+    <p class="formula">z(3) = U · x(3) + W · h(2) + b<sub>h</sub></p>
+    <p class="formula">h(3) = tanh(z(3))</p>
+    <p class="formula">o(3) = V · h(3) + b<sub>o</sub></p>
+    <p class="formula">ŷ = softmax(o(3))</p>
+    <p>h(3) encodes the entire patient trajectory; ŷ is P(heart failure)</p>
+</div>
+
+<h3>Loss Function</h3>
+
+<p>For sequence classification, we compute loss only at the final time step:</p>
+
+<div class="formula-box">
+    <h4>Cross-Entropy Loss (Many-to-One)</h4>
+    <p class="formula">L = -log P(y | x₁, x₂, ..., x<sub>T</sub>)</p>
+    <p>Where y is the true label and the probability comes from softmax over the final output.</p>
+</div>
+
+<p>For sequence prediction (predict at every time step):</p>
+
+<div class="formula-box">
+    <h4>Cross-Entropy Loss (Many-to-Many)</h4>
+    <p class="formula">L = -Σ<sub>t=1</sub><sup>T</sup> log P(y<sub>t</sub> | x₁, ..., x<sub>t</sub>)</p>
+    <p>Sum of losses across all time steps.</p>
+</div>
+
+<hr>
+
+<h2>Backpropagation Through Time (BPTT)</h2>
+
+<p>Training RNNs requires computing gradients that flow backward through time. This is called <strong>Backpropagation Through Time</strong> (BPTT).</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec7_p13_2.png" alt="BPTT visualization">
+    <p class="img-caption">Gradients flow backward through the unrolled computation graph</p>
+</div>
+
+<h3>The Gradient Flow</h3>
+
+<p>To update weights, we need ∂L/∂W, ∂L/∂U, and ∂L/∂V. The key challenge: W affects h(t) at <em>every</em> time step, so its gradient accumulates contributions from all steps.</p>
+
+<div class="formula-box">
+    <h4>BPTT Gradient Computation</h4>
+    <p><strong>Step 1:</strong> Compute gradient at output</p>
+    <p class="formula">∂L/∂o(T) = ŷ(T) - y</p>
+    
+    <p><strong>Step 2:</strong> Gradient at final hidden state</p>
+    <p class="formula">∂L/∂h(T) = V<sup>T</sup> · (∂L/∂o(T))</p>
+    
+    <p><strong>Step 3:</strong> Backpropagate through time (for t = T-1, T-2, ..., 1)</p>
+    <p class="formula">∂L/∂h(t) = (∂h(t+1)/∂h(t))<sup>T</sup> · (∂L/∂h(t+1)) + (∂o(t)/∂h(t))<sup>T</sup> · (∂L/∂o(t))</p>
+    
+    <p><strong>Step 4:</strong> Accumulate weight gradients</p>
+    <p class="formula">∂L/∂W = Σ<sub>t</sub> (∂L/∂h(t)) · (∂h(t)/∂W)</p>
+</div>
+
+<p>The crucial term is <strong>∂h(t+1)/∂h(t)</strong> — how much the hidden state at t+1 depends on the hidden state at t. This involves the recurrent weight W and the activation function derivative:</p>
+
+<div class="formula-box">
+    <p class="formula">∂h(t+1)/∂h(t) = diag(f'(z(t+1))) · W</p>
+    <p>Where f' is the derivative of tanh (which is 1 - tanh²).</p>
+</div>
+
+<hr>
+
+<h2>The Vanishing Gradient Problem</h2>
+
+<p>Here's where RNNs run into trouble. When backpropagating through many time steps, we multiply many gradient terms together:</p>
+
+<div class="formula-box">
+    <h4>Gradient Through Time</h4>
+    <p class="formula">∂h(T)/∂h(1) = Π<sub>t=1</sub><sup>T-1</sup> (∂h(t+1)/∂h(t)) = Π<sub>t=1</sub><sup>T-1</sup> diag(f'(z(t+1))) · W</p>
+</div>
+
+<p>If the eigenvalues of W are:</p>
+<ul>
+    <li><strong>< 1</strong>: Gradients shrink exponentially → <strong>Vanishing gradients</strong></li>
+    <li><strong>> 1</strong>: Gradients grow exponentially → <strong>Exploding gradients</strong></li>
+</ul>
+
+<div class="warning-box">
+    <h4>⚠️ The Vanishing Gradient Problem</h4>
+    <p>With tanh activation, the derivative f'(z) ∈ (0, 1]. After multiplying many such terms, gradients become negligibly small.</p>
+    <p><strong>Consequence:</strong> The RNN can't learn long-range dependencies. Information from early visits gets "forgotten" because gradients don't flow back far enough to update the relevant weights.</p>
+    <p>For a patient with 50 visits, a standard RNN effectively only "sees" the last 5-10 visits during training.</p>
+</div>
+
+<p>Exploding gradients can be mitigated with <strong>gradient clipping</strong>:</p>
+
+<pre><span class="comment"># Gradient clipping in PyTorch</span>
+torch.nn.utils.<span class="function">clip_grad_norm_</span>(model.<span class="function">parameters</span>(), max_norm=<span class="number">1.0</span>)
+</pre>
+
+<p>But vanishing gradients require architectural changes. Enter: gated recurrent units.</p>
+
+
+<hr>
+
+<h2>LSTM: Long Short-Term Memory</h2>
+
+<p>LSTMs (Hochreiter & Schmidhuber, 1997) solve the vanishing gradient problem with a more sophisticated cell architecture. The key innovation: a <strong>cell state</strong> c(t) that acts as a "conveyor belt" — information can flow through unchanged, with gates controlling what gets added or removed.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab4_rnn_lstm.svg" alt="LSTM cell architecture">
+    <p class="img-caption">LSTM cell with forget gate, input gate, and output gate controlling information flow</p>
+</div>
+
+<h3>The Three Gates</h3>
+
+<p>LSTMs use three gates — each a sigmoid neural network layer that outputs values in [0, 1], controlling how much information passes through:</p>
+
+<table class="concept-table">
+<tr><th>Gate</th><th>Purpose</th><th>Equation</th></tr>
+<tr><td><strong>Forget Gate f(t)</strong></td><td>What to discard from cell state</td><td>f(t) = σ(U<sub>f</sub>·x(t) + W<sub>f</sub>·h(t-1) + b<sub>f</sub>)</td></tr>
+<tr><td><strong>Input Gate i(t)</strong></td><td>What new info to store</td><td>i(t) = σ(U<sub>i</sub>·x(t) + W<sub>i</sub>·h(t-1) + b<sub>i</sub>)</td></tr>
+<tr><td><strong>Output Gate o(t)</strong></td><td>What to output from cell state</td><td>o(t) = σ(U<sub>o</sub>·x(t) + W<sub>o</sub>·h(t-1) + b<sub>o</sub>)</td></tr>
+</table>
+
+<h3>LSTM Forward Pass</h3>
+
+<div class="formula-box">
+    <h4>Complete LSTM Equations</h4>
+    
+    <p><strong>1. Forget gate</strong> — decide what to forget from previous cell state:</p>
+    <p class="formula">f(t) = σ(U<sub>f</sub> · x(t) + W<sub>f</sub> · h(t-1) + b<sub>f</sub>)</p>
+    
+    <p><strong>2. Input gate</strong> — decide what new info to add:</p>
+    <p class="formula">i(t) = σ(U<sub>i</sub> · x(t) + W<sub>i</sub> · h(t-1) + b<sub>i</sub>)</p>
+    <p class="formula">c̃(t) = tanh(U<sub>c</sub> · x(t) + W<sub>c</sub> · h(t-1) + b<sub>c</sub>)</p>
+    
+    <p><strong>3. Update cell state</strong> — the key operation:</p>
+    <p class="formula">c(t) = f(t) ⊙ c(t-1) + i(t) ⊙ c̃(t)</p>
+    
+    <p><strong>4. Output gate</strong> — produce hidden state from cell state:</p>
+    <p class="formula">o(t) = σ(U<sub>o</sub> · x(t) + W<sub>o</sub> · h(t-1) + b<sub>o</sub>)</p>
+    <p class="formula">h(t) = o(t) ⊙ tanh(c(t))</p>
+    
+    <p>Where ⊙ denotes element-wise (Hadamard) product and σ is the sigmoid function.</p>
+</div>
+
+<h3>Why LSTMs Solve Vanishing Gradients</h3>
+
+<p>The magic is in the cell state update equation:</p>
+
+<p style="text-align: center; font-size: 1.2em;"><strong>c(t) = f(t) ⊙ c(t-1) + i(t) ⊙ c̃(t)</strong></p>
+
+<p>This is an <em>additive</em> update, not multiplicative! When backpropagating:</p>
+
+<div class="formula-box">
+    <p class="formula">∂c(t)/∂c(t-1) = f(t)</p>
+    <p>If the forget gate f(t) ≈ 1, gradients flow through unchanged!</p>
+</div>
+
+<p>Unlike standard RNNs where gradients must pass through tanh derivatives at every step, LSTMs can maintain gradients across many time steps by keeping forget gates close to 1. This is the "constant error carousel" — error signals can propagate back hundreds of steps without vanishing.</p>
+
+<div class="info-box">
+    <h4>💡 LSTM Intuition for Healthcare</h4>
+    <p>Think of the cell state as a patient's "medical memory":</p>
+    <ul>
+        <li><strong>Forget gate</strong>: "This acute infection resolved — forget it"</li>
+        <li><strong>Input gate</strong>: "New diabetes diagnosis — this is important, remember it"</li>
+        <li><strong>Output gate</strong>: "For predicting heart failure, output the cardiovascular history"</li>
+    </ul>
+    <p>Chronic conditions (diabetes, hypertension) get stored in the cell state with forget gates ≈ 1. Acute conditions (common cold) are quickly forgotten with forget gates ≈ 0.</p>
+</div>
+
+
+<hr>
+
+<h2>GRU: Gated Recurrent Unit</h2>
+
+<p>GRUs (Cho et al., 2014) simplify the LSTM architecture while maintaining most of its benefits. Instead of three gates, GRUs use two: a <strong>reset gate</strong> and an <strong>update gate</strong>. There's no separate cell state — just the hidden state.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab4_rnn_gru.svg" alt="GRU cell architecture">
+    <p class="img-caption">GRU with reset gate r(t) and update gate z(t)</p>
+</div>
+
+<h3>GRU Equations</h3>
+
+<div class="formula-box">
+    <h4>Complete GRU Forward Pass</h4>
+    
+    <p><strong>1. Reset gate</strong> — how much past info to forget when computing candidate:</p>
+    <p class="formula">r(t) = σ(U<sub>r</sub> · x(t) + W<sub>r</sub> · h(t-1) + b<sub>r</sub>)</p>
+    
+    <p><strong>2. Update gate</strong> — how much to update vs. keep from past:</p>
+    <p class="formula">z(t) = σ(U<sub>z</sub> · x(t) + W<sub>z</sub> · h(t-1) + b<sub>z</sub>)</p>
+    
+    <p><strong>3. Candidate hidden state</strong> — new information, with reset gate applied:</p>
+    <p class="formula">h̃(t) = tanh(U · x(t) + W · (r(t) ⊙ h(t-1)) + b)</p>
+    
+    <p><strong>4. Final hidden state</strong> — interpolation between old and new:</p>
+    <p class="formula">h(t) = z(t) ⊙ h(t-1) + (1 - z(t)) ⊙ h̃(t)</p>
+</div>
+
+<h3>LSTM vs. GRU</h3>
+
+<table class="concept-table">
+<tr><th>Aspect</th><th>LSTM</th><th>GRU</th></tr>
+<tr><td><strong>Gates</strong></td><td>3 (forget, input, output)</td><td>2 (reset, update)</td></tr>
+<tr><td><strong>States</strong></td><td>2 (cell state c, hidden state h)</td><td>1 (hidden state h only)</td></tr>
+<tr><td><strong>Parameters</strong></td><td>4 weight matrices per gate</td><td>3 weight matrices per gate</td></tr>
+<tr><td><strong>Computation</strong></td><td>Slower (more operations)</td><td>Faster (~25% fewer params)</td></tr>
+<tr><td><strong>Performance</strong></td><td>Often better on very long sequences</td><td>Comparable on most tasks</td></tr>
+</table>
+
+<div class="info-box">
+    <h4>💡 When to Use Which?</h4>
+    <ul>
+        <li><strong>LSTM</strong>: Very long sequences (>100 steps), need fine-grained memory control</li>
+        <li><strong>GRU</strong>: Moderate sequences, faster training, fewer parameters (better for limited data)</li>
+    </ul>
+    <p>For typical healthcare applications with ~10-50 visits per patient, GRUs often perform comparably with faster training. We'll use GRU in our implementation.</p>
+</div>
+
+<hr>
+
+<h2>Bidirectional RNNs</h2>
+
+<p>Standard RNNs process sequences in one direction — from past to future. But sometimes context from <em>both</em> directions is useful. A <strong>Bidirectional RNN</strong> runs two RNNs:</p>
+
+<ul>
+    <li><strong>Forward RNN</strong>: processes x₁ → x₂ → ... → x<sub>T</sub></li>
+    <li><strong>Backward RNN</strong>: processes x<sub>T</sub> → x<sub>T-1</sub> → ... → x₁</li>
+</ul>
+
+<p>The hidden states are concatenated:</p>
+
+<div class="formula-box">
+    <h4>Bidirectional Hidden State</h4>
+    <p class="formula">h(t) = [h<sub>forward</sub>(t) ; h<sub>backward</sub>(t)]</p>
+    <p>The final hidden state has dimension 2 × d<sub>h</sub> (forward and backward concatenated).</p>
+</div>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec7_p35_5.png" alt="Bidirectional RNN">
+    <p class="img-caption">Bidirectional RNN processes sequence in both directions</p>
+</div>
+
+<h3>When is Bidirectional Useful?</h3>
+
+<p>In healthcare, it depends on the task:</p>
+
+<table class="concept-table">
+<tr><th>Task</th><th>Use Bidirectional?</th><th>Reasoning</th></tr>
+<tr><td>Heart failure prediction (given full history)</td><td>✅ Yes</td><td>We have all visits; future context helps understand past</td></tr>
+<tr><td>Real-time risk monitoring</td><td>❌ No</td><td>Can't see future visits at prediction time</td></tr>
+<tr><td>Diagnosis sequence annotation</td><td>✅ Yes</td><td>Labeling visits benefits from full context</td></tr>
+<tr><td>Next-visit prediction</td><td>❌ No</td><td>By definition, predicting unseen future</td></tr>
+</table>
+
+<p>For retrospective analysis with complete patient histories, bidirectional models typically outperform unidirectional ones by 2-5% AUROC.</p>
+
+
+<hr>
+
+<h2>Practical Implementation: Heart Failure Prediction</h2>
+
+<p>Let's build a complete bidirectional GRU model for predicting heart failure from sequences of patient visits. We'll walk through every component: data handling, model architecture, training, and evaluation.</p>
+
+<h3>The Task</h3>
+
+<p>Given a patient's sequence of hospital visits (each containing diagnosis codes), predict whether they will develop heart failure. This is a <strong>many-to-one</strong> sequence classification problem.</p>
+
+<pre><span class="comment"># Example patient data</span>
+<span class="comment"># Patient 1: 4 visits → heart failure = YES</span>
+<span class="comment"># Visit 1: [Obesity, Sleep Apnea]</span>
+<span class="comment"># Visit 2: [Obesity, Hypertension]</span>
+<span class="comment"># Visit 3: [Diabetes, Hypertension, Hyperlipidemia]</span>
+<span class="comment"># Visit 4: [Diabetes, Coronary Artery Disease, Atrial Fibrillation]</span>
+
+<span class="comment"># Patient 2: 2 visits → heart failure = NO</span>
+<span class="comment"># Visit 1: [Acute Bronchitis]</span>
+<span class="comment"># Visit 2: [Acute Sinusitis, Allergic Rhinitis]</span>
+</pre>
+
+<h3>Data Format and Challenges</h3>
+
+<p>Healthcare sequence data presents unique challenges:</p>
+
+<ul>
+    <li><strong>Variable sequence lengths</strong>: patients have different numbers of visits (2-100+)</li>
+    <li><strong>Variable-size visits</strong>: each visit has different numbers of diagnosis codes (1-50)</li>
+    <li><strong>Sparse codes</strong>: ~15,000 possible ICD codes, most patients have only 10-200 unique codes</li>
+    <li><strong>Imbalanced labels</strong>: heart failure affects ~5% of patients</li>
+</ul>
+
+<h3>Custom Dataset Class</h3>
+
+<p>We need a PyTorch Dataset that handles variable-length sequences. Each patient's visits are aggregated into a single vector per visit (sum of diagnosis embeddings), then padded to a fixed maximum length:</p>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset, DataLoader
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">class</span> <span class="builtin">VisitSequenceDataset</span>(Dataset):
+    <span class="string">"""
+    Dataset for patient visit sequences.
+    
+    Each patient has a variable number of visits.
+    Each visit contains multiple diagnosis codes (multi-hot encoded).
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, patient_visits, labels, num_codes):
+        <span class="string">"""
+        Args:
+            patient_visits: List of patients, each is a list of visits,
+                           each visit is a list of diagnosis code indices.
+                           e.g., [[[10, 50], [10, 50, 200]], [[5, 100]], ...]
+            labels: Binary labels (heart failure: 0 or 1)
+            num_codes: Total number of unique diagnosis codes
+        """</span>
+        self.patient_visits = patient_visits
+        self.labels = labels
+        self.num_codes = num_codes
+    
+    <span class="keyword">def</span> <span class="function">__len__</span>(self):
+        <span class="keyword">return</span> <span class="builtin">len</span>(self.labels)
+    
+    <span class="keyword">def</span> <span class="function">__getitem__</span>(self, idx):
+        visits = self.patient_visits[idx]
+        label = self.labels[idx]
+        
+        <span class="comment"># Convert each visit to multi-hot vector</span>
+        visit_vectors = []
+        <span class="keyword">for</span> visit_codes <span class="keyword">in</span> visits:
+            multi_hot = np.<span class="function">zeros</span>(self.num_codes, dtype=np.float32)
+            <span class="keyword">for</span> code_idx <span class="keyword">in</span> visit_codes:
+                multi_hot[code_idx] = <span class="number">1.0</span>
+            visit_vectors.<span class="function">append</span>(multi_hot)
+        
+        <span class="comment"># Stack into tensor: [num_visits, num_codes]</span>
+        visit_tensor = torch.<span class="function">tensor</span>(np.<span class="function">stack</span>(visit_vectors))
+        seq_length = <span class="builtin">len</span>(visits)
+        
+        <span class="keyword">return</span> visit_tensor, seq_length, torch.<span class="function">tensor</span>(label, dtype=torch.float32)
+
+
+<span class="keyword">def</span> <span class="function">collate_visits</span>(batch):
+    <span class="string">"""
+    Custom collate function to handle variable-length sequences.
+    Pads sequences to the maximum length in the batch.
+    """</span>
+    visits, lengths, labels = <span class="builtin">zip</span>(*batch)
+    
+    <span class="comment"># Find max sequence length in this batch</span>
+    max_len = <span class="builtin">max</span>(lengths)
+    num_codes = visits[<span class="number">0</span>].shape[<span class="number">1</span>]
+    batch_size = <span class="builtin">len</span>(batch)
+    
+    <span class="comment"># Create padded tensor</span>
+    padded = torch.<span class="function">zeros</span>(batch_size, max_len, num_codes)
+    
+    <span class="keyword">for</span> i, (visit, length) <span class="keyword">in</span> <span class="builtin">enumerate</span>(<span class="builtin">zip</span>(visits, lengths)):
+        padded[i, :length, :] = visit
+    
+    lengths = torch.<span class="function">tensor</span>(lengths)
+    labels = torch.<span class="function">stack</span>(labels)
+    
+    <span class="keyword">return</span> padded, lengths, labels
+</pre>
+
+<h3>Example Data Setup</h3>
+
+<pre><span class="comment"># Example: create dataset</span>
+patient_visits = [
+    <span class="comment"># Patient 1: 4 visits</span>
+    [[<span class="number">10</span>, <span class="number">50</span>], [<span class="number">10</span>, <span class="number">50</span>, <span class="number">200</span>], [<span class="number">25</span>, <span class="number">200</span>, <span class="number">300</span>], [<span class="number">25</span>, <span class="number">400</span>, <span class="number">450</span>]],
+    <span class="comment"># Patient 2: 2 visits</span>
+    [[<span class="number">5</span>], [<span class="number">5</span>, <span class="number">15</span>]],
+    <span class="comment"># Patient 3: 3 visits</span>
+    [[<span class="number">100</span>, <span class="number">150</span>], [<span class="number">100</span>, <span class="number">200</span>], [<span class="number">100</span>, <span class="number">200</span>, <span class="number">500</span>]],
+    <span class="comment"># ... more patients</span>
+]
+labels = [<span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>]  <span class="comment"># Heart failure labels</span>
+num_codes = <span class="number">1000</span>
+
+dataset = VisitSequenceDataset(patient_visits, labels, num_codes)
+dataloader = DataLoader(
+    dataset, 
+    batch_size=<span class="number">32</span>, 
+    shuffle=<span class="keyword">True</span>, 
+    collate_fn=collate_visits
+)
+
+<span class="comment"># Test batch</span>
+<span class="keyword">for</span> padded_visits, lengths, batch_labels <span class="keyword">in</span> dataloader:
+    <span class="builtin">print</span>(<span class="string">f"Batch shape: </span>{padded_visits.shape}<span class="string">"</span>)   <span class="comment"># [batch_size, max_seq_len, num_codes]</span>
+    <span class="builtin">print</span>(<span class="string">f"Lengths: </span>{lengths}<span class="string">"</span>)                   <span class="comment"># [4, 2, 3]</span>
+    <span class="builtin">print</span>(<span class="string">f"Labels: </span>{batch_labels}<span class="string">"</span>)                <span class="comment"># [1, 0, 1]</span>
+    <span class="keyword">break</span>
+</pre>
+
+
+<hr>
+
+<h2>Bidirectional GRU Model Architecture</h2>
+
+<p>Our model has three main components:</p>
+
+<ol>
+    <li><strong>Embedding layer</strong>: transforms sparse multi-hot diagnosis vectors to dense representations</li>
+    <li><strong>Bidirectional GRU</strong>: processes the visit sequence in both directions</li>
+    <li><strong>Classifier</strong>: uses final hidden states to predict heart failure</li>
+</ol>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">from</span> torch.nn.utils.rnn <span class="keyword">import</span> pack_padded_sequence, pad_packed_sequence
+
+<span class="keyword">class</span> <span class="builtin">BidirectionalGRU</span>(nn.Module):
+    <span class="string">"""
+    Bidirectional GRU for heart failure prediction from visit sequences.
+    
+    Architecture:
+        Multi-hot diagnosis codes → Embedding → Bi-GRU → Concat final states → Classifier
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(
+        self,
+        num_codes,
+        embed_dim=<span class="number">128</span>,
+        hidden_dim=<span class="number">128</span>,
+        num_layers=<span class="number">1</span>,
+        dropout=<span class="number">0.3</span>
+    ):
+        <span class="string">"""
+        Args:
+            num_codes: Number of unique diagnosis codes (vocabulary size)
+            embed_dim: Dimension of code embeddings
+            hidden_dim: GRU hidden state dimension
+            num_layers: Number of stacked GRU layers
+            dropout: Dropout probability
+        """</span>
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.num_codes = num_codes
+        self.embed_dim = embed_dim
+        self.hidden_dim = hidden_dim
+        
+        <span class="comment"># Embedding layer: transforms multi-hot to dense</span>
+        <span class="comment"># Using Linear instead of nn.Embedding because input is multi-hot, not indices</span>
+        self.embedding = nn.Linear(num_codes, embed_dim)
+        
+        <span class="comment"># Bidirectional GRU</span>
+        self.gru = nn.GRU(
+            input_size=embed_dim,
+            hidden_size=hidden_dim,
+            num_layers=num_layers,
+            batch_first=<span class="keyword">True</span>,
+            bidirectional=<span class="keyword">True</span>,
+            dropout=dropout <span class="keyword">if</span> num_layers > <span class="number">1</span> <span class="keyword">else</span> <span class="number">0</span>
+        )
+        
+        <span class="comment"># Classifier: takes concatenated forward and backward hidden states</span>
+        <span class="comment"># Hidden dim is doubled due to bidirectional</span>
+        self.dropout = nn.Dropout(dropout)
+        self.classifier = nn.Sequential(
+            nn.Linear(hidden_dim * <span class="number">2</span>, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, <span class="number">1</span>)  <span class="comment"># Binary classification</span>
+        )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, visits, lengths):
+        <span class="string">"""
+        Forward pass.
+        
+        Args:
+            visits: Padded visit sequences [batch_size, max_seq_len, num_codes]
+            lengths: Actual sequence lengths [batch_size]
+        
+        Returns:
+            logits: [batch_size, 1] - raw scores before sigmoid
+        """</span>
+        batch_size = visits.size(<span class="number">0</span>)
+        
+        <span class="comment"># 1. Embed each visit's diagnosis codes</span>
+        <span class="comment"># [batch, max_seq_len, num_codes] → [batch, max_seq_len, embed_dim]</span>
+        embedded = self.<span class="function">embedding</span>(visits)
+        embedded = torch.<span class="function">tanh</span>(embedded)  <span class="comment"># Activation after embedding</span>
+        
+        <span class="comment"># 2. Pack padded sequence for efficient GRU processing</span>
+        <span class="comment"># This tells GRU to ignore padding positions</span>
+        packed = <span class="function">pack_padded_sequence</span>(
+            embedded, 
+            lengths.<span class="function">cpu</span>(),  <span class="comment"># lengths must be on CPU</span>
+            batch_first=<span class="keyword">True</span>,
+            enforce_sorted=<span class="keyword">False</span>  <span class="comment"># Allow unsorted sequences</span>
+        )
+        
+        <span class="comment"># 3. Pass through bidirectional GRU</span>
+        <span class="comment"># packed_output contains all hidden states</span>
+        <span class="comment"># hidden: [num_layers * 2, batch_size, hidden_dim]</span>
+        packed_output, hidden = self.<span class="function">gru</span>(packed)
+        
+        <span class="comment"># 4. Extract final hidden states from both directions</span>
+        <span class="comment"># hidden shape: [num_layers * 2, batch, hidden_dim]</span>
+        <span class="comment"># For single layer bidirectional: hidden[0] = forward, hidden[1] = backward</span>
+        
+        <span class="comment"># Get the last layer's hidden states</span>
+        <span class="comment"># Forward direction: processes sequence left-to-right, final state at position -2</span>
+        <span class="comment"># Backward direction: processes right-to-left, final state at position -1</span>
+        forward_final = hidden[-<span class="number">2</span>]   <span class="comment"># [batch, hidden_dim]</span>
+        backward_final = hidden[-<span class="number">1</span>]  <span class="comment"># [batch, hidden_dim]</span>
+        
+        <span class="comment"># 5. Concatenate forward and backward hidden states</span>
+        combined = torch.<span class="function">cat</span>([forward_final, backward_final], dim=<span class="number">1</span>)  <span class="comment"># [batch, hidden_dim * 2]</span>
+        combined = self.<span class="function">dropout</span>(combined)
+        
+        <span class="comment"># 6. Classification</span>
+        logits = self.<span class="function">classifier</span>(combined)  <span class="comment"># [batch, 1]</span>
+        
+        <span class="keyword">return</span> logits
+
+
+<span class="comment"># Initialize model</span>
+model = BidirectionalGRU(
+    num_codes=<span class="number">1000</span>,
+    embed_dim=<span class="number">128</span>,
+    hidden_dim=<span class="number">128</span>,
+    num_layers=<span class="number">1</span>,
+    dropout=<span class="number">0.3</span>
+)
+
+<span class="builtin">print</span>(model)
+</pre>
+
+<pre><span class="comment"># Model architecture output:</span>
+<span class="comment"># BidirectionalGRU(</span>
+<span class="comment">#   (embedding): Linear(in_features=1000, out_features=128, bias=True)</span>
+<span class="comment">#   (gru): GRU(128, 128, batch_first=True, bidirectional=True)</span>
+<span class="comment">#   (dropout): Dropout(p=0.3, inplace=False)</span>
+<span class="comment">#   (classifier): Sequential(</span>
+<span class="comment">#     (0): Linear(in_features=256, out_features=128, bias=True)</span>
+<span class="comment">#     (1): ReLU()</span>
+<span class="comment">#     (2): Dropout(p=0.3, inplace=False)</span>
+<span class="comment">#     (3): Linear(in_features=128, out_features=1, bias=True)</span>
+<span class="comment">#   )</span>
+<span class="comment"># )</span>
+</pre>
+
+<h3>Understanding pack_padded_sequence</h3>
+
+<p>Padding is necessary for batching variable-length sequences, but we don't want the GRU to process padding tokens. <code>pack_padded_sequence</code> creates an efficient representation that skips padding:</p>
+
+<div class="info-box">
+    <h4>📦 How Packing Works</h4>
+    <p>Consider a batch of 3 sequences with lengths [4, 2, 3]:</p>
+    <pre>Original (padded):
+Seq 1: [A, B, C, D]
+Seq 2: [E, F, 0, 0]  ← padding
+Seq 3: [G, H, I, 0]  ← padding
+
+Packed (sorted by length, interleaved):
+data: [A, E, G, B, F, H, C, I, D]
+batch_sizes: [3, 3, 2, 1]  ← how many sequences at each time step</pre>
+    <p>The GRU processes all valid elements efficiently, ignoring padding entirely.</p>
+</div>
+
+
+<hr>
+
+<h2>Training the Model</h2>
+
+<p>Now let's implement the complete training pipeline with proper evaluation metrics for imbalanced healthcare data.</p>
+
+<pre><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score, precision_recall_curve, auc
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">def</span> <span class="function">train_epoch</span>(model, dataloader, criterion, optimizer, device):
+    <span class="string">"""Train for one epoch."""</span>
+    model.<span class="function">train</span>()
+    total_loss = <span class="number">0</span>
+    num_batches = <span class="number">0</span>
+    
+    <span class="keyword">for</span> visits, lengths, labels <span class="keyword">in</span> dataloader:
+        <span class="comment"># Move to device</span>
+        visits = visits.<span class="function">to</span>(device)
+        labels = labels.<span class="function">to</span>(device)
+        
+        <span class="comment"># Forward pass</span>
+        optimizer.<span class="function">zero_grad</span>()
+        logits = <span class="function">model</span>(visits, lengths)
+        
+        <span class="comment"># Compute loss (BCE with logits)</span>
+        loss = <span class="function">criterion</span>(logits.<span class="function">squeeze</span>(), labels)
+        
+        <span class="comment"># Backward pass</span>
+        loss.<span class="function">backward</span>()
+        
+        <span class="comment"># Gradient clipping to prevent exploding gradients</span>
+        torch.nn.utils.<span class="function">clip_grad_norm_</span>(model.<span class="function">parameters</span>(), max_norm=<span class="number">1.0</span>)
+        
+        optimizer.<span class="function">step</span>()
+        
+        total_loss += loss.<span class="function">item</span>()
+        num_batches += <span class="number">1</span>
+    
+    <span class="keyword">return</span> total_loss / num_batches
+
+
+<span class="keyword">def</span> <span class="function">evaluate</span>(model, dataloader, device):
+    <span class="string">"""
+    Evaluate model and compute metrics.
+    
+    Returns:
+        Dictionary with loss, AUROC, and AUPRC
+    """</span>
+    model.<span class="function">eval</span>()
+    all_probs = []
+    all_labels = []
+    total_loss = <span class="number">0</span>
+    num_batches = <span class="number">0</span>
+    criterion = nn.BCEWithLogitsLoss()
+    
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        <span class="keyword">for</span> visits, lengths, labels <span class="keyword">in</span> dataloader:
+            visits = visits.<span class="function">to</span>(device)
+            labels = labels.<span class="function">to</span>(device)
+            
+            logits = <span class="function">model</span>(visits, lengths)
+            loss = <span class="function">criterion</span>(logits.<span class="function">squeeze</span>(), labels)
+            
+            <span class="comment"># Convert logits to probabilities</span>
+            probs = torch.<span class="function">sigmoid</span>(logits).<span class="function">squeeze</span>()
+            
+            all_probs.<span class="function">extend</span>(probs.<span class="function">cpu</span>().<span class="function">numpy</span>())
+            all_labels.<span class="function">extend</span>(labels.<span class="function">cpu</span>().<span class="function">numpy</span>())
+            total_loss += loss.<span class="function">item</span>()
+            num_batches += <span class="number">1</span>
+    
+    all_probs = np.<span class="function">array</span>(all_probs)
+    all_labels = np.<span class="function">array</span>(all_labels)
+    
+    <span class="comment"># Compute metrics</span>
+    auroc = <span class="function">roc_auc_score</span>(all_labels, all_probs)
+    
+    <span class="comment"># AUPRC (Area Under Precision-Recall Curve) - better for imbalanced data</span>
+    precision, recall, _ = <span class="function">precision_recall_curve</span>(all_labels, all_probs)
+    auprc = <span class="function">auc</span>(recall, precision)
+    
+    <span class="keyword">return</span> {
+        <span class="string">'loss'</span>: total_loss / num_batches,
+        <span class="string">'auroc'</span>: auroc,
+        <span class="string">'auprc'</span>: auprc
+    }
+</pre>
+
+<h3>Complete Training Script</h3>
+
+<pre><span class="keyword">def</span> <span class="function">train_model</span>(
+    model,
+    train_loader,
+    val_loader,
+    num_epochs=<span class="number">50</span>,
+    learning_rate=<span class="number">0.001</span>,
+    patience=<span class="number">10</span>,
+    device=<span class="keyword">None</span>
+):
+    <span class="string">"""
+    Full training loop with early stopping and learning rate scheduling.
+    """</span>
+    <span class="keyword">if</span> device <span class="keyword">is</span> <span class="keyword">None</span>:
+        device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+    
+    model = model.<span class="function">to</span>(device)
+    <span class="builtin">print</span>(<span class="string">f"Training on </span>{device}<span class="string">"</span>)
+    
+    <span class="comment"># Loss function with class weights for imbalanced data</span>
+    <span class="comment"># Assuming ~5% positive class, use pos_weight = 95/5 = 19</span>
+    pos_weight = torch.<span class="function">tensor</span>([<span class="number">10.0</span>]).<span class="function">to</span>(device)  <span class="comment"># Adjust based on your data</span>
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    
+    <span class="comment"># Optimizer</span>
+    optimizer = optim.Adam(model.<span class="function">parameters</span>(), lr=learning_rate, weight_decay=<span class="number">1e-5</span>)
+    
+    <span class="comment"># Learning rate scheduler</span>
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+        optimizer, mode=<span class="string">'max'</span>, factor=<span class="number">0.5</span>, patience=<span class="number">5</span>, verbose=<span class="keyword">True</span>
+    )
+    
+    <span class="comment"># Early stopping</span>
+    best_auroc = <span class="number">0</span>
+    patience_counter = <span class="number">0</span>
+    best_model_state = <span class="keyword">None</span>
+    
+    history = {<span class="string">'train_loss'</span>: [], <span class="string">'val_loss'</span>: [], <span class="string">'val_auroc'</span>: [], <span class="string">'val_auprc'</span>: []}
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+        <span class="comment"># Training</span>
+        train_loss = <span class="function">train_epoch</span>(model, train_loader, criterion, optimizer, device)
+        
+        <span class="comment"># Validation</span>
+        val_metrics = <span class="function">evaluate</span>(model, val_loader, device)
+        
+        <span class="comment"># Record history</span>
+        history[<span class="string">'train_loss'</span>].<span class="function">append</span>(train_loss)
+        history[<span class="string">'val_loss'</span>].<span class="function">append</span>(val_metrics[<span class="string">'loss'</span>])
+        history[<span class="string">'val_auroc'</span>].<span class="function">append</span>(val_metrics[<span class="string">'auroc'</span>])
+        history[<span class="string">'val_auprc'</span>].<span class="function">append</span>(val_metrics[<span class="string">'auprc'</span>])
+        
+        <span class="comment"># Print progress</span>
+        <span class="builtin">print</span>(<span class="string">f"Epoch </span>{epoch+<span class="number">1</span>:<span class="number">3</span>d}<span class="string"> | "</span>
+              <span class="string">f"Train Loss: </span>{train_loss:<span class="number">.4</span>f}<span class="string"> | "</span>
+              <span class="string">f"Val Loss: </span>{val_metrics[<span class="string">'loss'</span>]:<span class="number">.4</span>f}<span class="string"> | "</span>
+              <span class="string">f"AUROC: </span>{val_metrics[<span class="string">'auroc'</span>]:<span class="number">.4</span>f}<span class="string"> | "</span>
+              <span class="string">f"AUPRC: </span>{val_metrics[<span class="string">'auprc'</span>]:<span class="number">.4</span>f}<span class="string">"</span>)
+        
+        <span class="comment"># Learning rate scheduling</span>
+        scheduler.<span class="function">step</span>(val_metrics[<span class="string">'auroc'</span>])
+        
+        <span class="comment"># Early stopping check</span>
+        <span class="keyword">if</span> val_metrics[<span class="string">'auroc'</span>] > best_auroc:
+            best_auroc = val_metrics[<span class="string">'auroc'</span>]
+            patience_counter = <span class="number">0</span>
+            best_model_state = model.<span class="function">state_dict</span>().<span class="function">copy</span>()
+            <span class="builtin">print</span>(<span class="string">f"  → New best model! AUROC: </span>{best_auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+        <span class="keyword">else</span>:
+            patience_counter += <span class="number">1</span>
+            <span class="keyword">if</span> patience_counter >= patience:
+                <span class="builtin">print</span>(<span class="string">f"\nEarly stopping at epoch </span>{epoch+<span class="number">1</span>}<span class="string">"</span>)
+                <span class="keyword">break</span>
+    
+    <span class="comment"># Load best model</span>
+    <span class="keyword">if</span> best_model_state <span class="keyword">is not</span> <span class="keyword">None</span>:
+        model.<span class="function">load_state_dict</span>(best_model_state)
+    
+    <span class="builtin">print</span>(<span class="string">f"\nTraining complete. Best AUROC: </span>{best_auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="keyword">return</span> model, history
+</pre>
+
+<h3>Running Training</h3>
+
+<pre><span class="comment"># Example training run</span>
+device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+
+<span class="comment"># Create model</span>
+model = BidirectionalGRU(
+    num_codes=<span class="number">1000</span>,
+    embed_dim=<span class="number">128</span>,
+    hidden_dim=<span class="number">128</span>,
+    num_layers=<span class="number">2</span>,
+    dropout=<span class="number">0.3</span>
+)
+
+<span class="comment"># Train</span>
+trained_model, history = <span class="function">train_model</span>(
+    model,
+    train_loader,
+    val_loader,
+    num_epochs=<span class="number">50</span>,
+    learning_rate=<span class="number">0.001</span>,
+    patience=<span class="number">10</span>,
+    device=device
+)
+</pre>
+
+<pre><span class="comment"># Sample training output:</span>
+<span class="comment"># Training on cuda</span>
+<span class="comment"># Epoch   1 | Train Loss: 0.8234 | Val Loss: 0.7621 | AUROC: 0.6234 | AUPRC: 0.1523</span>
+<span class="comment">#   → New best model! AUROC: 0.6234</span>
+<span class="comment"># Epoch   2 | Train Loss: 0.6543 | Val Loss: 0.5987 | AUROC: 0.7012 | AUPRC: 0.2145</span>
+<span class="comment">#   → New best model! AUROC: 0.7012</span>
+<span class="comment"># Epoch   3 | Train Loss: 0.5234 | Val Loss: 0.4823 | AUROC: 0.7543 | AUPRC: 0.2876</span>
+<span class="comment">#   → New best model! AUROC: 0.7543</span>
+<span class="comment"># ...</span>
+<span class="comment"># Epoch  25 | Train Loss: 0.2134 | Val Loss: 0.3245 | AUROC: 0.8456 | AUPRC: 0.4123</span>
+<span class="comment">#   → New best model! AUROC: 0.8456</span>
+<span class="comment"># ...</span>
+<span class="comment"># Epoch  35 | Train Loss: 0.1823 | Val Loss: 0.3567 | AUROC: 0.8423 | AUPRC: 0.4056</span>
+<span class="comment"># Early stopping at epoch 35</span>
+<span class="comment">#</span>
+<span class="comment"># Training complete. Best AUROC: 0.8456</span>
+</pre>
+
+
+<hr>
+
+<h2>Model Variants and Enhancements</h2>
+
+<h3>Using Pre-trained Embeddings</h3>
+
+<p>Instead of learning embeddings from scratch, we can use pre-trained medical embeddings from Part 1:</p>
+
+<pre><span class="keyword">class</span> <span class="builtin">BidirectionalGRUWithPretrained</span>(nn.Module):
+    <span class="string">"""Bidirectional GRU with pre-trained medical code embeddings."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(
+        self,
+        embedding_matrix,       <span class="comment"># Pre-trained embeddings [num_codes, embed_dim]</span>
+        hidden_dim=<span class="number">128</span>,
+        num_layers=<span class="number">1</span>,
+        dropout=<span class="number">0.3</span>,
+        freeze_embeddings=<span class="keyword">True</span>
+    ):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        num_codes, embed_dim = embedding_matrix.shape
+        
+        <span class="comment"># Initialize embedding layer with pre-trained weights</span>
+        self.embedding = nn.Linear(num_codes, embed_dim, bias=<span class="keyword">False</span>)
+        self.embedding.weight.data.<span class="function">copy_</span>(torch.<span class="function">tensor</span>(embedding_matrix.T))
+        
+        <span class="keyword">if</span> freeze_embeddings:
+            self.embedding.weight.requires_grad = <span class="keyword">False</span>
+        
+        <span class="comment"># Rest of architecture same as before</span>
+        self.gru = nn.GRU(
+            input_size=embed_dim,
+            hidden_size=hidden_dim,
+            num_layers=num_layers,
+            batch_first=<span class="keyword">True</span>,
+            bidirectional=<span class="keyword">True</span>,
+            dropout=dropout <span class="keyword">if</span> num_layers > <span class="number">1</span> <span class="keyword">else</span> <span class="number">0</span>
+        )
+        
+        self.dropout = nn.Dropout(dropout)
+        self.classifier = nn.Sequential(
+            nn.Linear(hidden_dim * <span class="number">2</span>, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, <span class="number">1</span>)
+        )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, visits, lengths):
+        <span class="comment"># Same forward pass as before</span>
+        embedded = self.<span class="function">embedding</span>(visits)
+        embedded = torch.<span class="function">tanh</span>(embedded)
+        
+        packed = <span class="function">pack_padded_sequence</span>(
+            embedded, lengths.<span class="function">cpu</span>(), batch_first=<span class="keyword">True</span>, enforce_sorted=<span class="keyword">False</span>
+        )
+        
+        _, hidden = self.<span class="function">gru</span>(packed)
+        
+        forward_final = hidden[-<span class="number">2</span>]
+        backward_final = hidden[-<span class="number">1</span>]
+        combined = torch.<span class="function">cat</span>([forward_final, backward_final], dim=<span class="number">1</span>)
+        combined = self.<span class="function">dropout</span>(combined)
+        
+        <span class="keyword">return</span> self.<span class="function">classifier</span>(combined)
+</pre>
+
+<h3>Adding Attention Mechanism</h3>
+
+<p>Attention allows the model to focus on the most relevant visits for the prediction. This is particularly useful in healthcare where a single critical visit might be most predictive:</p>
+
+<pre><span class="keyword">class</span> <span class="builtin">AttentionBidirectionalGRU</span>(nn.Module):
+    <span class="string">"""Bidirectional GRU with attention over visit sequence."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_codes, embed_dim=<span class="number">128</span>, hidden_dim=<span class="number">128</span>, dropout=<span class="number">0.3</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.embedding = nn.Linear(num_codes, embed_dim)
+        self.gru = nn.GRU(embed_dim, hidden_dim, batch_first=<span class="keyword">True</span>, bidirectional=<span class="keyword">True</span>)
+        
+        <span class="comment"># Attention mechanism</span>
+        self.attention = nn.Sequential(
+            nn.Linear(hidden_dim * <span class="number">2</span>, hidden_dim),
+            nn.Tanh(),
+            nn.Linear(hidden_dim, <span class="number">1</span>)
+        )
+        
+        self.dropout = nn.Dropout(dropout)
+        self.classifier = nn.Linear(hidden_dim * <span class="number">2</span>, <span class="number">1</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, visits, lengths):
+        batch_size = visits.size(<span class="number">0</span>)
+        max_len = visits.size(<span class="number">1</span>)
+        
+        <span class="comment"># Embed</span>
+        embedded = torch.<span class="function">tanh</span>(self.<span class="function">embedding</span>(visits))
+        
+        <span class="comment"># GRU</span>
+        packed = <span class="function">pack_padded_sequence</span>(embedded, lengths.<span class="function">cpu</span>(), batch_first=<span class="keyword">True</span>, enforce_sorted=<span class="keyword">False</span>)
+        packed_output, _ = self.<span class="function">gru</span>(packed)
+        output, _ = <span class="function">pad_packed_sequence</span>(packed_output, batch_first=<span class="keyword">True</span>, total_length=max_len)
+        <span class="comment"># output: [batch, max_len, hidden_dim * 2]</span>
+        
+        <span class="comment"># Attention scores</span>
+        attn_scores = self.<span class="function">attention</span>(output).<span class="function">squeeze</span>(-<span class="number">1</span>)  <span class="comment"># [batch, max_len]</span>
+        
+        <span class="comment"># Mask padding positions</span>
+        mask = torch.<span class="function">arange</span>(max_len).<span class="function">unsqueeze</span>(<span class="number">0</span>).<span class="function">expand</span>(batch_size, -<span class="number">1</span>).<span class="function">to</span>(visits.device)
+        mask = mask >= lengths.<span class="function">unsqueeze</span>(<span class="number">1</span>).<span class="function">to</span>(visits.device)
+        attn_scores = attn_scores.<span class="function">masked_fill</span>(mask, <span class="builtin">float</span>(<span class="string">'-inf'</span>))
+        
+        <span class="comment"># Softmax</span>
+        attn_weights = torch.<span class="function">softmax</span>(attn_scores, dim=<span class="number">1</span>).<span class="function">unsqueeze</span>(<span class="number">2</span>)  <span class="comment"># [batch, max_len, 1]</span>
+        
+        <span class="comment"># Weighted sum of hidden states</span>
+        context = (output * attn_weights).<span class="function">sum</span>(dim=<span class="number">1</span>)  <span class="comment"># [batch, hidden_dim * 2]</span>
+        context = self.<span class="function">dropout</span>(context)
+        
+        <span class="keyword">return</span> self.<span class="function">classifier</span>(context)
+</pre>
+
+<div class="info-box">
+    <h4>💡 Why Attention Helps</h4>
+    <p>Without attention, the model must compress the entire visit history into a fixed-size hidden state. With attention:</p>
+    <ul>
+        <li>The model can "look back" at any visit when making predictions</li>
+        <li>Attention weights are interpretable — they show which visits the model considers most important</li>
+        <li>For predicting heart failure, we might see high attention on the visit where coronary artery disease was first diagnosed</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>Results Comparison</h2>
+
+<p>Typical results on heart failure prediction from EHR visit sequences:</p>
+
+<table class="results-table">
+<tr><th>Model</th><th>Architecture</th><th>Val AUROC</th><th>Val AUPRC</th><th>Parameters</th></tr>
+<tr><td>Logistic Regression</td><td>Multi-hot features</td><td>0.762</td><td>0.185</td><td>1K</td></tr>
+<tr><td>DNN (Part 1)</td><td>3-layer MLP</td><td>0.801</td><td>0.234</td><td>150K</td></tr>
+<tr><td>Unidirectional GRU</td><td>1-layer GRU</td><td>0.823</td><td>0.312</td><td>180K</td></tr>
+<tr><td>Bidirectional GRU</td><td>1-layer Bi-GRU</td><td>0.845</td><td>0.356</td><td>220K</td></tr>
+<tr class="highlight-row"><td>Bi-GRU + Pre-trained</td><td>1-layer Bi-GRU + Med2Vec</td><td>0.867</td><td>0.398</td><td>220K</td></tr>
+<tr class="highlight-row"><td>Bi-GRU + Attention</td><td>Attention Bi-GRU</td><td>0.872</td><td>0.412</td><td>250K</td></tr>
+<tr><td>LSTM</td><td>2-layer Bi-LSTM</td><td>0.869</td><td>0.405</td><td>350K</td></tr>
+</table>
+
+<p>Key observations:</p>
+
+<ul>
+    <li><strong>Sequential models beat bag-of-codes</strong>: GRU/LSTM outperform DNN by 4-7% AUROC</li>
+    <li><strong>Bidirectional helps</strong>: Looking at future context improves ~2% AUROC</li>
+    <li><strong>Pre-trained embeddings boost performance</strong>: Med2Vec embeddings add ~2% AUROC</li>
+    <li><strong>Attention provides marginal gains</strong>: +0.5% AUROC but adds interpretability</li>
+    <li><strong>GRU ≈ LSTM</strong>: Similar performance with fewer parameters</li>
+</ul>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>We've covered the theory and practice of RNNs for healthcare:</p>
+
+<table class="concept-table">
+<tr><th>Concept</th><th>Key Idea</th><th>Healthcare Application</th></tr>
+<tr><td><strong>RNN</strong></td><td>Hidden state carries information across time</td><td>Model patient trajectories</td></tr>
+<tr><td><strong>BPTT</strong></td><td>Gradients flow backward through time</td><td>Learn from entire visit history</td></tr>
+<tr><td><strong>Vanishing Gradients</strong></td><td>Gradients shrink exponentially</td><td>Standard RNN forgets early visits</td></tr>
+<tr><td><strong>LSTM</strong></td><td>Cell state + gates for controlled memory</td><td>Remember chronic conditions long-term</td></tr>
+<tr><td><strong>GRU</strong></td><td>Simplified LSTM with fewer parameters</td><td>Efficient modeling of visit sequences</td></tr>
+<tr><td><strong>Bidirectional</strong></td><td>Process sequence in both directions</td><td>Use full history for retrospective analysis</td></tr>
+<tr><td><strong>Attention</strong></td><td>Learn to focus on relevant time steps</td><td>Identify critical visits for prediction</td></tr>
+</table>
+
+<div class="warning-box">
+    <h4>⚠️ Important Considerations</h4>
+    <ul>
+        <li><strong>Sequence length</strong>: Very long sequences (>100 visits) may still challenge even LSTMs. Consider chunking or hierarchical models.</li>
+        <li><strong>Temporal gaps</strong>: Standard RNNs don't model the time between visits. Consider time-aware RNNs or add time features.</li>
+        <li><strong>Irregular sampling</strong>: Patients don't visit at fixed intervals. This is fundamentally different from NLP or speech.</li>
+        <li><strong>Missingness</strong>: Absence of a diagnosis code might mean "not present" or "not tested". This is domain-specific.</li>
+        <li><strong>Interpretability</strong>: For clinical deployment, attention weights help explain predictions to clinicians.</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>Hochreiter & Schmidhuber (1997). "Long Short-Term Memory" — Original LSTM paper</li>
+    <li>Cho et al. (2014). "Learning Phrase Representations using RNN Encoder-Decoder" — GRU introduction</li>
+    <li>Choi et al. (2016). "RETAIN: An Interpretable Predictive Model for Healthcare using Reverse Time Attention Mechanism"</li>
+    <li>Lipton et al. (2016). "Learning to Diagnose with LSTM Recurrent Neural Networks"</li>
+    <li>Rajkomar et al. (2018). "Scalable and accurate deep learning with electronic health records"</li>
+    <li>Shickel et al. (2018). "Deep EHR: A Survey of Recent Advances in Deep Learning Techniques for EHR Analysis"</li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

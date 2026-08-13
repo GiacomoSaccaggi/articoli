@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Attention Mechanisms and the RETAIN Model for Interpretable Healthcare AI">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>Attention Mechanisms for Interpretable Healthcare AI</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Attention Mechanisms for Interpretable Healthcare AI</h2>
+                        <hr class="small">
+                        <h5>Deep Learning for Healthcare — Part 4: The RETAIN Model — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Attention Mechanisms and the RETAIN Model</h1>
+<p style="text-align:center;"><em>"In healthcare, it's not enough to predict — we must explain why."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>The Limitation of Encoder-Decoder Models</h2>
+
+<p>In previous articles, we explored how RNNs can model sequential patient data — processing visits one by one and building up a hidden state that captures the patient's medical history. But there's a fundamental problem with the standard encoder-decoder architecture.</p>
+
+<p>Consider a patient with 50 hospital visits over 10 years. A vanilla RNN encoder compresses this entire history into a <strong>single fixed-length context vector</strong>. This vector must somehow capture every relevant detail: the diabetes diagnosed in visit 3, the cardiac event in visit 27, the medication change in visit 45.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec9_p5_5.png" alt="Encoder-decoder limitation">
+    <p class="img-caption">Standard encoder-decoder: the entire input sequence is compressed into one context vector</p>
+</div>
+
+<p>The problem is <strong>information bottleneck</strong>. No matter how complex the patient history, we force it through a fixed-dimensional vector (typically 128-512 dimensions). For long sequences:</p>
+
+<ul>
+    <li><strong>Early information fades</strong> — despite LSTM/GRU gates, information from early visits gets diluted</li>
+    <li><strong>No selective focus</strong> — the decoder can't "look back" at specific visits that matter for the current prediction</li>
+    <li><strong>Capacity saturation</strong> — adding more visits doesn't proportionally increase information in the context</li>
+</ul>
+
+<div class="warning-box">
+    <h4>⚠️ The Bottleneck Problem</h4>
+    <p>Imagine summarizing a 500-page medical record into a single paragraph. No matter how good your summarization, you'll lose critical details. That's exactly what happens when we compress a patient's entire history into a fixed-size vector.</p>
+</div>
+
+<hr>
+
+<h2>Attention: Dynamic Context Vectors</h2>
+
+<p>The breakthrough insight: instead of forcing all information through one bottleneck, let the decoder <strong>selectively attend</strong> to different parts of the input for each output step.</p>
+
+<p>Rather than a single static context vector <strong>c</strong>, we compute a <em>different</em> context vector <strong>c<sub>i</sub></strong> for each output position i. This context is a weighted combination of all encoder hidden states, where the weights indicate which inputs are most relevant for the current prediction.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec9_p6_6.png" alt="Attention mechanism">
+    <p class="img-caption">Attention mechanism: the context vector is dynamically computed for each output</p>
+</div>
+
+<h3>The Attention Architecture</h3>
+
+<p>Given an encoder that produces hidden states <strong>h<sub>1</sub>, h<sub>2</sub>, ..., h<sub>T</sub></strong> (one for each input position), and a decoder with state <strong>s<sub>i</sub></strong> at output position i:</p>
+
+<div class="formula-box">
+    <h4>Attention Computation</h4>
+    <p><strong>Step 1: Compute alignment scores</strong></p>
+    <p class="formula">e<sub>ij</sub> = score(s<sub>i</sub>, h<sub>j</sub>)</p>
+    <p>How relevant is input position j for output position i?</p>
+    
+    <p><strong>Step 2: Normalize to attention weights</strong></p>
+    <p class="formula">α<sub>ij</sub> = exp(e<sub>ij</sub>) / Σ<sub>k</sub> exp(e<sub>ik</sub>)</p>
+    <p>Softmax ensures weights sum to 1 across all input positions.</p>
+    
+    <p><strong>Step 3: Compute context vector</strong></p>
+    <p class="formula">c<sub>i</sub> = Σ<sub>j</sub> α<sub>ij</sub> · h<sub>j</sub></p>
+    <p>Weighted sum of encoder hidden states.</p>
+</div>
+
+<p>The attention weights α<sub>ij</sub> form a probability distribution over input positions. High weights mean "pay attention here" — the model has learned that this input is important for the current output.</p>
+
+<hr>
+
+<h2>Alignment Models: Computing Attention Scores</h2>
+
+<p>The key design choice in attention is the <strong>score function</strong> — how do we measure compatibility between decoder state s<sub>i</sub> and encoder state h<sub>j</sub>? Three main approaches dominate:</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec9_p7_7.png" alt="Attention alignment models">
+    <p class="img-caption">Different alignment functions for computing attention scores</p>
+</div>
+
+<h3>1. Dot-Product Attention</h3>
+
+<p>The simplest approach: just take the dot product of the two vectors.</p>
+
+<div class="formula-box">
+    <h4>Dot-Product Attention</h4>
+    <p class="formula">score(s<sub>i</sub>, h<sub>j</sub>) = s<sub>i</sub><sup>T</sup> · h<sub>j</sub></p>
+    <p><strong>Pros:</strong> Fast, no learnable parameters</p>
+    <p><strong>Cons:</strong> Requires s and h to have same dimension; can have magnitude issues with high dimensions</p>
+</div>
+
+<pre><span class="keyword">def</span> <span class="function">dot_product_attention</span>(decoder_state, encoder_states):
+    <span class="string">"""
+    Args:
+        decoder_state: [batch, hidden_dim]
+        encoder_states: [batch, seq_len, hidden_dim]
+    Returns:
+        scores: [batch, seq_len]
+    """</span>
+    <span class="comment"># [batch, hidden_dim] @ [batch, hidden_dim, seq_len] -> [batch, seq_len]</span>
+    scores = torch.<span class="function">bmm</span>(
+        decoder_state.<span class="function">unsqueeze</span>(<span class="number">1</span>),  <span class="comment"># [batch, 1, hidden]</span>
+        encoder_states.<span class="function">transpose</span>(<span class="number">1</span>, <span class="number">2</span>)  <span class="comment"># [batch, hidden, seq_len]</span>
+    ).<span class="function">squeeze</span>(<span class="number">1</span>)  <span class="comment"># [batch, seq_len]</span>
+    <span class="keyword">return</span> scores
+</pre>
+
+<h3>2. General (Bilinear) Attention</h3>
+
+<p>Introduce a learnable weight matrix to allow different dimensions and learn a compatibility function:</p>
+
+<div class="formula-box">
+    <h4>General Attention</h4>
+    <p class="formula">score(s<sub>i</sub>, h<sub>j</sub>) = s<sub>i</sub><sup>T</sup> · W<sub>a</sub> · h<sub>j</sub></p>
+    <p>Where W<sub>a</sub> is a learnable [decoder_dim × encoder_dim] matrix</p>
+    <p><strong>Pros:</strong> Handles different dimensions; learns task-specific compatibility</p>
+    <p><strong>Cons:</strong> O(d²) parameters</p>
+</div>
+
+<pre><span class="keyword">class</span> <span class="builtin">GeneralAttention</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, decoder_dim, encoder_dim):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.W_a = nn.Linear(encoder_dim, decoder_dim, bias=<span class="keyword">False</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, decoder_state, encoder_states):
+        <span class="string">"""
+        Args:
+            decoder_state: [batch, decoder_dim]
+            encoder_states: [batch, seq_len, encoder_dim]
+        Returns:
+            scores: [batch, seq_len]
+        """</span>
+        <span class="comment"># Project encoder states: [batch, seq_len, decoder_dim]</span>
+        projected = self.<span class="function">W_a</span>(encoder_states)
+        
+        <span class="comment"># Dot product with decoder state</span>
+        scores = torch.<span class="function">bmm</span>(
+            projected,
+            decoder_state.<span class="function">unsqueeze</span>(<span class="number">2</span>)  <span class="comment"># [batch, decoder_dim, 1]</span>
+        ).<span class="function">squeeze</span>(<span class="number">2</span>)  <span class="comment"># [batch, seq_len]</span>
+        <span class="keyword">return</span> scores
+</pre>
+
+<h3>3. Additive (Bahdanau) Attention</h3>
+
+<p>Concatenate the vectors and pass through a feedforward network:</p>
+
+<div class="formula-box">
+    <h4>Additive Attention</h4>
+    <p class="formula">score(s<sub>i</sub>, h<sub>j</sub>) = v<sub>a</sub><sup>T</sup> · tanh(W<sub>a</sub> · [s<sub>i</sub>; h<sub>j</sub>])</p>
+    <p>Where [;] denotes concatenation, W<sub>a</sub> projects to hidden dim, and v<sub>a</sub> projects to scalar</p>
+    <p><strong>Pros:</strong> Most expressive; can learn complex compatibility patterns</p>
+    <p><strong>Cons:</strong> Slower due to concatenation and nonlinearity</p>
+</div>
+
+<pre><span class="keyword">class</span> <span class="builtin">AdditiveAttention</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, decoder_dim, encoder_dim, attention_dim):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.W_decoder = nn.Linear(decoder_dim, attention_dim, bias=<span class="keyword">False</span>)
+        self.W_encoder = nn.Linear(encoder_dim, attention_dim, bias=<span class="keyword">False</span>)
+        self.v = nn.Linear(attention_dim, <span class="number">1</span>, bias=<span class="keyword">False</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, decoder_state, encoder_states):
+        <span class="string">"""
+        Args:
+            decoder_state: [batch, decoder_dim]
+            encoder_states: [batch, seq_len, encoder_dim]
+        Returns:
+            scores: [batch, seq_len]
+        """</span>
+        <span class="comment"># Project decoder: [batch, 1, attention_dim]</span>
+        dec_proj = self.<span class="function">W_decoder</span>(decoder_state).<span class="function">unsqueeze</span>(<span class="number">1</span>)
+        
+        <span class="comment"># Project encoder: [batch, seq_len, attention_dim]</span>
+        enc_proj = self.<span class="function">W_encoder</span>(encoder_states)
+        
+        <span class="comment"># Combine and compute scores</span>
+        combined = torch.<span class="function">tanh</span>(dec_proj + enc_proj)  <span class="comment"># Broadcasting</span>
+        scores = self.<span class="function">v</span>(combined).<span class="function">squeeze</span>(<span class="number">2</span>)  <span class="comment"># [batch, seq_len]</span>
+        <span class="keyword">return</span> scores
+</pre>
+
+<table class="concept-table">
+<tr><th>Method</th><th>Score Function</th><th>Parameters</th><th>When to Use</th></tr>
+<tr><td>Dot-Product</td><td>s<sup>T</sup>h</td><td>0</td><td>Same dimensions, speed critical</td></tr>
+<tr><td>General</td><td>s<sup>T</sup>Wh</td><td>d₁ × d₂</td><td>Different dimensions, moderate complexity</td></tr>
+<tr><td>Additive</td><td>v<sup>T</sup>tanh(W[s;h])</td><td>(d₁+d₂)×d_a + d_a</td><td>Maximum expressiveness needed</td></tr>
+</table>
+
+<hr>
+
+<h2>The Interpretability Problem in Healthcare</h2>
+
+<p>Deep learning models achieve impressive predictive performance, but in healthcare, <strong>accuracy alone is insufficient</strong>. When a model predicts that a patient has 85% risk of heart failure, clinicians need to know <em>why</em>. What factors drove that prediction? Which visits were most concerning? Which diagnoses contributed most?</p>
+
+<p>This isn't just about trust — it's about <strong>actionability</strong>. A doctor can't intervene on a black-box prediction. But if the model says "high risk because of the combination of cardiac dysrhythmia in visit 12 and coronary atherosclerosis in visit 18," that's actionable clinical information.</p>
+
+<h3>Categories of Interpretability</h3>
+
+<p>Interpretable models in healthcare generally fall into three categories:</p>
+
+<table class="concept-table">
+<tr><th>Category</th><th>Approach</th><th>Example</th><th>Limitation</th></tr>
+<tr>
+    <td><strong>Rule-based</strong></td>
+    <td>Extract decision rules</td>
+    <td>"IF diabetes AND hypertension THEN high risk"</td>
+    <td>Rules can be too simple for complex patterns</td>
+</tr>
+<tr>
+    <td><strong>Case-based</strong></td>
+    <td>Find similar patients</td>
+    <td>"This patient is similar to these 5 who had heart failure"</td>
+    <td>Doesn't explain what made them similar</td>
+</tr>
+<tr>
+    <td><strong>Risk-factor-based</strong></td>
+    <td>Identify contributing factors</td>
+    <td>"Diagnosis X contributed +0.3, medication Y contributed -0.1"</td>
+    <td>Requires model architecture that supports attribution</td>
+</tr>
+</table>
+
+<p>For temporal healthcare data (sequences of visits), we need models that can identify:</p>
+<ul>
+    <li><strong>Which visits</strong> were most important for the prediction</li>
+    <li><strong>Which variables within those visits</strong> (diagnoses, medications, labs) drove the contribution</li>
+</ul>
+
+<p>This is exactly what attention mechanisms can provide — and the <strong>RETAIN model</strong> was specifically designed to exploit this for healthcare interpretability.</p>
+
+<hr>
+
+<h2>RETAIN: REverse Time AttentioN Model</h2>
+
+<p>RETAIN (Choi et al., NIPS 2016) is a neural network architecture designed specifically for interpretable healthcare prediction. Its key innovation: <strong>two-level attention</strong> that provides both visit-level and variable-level interpretability.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/hw4_retain_retain-1.png" alt="RETAIN architecture">
+    <p class="img-caption">RETAIN architecture: two parallel RNNs generating visit-level (α) and variable-level (β) attention</p>
+</div>
+
+<h3>The Core Insight</h3>
+
+<p>Standard attention tells us which <em>visits</em> are important. But a visit might contain 10 diagnosis codes, 5 medications, and 3 lab results. Which of these actually matters?</p>
+
+<p>RETAIN introduces <strong>two attention mechanisms</strong>:</p>
+<ul>
+    <li><strong>α (alpha)</strong>: Visit-level attention — which visits should we focus on?</li>
+    <li><strong>β (beta)</strong>: Variable-level attention — within each visit, which variables matter?</li>
+</ul>
+
+<p>The combination allows us to say: "The prediction is driven by cardiac dysrhythmia (variable) in visit 12 (visit)."</p>
+
+<h3>Why Reverse Time?</h3>
+
+<p>RETAIN processes visits in <strong>reverse chronological order</strong> (most recent first). Why?</p>
+
+<div class="info-box">
+    <h4>💡 Reverse Time Processing</h4>
+    <p>In healthcare prediction, <strong>recent events are typically more relevant</strong> than distant history. A cardiac event last month matters more than a childhood illness 30 years ago.</p>
+    <p>By processing in reverse time, the RNN sees the most recent (and most relevant) visits first, when its hidden state is freshest. This leads to better attention weights for recent visits.</p>
+</div>
+
+<hr>
+
+<h2>RETAIN Architecture: Step by Step</h2>
+
+<p>Let's walk through the RETAIN architecture in detail. Given a patient with T visits, where each visit contains a set of medical codes:</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/hw4_retain_retain-2.png" alt="RETAIN detailed architecture">
+    <p class="img-caption">RETAIN processes visits through embedding, two RNNs, and two attention mechanisms</p>
+</div>
+
+<h3>Step 1: Embed Visit Codes</h3>
+
+<p>Each visit x<sub>i</sub> is represented as a multi-hot vector over all possible medical codes. We embed this into a dense representation:</p>
+
+<div class="formula-box">
+    <p class="formula">v<sub>i</sub> = W<sub>emb</sub> · x<sub>i</sub></p>
+    <p>Where W<sub>emb</sub> ∈ ℝ<sup>d×|codes|</sup> is the embedding matrix, v<sub>i</sub> ∈ ℝ<sup>d</sup></p>
+</div>
+
+<h3>Step 2: RNN<sub>α</sub> — Visit Importance</h3>
+
+<p>Process visits in <strong>reverse order</strong> through the first RNN to generate visit-level representations:</p>
+
+<div class="formula-box">
+    <p class="formula">g<sub>i</sub> = RNN<sub>α</sub>(g<sub>i+1</sub>, v<sub>i</sub>)</p>
+    <p>Starting from g<sub>T</sub> (most recent) down to g<sub>1</sub> (oldest)</p>
+</div>
+
+<h3>Step 3: Compute α — Visit Attention Weights</h3>
+
+<p>Transform each g<sub>i</sub> into a scalar attention score, then normalize:</p>
+
+<div class="formula-box">
+    <p class="formula">e<sub>i</sub> = w<sub>α</sub><sup>T</sup> · g<sub>i</sub> + b<sub>α</sub></p>
+    <p class="formula">α<sub>i</sub> = softmax(e<sub>i</sub>) = exp(e<sub>i</sub>) / Σ<sub>j</sub> exp(e<sub>j</sub>)</p>
+    <p>α<sub>i</sub> ∈ [0,1] indicates the importance of visit i. Higher α means the model "attends" more to this visit.</p>
+</div>
+
+<h3>Step 4: RNN<sub>β</sub> — Variable Context</h3>
+
+<p>A second RNN (also in reverse time) generates context for variable-level attention:</p>
+
+<div class="formula-box">
+    <p class="formula">h<sub>i</sub> = RNN<sub>β</sub>(h<sub>i+1</sub>, v<sub>i</sub>)</p>
+</div>
+
+<h3>Step 5: Compute β — Variable Attention Weights</h3>
+
+<p>Unlike α (scalar per visit), β is a <strong>vector</strong> with one weight per embedding dimension:</p>
+
+<div class="formula-box">
+    <p class="formula">β<sub>i</sub> = tanh(W<sub>β</sub> · h<sub>i</sub> + b<sub>β</sub>)</p>
+    <p>β<sub>i</sub> ∈ ℝ<sup>d</sup> with values in [-1, 1]. Each dimension indicates whether that "feature direction" in the embedding space contributes positively or negatively.</p>
+</div>
+
+<p>Note: β uses <strong>tanh</strong> (not softmax) because:</p>
+<ul>
+    <li>We want values that can be positive (contributing toward prediction) or negative (contributing against)</li>
+    <li>Variables are not mutually exclusive — multiple can be important simultaneously</li>
+</ul>
+
+<h3>Step 6: Compute Context Vector</h3>
+
+<p>Combine visit attention (α), variable attention (β), and visit embeddings (v):</p>
+
+<div class="formula-box">
+    <p class="formula">c = Σ<sub>i=1</sub><sup>T</sup> α<sub>i</sub> · (β<sub>i</sub> ⊙ v<sub>i</sub>)</p>
+    <p>Where ⊙ is element-wise multiplication. The context c ∈ ℝ<sup>d</sup> aggregates information from all visits, weighted by their importance (α) and filtered by variable relevance (β).</p>
+</div>
+
+<h3>Step 7: Final Prediction</h3>
+
+<p>Pass the context through a final layer for prediction:</p>
+
+<div class="formula-box">
+    <p class="formula">ŷ = softmax(W<sub>out</sub> · c + b<sub>out</sub>)</p>
+    <p>For binary classification (e.g., heart failure prediction), output is P(positive class).</p>
+</div>
+
+<hr>
+
+<h2>Interpreting RETAIN: Contribution Analysis</h2>
+
+<p>The beauty of RETAIN is that we can decompose predictions into interpretable contributions. For each visit i and each medical code j within that visit:</p>
+
+<div class="formula-box">
+    <h4>Contribution of Code j in Visit i</h4>
+    <p class="formula">contribution<sub>ij</sub> = α<sub>i</sub> · (β<sub>i</sub> ⊙ W<sub>emb</sub>[j, :])<sup>T</sup> · W<sub>out</sub></p>
+    <p>This tells us how much code j in visit i contributed to the final prediction.</p>
+    <p><strong>Positive contribution</strong>: pushes prediction toward positive class (e.g., heart failure)</p>
+    <p><strong>Negative contribution</strong>: pushes prediction toward negative class (e.g., no heart failure)</p>
+</div>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/hw4_retain_retain-3.png" alt="RETAIN interpretation">
+    <p class="img-caption">RETAIN contribution analysis: identifying which diagnoses in which visits drove the prediction</p>
+</div>
+
+<h3>Clinical Interpretation Example</h3>
+
+<p>Consider a heart failure prediction with the following contribution analysis:</p>
+
+<table class="results-table">
+<tr><th>Visit</th><th>α (Visit Importance)</th><th>Diagnosis</th><th>Contribution</th></tr>
+<tr><td>Visit 12</td><td>0.35</td><td>Cardiac Dysrhythmia (CD)</td><td class="highlight-row">+0.42</td></tr>
+<tr><td>Visit 18</td><td>0.28</td><td>Coronary Atherosclerosis (CA)</td><td class="highlight-row">+0.31</td></tr>
+<tr><td>Visit 15</td><td>0.18</td><td>Heart Valve Disorder (HVD)</td><td>+0.15</td></tr>
+<tr><td>Visit 8</td><td>0.12</td><td>Skin Disorder (SD)</td><td>-0.08</td></tr>
+<tr><td>Visit 3</td><td>0.07</td><td>Essential Hypertension</td><td>+0.05</td></tr>
+</table>
+
+<p>This tells the clinician:</p>
+<ul>
+    <li><strong>Visit 12</strong> is the most important (α=0.35), primarily due to cardiac dysrhythmia</li>
+    <li><strong>Cardiac conditions</strong> (CD, CA, HVD) are positive contributors — as expected for heart failure</li>
+    <li><strong>Skin disorder</strong> is a negative contributor — makes sense, it's unrelated to cardiac health</li>
+    <li>The model has learned clinically meaningful patterns!</li>
+</ul>
+
+<hr>
+
+<h2>RETAIN Implementation in PyTorch</h2>
+
+<p>Let's implement the complete RETAIN model. We'll use GRUs as the RNN cells, which work well in practice and are computationally efficient.</p>
+
+<h3>The RETAIN Module</h3>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+
+<span class="keyword">class</span> <span class="builtin">RETAIN</span>(nn.Module):
+    <span class="string">"""
+    RETAIN: REverse Time AttentioN model for interpretable healthcare prediction.
+    
+    Two-level attention:
+    - Alpha (α): visit-level attention weights
+    - Beta (β): variable-level attention weights
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_codes, embed_dim=<span class="number">128</span>, hidden_dim=<span class="number">128</span>, 
+                 num_classes=<span class="number">2</span>, dropout=<span class="number">0.3</span>):
+        <span class="string">"""
+        Args:
+            num_codes: Size of medical code vocabulary
+            embed_dim: Dimension of code embeddings
+            hidden_dim: Hidden dimension for GRU cells
+            num_classes: Number of output classes
+            dropout: Dropout probability
+        """</span>
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.num_codes = num_codes
+        self.embed_dim = embed_dim
+        self.hidden_dim = hidden_dim
+        
+        <span class="comment"># Embedding layer for medical codes</span>
+        self.embedding = nn.Linear(num_codes, embed_dim, bias=<span class="keyword">False</span>)
+        
+        <span class="comment"># RNN for visit-level attention (alpha)</span>
+        self.gru_alpha = nn.GRU(
+            input_size=embed_dim,
+            hidden_size=hidden_dim,
+            batch_first=<span class="keyword">True</span>,
+            bidirectional=<span class="keyword">False</span>
+        )
+        
+        <span class="comment"># RNN for variable-level attention (beta)</span>
+        self.gru_beta = nn.GRU(
+            input_size=embed_dim,
+            hidden_size=hidden_dim,
+            batch_first=<span class="keyword">True</span>,
+            bidirectional=<span class="keyword">False</span>
+        )
+        
+        <span class="comment"># Attention layers</span>
+        self.alpha_fc = nn.Linear(hidden_dim, <span class="number">1</span>)  <span class="comment"># Visit attention: hidden -> scalar</span>
+        self.beta_fc = nn.Linear(hidden_dim, embed_dim)  <span class="comment"># Variable attention: hidden -> embed_dim</span>
+        
+        <span class="comment"># Output layer</span>
+        self.output_fc = nn.Linear(embed_dim, num_classes)
+        
+        <span class="comment"># Dropout</span>
+        self.dropout = nn.Dropout(dropout)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, lengths):
+        <span class="string">"""
+        Args:
+            x: Padded visit sequences [batch_size, max_visits, num_codes]
+               Each visit is a multi-hot vector of medical codes
+            lengths: Actual number of visits per patient [batch_size]
+        
+        Returns:
+            logits: [batch_size, num_classes]
+            alpha: Visit attention weights [batch_size, max_visits]
+            beta: Variable attention weights [batch_size, max_visits, embed_dim]
+        """</span>
+        batch_size, max_visits, _ = x.size()
+        
+        <span class="comment"># Step 1: Embed visits</span>
+        <span class="comment"># [batch, max_visits, num_codes] -> [batch, max_visits, embed_dim]</span>
+        v = self.<span class="function">embedding</span>(x)
+        v = self.<span class="function">dropout</span>(v)
+        
+        <span class="comment"># Step 2: Reverse the sequence for reverse-time processing</span>
+        <span class="comment"># RETAIN processes from most recent to oldest</span>
+        v_reversed = self.<span class="function">_reverse_sequence</span>(v, lengths)
+        
+        <span class="comment"># Step 3: GRU for alpha (visit-level attention)</span>
+        g, _ = self.<span class="function">gru_alpha</span>(v_reversed)  <span class="comment"># [batch, max_visits, hidden]</span>
+        g = self.<span class="function">_reverse_sequence</span>(g, lengths)  <span class="comment"># Reverse back to original order</span>
+        
+        <span class="comment"># Step 4: Compute alpha attention weights</span>
+        <span class="comment"># [batch, max_visits, hidden] -> [batch, max_visits, 1] -> [batch, max_visits]</span>
+        alpha_logits = self.<span class="function">alpha_fc</span>(g).<span class="function">squeeze</span>(-<span class="number">1</span>)
+        
+        <span class="comment"># Mask padding positions before softmax</span>
+        mask = self.<span class="function">_create_mask</span>(lengths, max_visits, x.device)
+        alpha_logits = alpha_logits.<span class="function">masked_fill</span>(~mask, <span class="builtin">float</span>(<span class="string">'-inf'</span>))
+        alpha = F.<span class="function">softmax</span>(alpha_logits, dim=<span class="number">1</span>)  <span class="comment"># [batch, max_visits]</span>
+        
+        <span class="comment"># Step 5: GRU for beta (variable-level attention)</span>
+        h, _ = self.<span class="function">gru_beta</span>(v_reversed)  <span class="comment"># [batch, max_visits, hidden]</span>
+        h = self.<span class="function">_reverse_sequence</span>(h, lengths)  <span class="comment"># Reverse back</span>
+        
+        <span class="comment"># Step 6: Compute beta attention weights</span>
+        <span class="comment"># [batch, max_visits, hidden] -> [batch, max_visits, embed_dim]</span>
+        beta = torch.<span class="function">tanh</span>(self.<span class="function">beta_fc</span>(h))
+        
+        <span class="comment"># Step 7: Compute context vector</span>
+        <span class="comment"># c = sum_i alpha_i * (beta_i ⊙ v_i)</span>
+        <span class="comment"># alpha: [batch, max_visits] -> [batch, max_visits, 1]</span>
+        <span class="comment"># beta * v: [batch, max_visits, embed_dim]</span>
+        alpha_expanded = alpha.<span class="function">unsqueeze</span>(-<span class="number">1</span>)  <span class="comment"># [batch, max_visits, 1]</span>
+        context = (alpha_expanded * beta * v).<span class="function">sum</span>(dim=<span class="number">1</span>)  <span class="comment"># [batch, embed_dim]</span>
+        
+        <span class="comment"># Step 8: Final prediction</span>
+        context = self.<span class="function">dropout</span>(context)
+        logits = self.<span class="function">output_fc</span>(context)  <span class="comment"># [batch, num_classes]</span>
+        
+        <span class="keyword">return</span> logits, alpha, beta
+    
+    <span class="keyword">def</span> <span class="function">_reverse_sequence</span>(self, x, lengths):
+        <span class="string">"""Reverse sequences for reverse-time processing."""</span>
+        batch_size, max_len, dim = x.size()
+        reversed_x = torch.<span class="function">zeros_like</span>(x)
+        
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(batch_size):
+            length = lengths[i].<span class="function">item</span>()
+            <span class="comment"># Reverse only the valid portion</span>
+            reversed_x[i, :length] = x[i, :length].<span class="function">flip</span>(dims=[<span class="number">0</span>])
+        
+        <span class="keyword">return</span> reversed_x
+    
+    <span class="keyword">def</span> <span class="function">_create_mask</span>(self, lengths, max_len, device):
+        <span class="string">"""Create boolean mask for valid positions."""</span>
+        batch_size = lengths.size(<span class="number">0</span>)
+        mask = torch.<span class="function">arange</span>(max_len, device=device).<span class="function">unsqueeze</span>(<span class="number">0</span>)
+        mask = mask < lengths.<span class="function">unsqueeze</span>(<span class="number">1</span>)
+        <span class="keyword">return</span> mask
+</pre>
+
+<h3>Custom Dataset for Variable-Length Visits</h3>
+
+<p>Patients have different numbers of visits. We need a custom collate function to handle padding:</p>
+
+<pre><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset, DataLoader
+<span class="keyword">from</span> torch.nn.utils.rnn <span class="keyword">import</span> pad_sequence
+
+<span class="keyword">class</span> <span class="builtin">PatientVisitDataset</span>(Dataset):
+    <span class="string">"""Dataset for patient visit sequences."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, patient_visits, labels, num_codes):
+        <span class="string">"""
+        Args:
+            patient_visits: List of lists of lists
+                patient_visits[i] = list of visits for patient i
+                patient_visits[i][j] = list of code indices for visit j
+            labels: Binary labels for each patient
+            num_codes: Total number of unique codes
+        """</span>
+        self.patient_visits = patient_visits
+        self.labels = labels
+        self.num_codes = num_codes
+    
+    <span class="keyword">def</span> <span class="function">__len__</span>(self):
+        <span class="keyword">return</span> <span class="builtin">len</span>(self.labels)
+    
+    <span class="keyword">def</span> <span class="function">__getitem__</span>(self, idx):
+        visits = self.patient_visits[idx]  <span class="comment"># List of visits</span>
+        label = self.labels[idx]
+        
+        <span class="comment"># Convert each visit to multi-hot vector</span>
+        visit_tensors = []
+        <span class="keyword">for</span> visit_codes <span class="keyword">in</span> visits:
+            multi_hot = torch.<span class="function">zeros</span>(self.num_codes)
+            <span class="keyword">for</span> code_idx <span class="keyword">in</span> visit_codes:
+                multi_hot[code_idx] = <span class="number">1.0</span>
+            visit_tensors.<span class="function">append</span>(multi_hot)
+        
+        <span class="comment"># Stack visits: [num_visits, num_codes]</span>
+        visits_tensor = torch.<span class="function">stack</span>(visit_tensors)
+        
+        <span class="keyword">return</span> visits_tensor, label
+
+
+<span class="keyword">def</span> <span class="function">collate_fn</span>(batch):
+    <span class="string">"""Custom collate function to handle variable-length visit sequences."""</span>
+    visits_list, labels = <span class="builtin">zip</span>(*batch)
+    
+    <span class="comment"># Get lengths before padding</span>
+    lengths = torch.<span class="function">tensor</span>([v.size(<span class="number">0</span>) <span class="keyword">for</span> v <span class="keyword">in</span> visits_list])
+    
+    <span class="comment"># Pad visit sequences to same length</span>
+    <span class="comment"># pad_sequence expects list of [seq_len, features] tensors</span>
+    padded_visits = pad_sequence(visits_list, batch_first=<span class="keyword">True</span>, padding_value=<span class="number">0</span>)
+    
+    labels = torch.<span class="function">tensor</span>(labels, dtype=torch.long)
+    
+    <span class="keyword">return</span> padded_visits, labels, lengths
+
+
+<span class="comment"># Example usage</span>
+patient_visits = [
+    [[<span class="number">0</span>, <span class="number">5</span>, <span class="number">23</span>], [<span class="number">1</span>, <span class="number">5</span>], [<span class="number">10</span>, <span class="number">15</span>, <span class="number">20</span>]],  <span class="comment"># Patient 1: 3 visits</span>
+    [[<span class="number">2</span>, <span class="number">8</span>], [<span class="number">3</span>, <span class="number">9</span>, <span class="number">12</span>, <span class="number">18</span>]],              <span class="comment"># Patient 2: 2 visits</span>
+    [[<span class="number">4</span>], [<span class="number">6</span>, <span class="number">7</span>], [<span class="number">11</span>], [<span class="number">14</span>, <span class="number">19</span>]],         <span class="comment"># Patient 3: 4 visits</span>
+]
+labels = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]
+
+dataset = PatientVisitDataset(patient_visits, labels, num_codes=<span class="number">100</span>)
+dataloader = DataLoader(dataset, batch_size=<span class="number">2</span>, shuffle=<span class="keyword">True</span>, collate_fn=collate_fn)
+</pre>
+
+<h3>Training RETAIN</h3>
+
+<pre><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score, precision_recall_fscore_support
+
+<span class="keyword">def</span> <span class="function">train_retain</span>(model, train_loader, val_loader, num_epochs=<span class="number">30</span>, lr=<span class="number">0.001</span>):
+    <span class="string">"""Train RETAIN model with early stopping."""</span>
+    device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+    model = model.<span class="function">to</span>(device)
+    
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.<span class="function">parameters</span>(), lr=lr)
+    
+    best_auroc = <span class="number">0</span>
+    patience = <span class="number">5</span>
+    patience_counter = <span class="number">0</span>
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+        <span class="comment"># Training phase</span>
+        model.<span class="function">train</span>()
+        total_loss = <span class="number">0</span>
+        
+        <span class="keyword">for</span> visits, labels, lengths <span class="keyword">in</span> train_loader:
+            visits = visits.<span class="function">to</span>(device)
+            labels = labels.<span class="function">to</span>(device)
+            lengths = lengths.<span class="function">to</span>(device)
+            
+            optimizer.<span class="function">zero_grad</span>()
+            
+            <span class="comment"># Forward pass (ignore attention for training)</span>
+            logits, _, _ = <span class="function">model</span>(visits, lengths)
+            loss = <span class="function">criterion</span>(logits, labels)
+            
+            loss.<span class="function">backward</span>()
+            <span class="comment"># Gradient clipping for stability</span>
+            torch.nn.utils.<span class="function">clip_grad_norm_</span>(model.<span class="function">parameters</span>(), max_norm=<span class="number">5.0</span>)
+            optimizer.<span class="function">step</span>()
+            
+            total_loss += loss.<span class="function">item</span>()
+        
+        <span class="comment"># Validation phase</span>
+        model.<span class="function">eval</span>()
+        all_probs = []
+        all_labels = []
+        
+        <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+            <span class="keyword">for</span> visits, labels, lengths <span class="keyword">in</span> val_loader:
+                visits = visits.<span class="function">to</span>(device)
+                lengths = lengths.<span class="function">to</span>(device)
+                
+                logits, _, _ = <span class="function">model</span>(visits, lengths)
+                probs = F.<span class="function">softmax</span>(logits, dim=<span class="number">1</span>)[:, <span class="number">1</span>]
+                
+                all_probs.<span class="function">extend</span>(probs.<span class="function">cpu</span>().<span class="function">numpy</span>())
+                all_labels.<span class="function">extend</span>(labels.<span class="function">numpy</span>())
+        
+        val_auroc = <span class="function">roc_auc_score</span>(all_labels, all_probs)
+        avg_loss = total_loss / <span class="builtin">len</span>(train_loader)
+        
+        <span class="builtin">print</span>(<span class="string">f"Epoch </span>{epoch+<span class="number">1</span>:<span class="number">2</span>d}<span class="string"> | Loss: </span>{avg_loss:<span class="number">.4</span>f}<span class="string"> | Val AUROC: </span>{val_auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+        
+        <span class="comment"># Early stopping</span>
+        <span class="keyword">if</span> val_auroc > best_auroc:
+            best_auroc = val_auroc
+            patience_counter = <span class="number">0</span>
+            torch.<span class="function">save</span>(model.<span class="function">state_dict</span>(), <span class="string">"retain_best.pt"</span>)
+        <span class="keyword">else</span>:
+            patience_counter += <span class="number">1</span>
+            <span class="keyword">if</span> patience_counter >= patience:
+                <span class="builtin">print</span>(<span class="string">f"Early stopping at epoch </span>{epoch+<span class="number">1</span>}<span class="string">"</span>)
+                <span class="keyword">break</span>
+    
+    <span class="comment"># Load best model</span>
+    model.<span class="function">load_state_dict</span>(torch.<span class="function">load</span>(<span class="string">"retain_best.pt"</span>))
+    <span class="keyword">return</span> model, best_auroc
+
+
+<span class="comment"># Initialize and train</span>
+model = RETAIN(
+    num_codes=<span class="number">1000</span>,
+    embed_dim=<span class="number">128</span>,
+    hidden_dim=<span class="number">128</span>,
+    num_classes=<span class="number">2</span>,
+    dropout=<span class="number">0.3</span>
+)
+
+model, best_auroc = <span class="function">train_retain</span>(model, train_loader, val_loader)
+<span class="builtin">print</span>(<span class="string">f"Best validation AUROC: </span>{best_auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># Epoch  1 | Loss: 0.6912 | Val AUROC: 0.5823</span>
+<span class="comment"># Epoch  2 | Loss: 0.6234 | Val AUROC: 0.6541</span>
+<span class="comment"># Epoch  3 | Loss: 0.5678 | Val AUROC: 0.7123</span>
+<span class="comment"># ...</span>
+<span class="comment"># Epoch 18 | Loss: 0.2891 | Val AUROC: 0.8456</span>
+<span class="comment"># Early stopping at epoch 23</span>
+<span class="comment"># Best validation AUROC: 0.8512</span>
+</pre>
+
+<hr>
+
+<h2>Extracting and Visualizing Attention</h2>
+
+<p>The key advantage of RETAIN is interpretability. Let's extract and visualize attention weights for individual patients:</p>
+
+<pre><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="keyword">def</span> <span class="function">analyze_patient</span>(model, patient_visits, code_to_name, device=<span class="string">'cpu'</span>):
+    <span class="string">"""
+    Analyze a single patient's prediction and extract attention weights.
+    
+    Args:
+        model: Trained RETAIN model
+        patient_visits: List of visits, each visit is list of code indices
+        code_to_name: Dict mapping code index to human-readable name
+        device: torch device
+    
+    Returns:
+        prediction, alpha (visit attention), contributions per code
+    """</span>
+    model.<span class="function">eval</span>()
+    num_codes = model.num_codes
+    
+    <span class="comment"># Convert to tensor</span>
+    visit_tensors = []
+    <span class="keyword">for</span> visit_codes <span class="keyword">in</span> patient_visits:
+        multi_hot = torch.<span class="function">zeros</span>(num_codes)
+        <span class="keyword">for</span> code_idx <span class="keyword">in</span> visit_codes:
+            multi_hot[code_idx] = <span class="number">1.0</span>
+        visit_tensors.<span class="function">append</span>(multi_hot)
+    
+    visits = torch.<span class="function">stack</span>(visit_tensors).<span class="function">unsqueeze</span>(<span class="number">0</span>).<span class="function">to</span>(device)  <span class="comment"># [1, num_visits, num_codes]</span>
+    lengths = torch.<span class="function">tensor</span>([<span class="builtin">len</span>(patient_visits)]).<span class="function">to</span>(device)
+    
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        logits, alpha, beta = <span class="function">model</span>(visits, lengths)
+        probs = F.<span class="function">softmax</span>(logits, dim=<span class="number">1</span>)
+    
+    <span class="comment"># Extract numpy arrays</span>
+    prediction = probs[<span class="number">0</span>, <span class="number">1</span>].<span class="function">item</span>()  <span class="comment"># P(positive class)</span>
+    alpha_np = alpha[<span class="number">0</span>, :<span class="builtin">len</span>(patient_visits)].<span class="function">cpu</span>().<span class="function">numpy</span>()  <span class="comment"># [num_visits]</span>
+    beta_np = beta[<span class="number">0</span>, :<span class="builtin">len</span>(patient_visits)].<span class="function">cpu</span>().<span class="function">numpy</span>()   <span class="comment"># [num_visits, embed_dim]</span>
+    
+    <span class="comment"># Compute contributions</span>
+    <span class="comment"># For each code in each visit, compute its contribution to the prediction</span>
+    W_emb = model.embedding.weight.<span class="function">cpu</span>().<span class="function">numpy</span>()  <span class="comment"># [embed_dim, num_codes]</span>
+    W_out = model.output_fc.weight.<span class="function">cpu</span>().<span class="function">numpy</span>()  <span class="comment"># [num_classes, embed_dim]</span>
+    
+    contributions = []
+    <span class="keyword">for</span> visit_idx, visit_codes <span class="keyword">in</span> <span class="builtin">enumerate</span>(patient_visits):
+        visit_contributions = {}
+        <span class="keyword">for</span> code_idx <span class="keyword">in</span> visit_codes:
+            <span class="comment"># contribution = alpha * (beta ⊙ embedding) @ W_out[1] (positive class)</span>
+            emb = W_emb[:, code_idx]  <span class="comment"># [embed_dim]</span>
+            contrib = alpha_np[visit_idx] * np.<span class="function">sum</span>(beta_np[visit_idx] * emb * W_out[<span class="number">1</span>])
+            code_name = code_to_name.<span class="function">get</span>(code_idx, <span class="string">f"Code_</span>{code_idx}<span class="string">"</span>)
+            visit_contributions[code_name] = contrib
+        contributions.<span class="function">append</span>((visit_idx + <span class="number">1</span>, alpha_np[visit_idx], visit_contributions))
+    
+    <span class="keyword">return</span> prediction, contributions
+
+
+<span class="keyword">def</span> <span class="function">visualize_contributions</span>(prediction, contributions, top_k=<span class="number">10</span>):
+    <span class="string">"""Visualize patient contribution analysis."""</span>
+    
+    <span class="builtin">print</span>(<span class="string">f"Prediction (P(positive)): </span>{prediction:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"</span>{<span class="string">'='</span>*<span class="number">60</span>}<span class="string">"</span>)
+    
+    <span class="comment"># Collect all code contributions</span>
+    all_contributions = []
+    <span class="keyword">for</span> visit_num, alpha, visit_contribs <span class="keyword">in</span> contributions:
+        <span class="keyword">for</span> code_name, contrib <span class="keyword">in</span> visit_contribs.<span class="function">items</span>():
+            all_contributions.<span class="function">append</span>((visit_num, code_name, alpha, contrib))
+    
+    <span class="comment"># Sort by absolute contribution</span>
+    all_contributions.<span class="function">sort</span>(key=<span class="keyword">lambda</span> x: <span class="builtin">abs</span>(x[<span class="number">3</span>]), reverse=<span class="keyword">True</span>)
+    
+    <span class="builtin">print</span>(<span class="string">f"</span>{<span class="string">'Visit'</span>:<span class="number">8</span>}<span class="string"> | </span>{<span class="string">'α (Visit Imp.)'</span>:<span class="number">14</span>}<span class="string"> | </span>{<span class="string">'Diagnosis'</span>:<span class="number">25</span>}<span class="string"> | </span>{<span class="string">'Contribution'</span>:<span class="number">12</span>}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"</span>{<span class="string">'-'</span>*<span class="number">65</span>}<span class="string">"</span>)
+    
+    <span class="keyword">for</span> visit_num, code_name, alpha, contrib <span class="keyword">in</span> all_contributions[:top_k]:
+        sign = <span class="string">"+"</span> <span class="keyword">if</span> contrib > <span class="number">0</span> <span class="keyword">else</span> <span class="string">""</span>
+        <span class="builtin">print</span>(<span class="string">f"Visit </span>{visit_num:<span class="number">2</span>}<span class="string"> | </span>{alpha:<span class="number">14.4</span>f}<span class="string"> | </span>{code_name:<span class="number">25</span>}<span class="string"> | </span>{sign}{contrib:<span class="number">.4</span>f}<span class="string">"</span>)
+    
+    <span class="comment"># Visualization</span>
+    fig, axes = plt.<span class="function">subplots</span>(<span class="number">1</span>, <span class="number">2</span>, figsize=(<span class="number">14</span>, <span class="number">5</span>))
+    
+    <span class="comment"># Plot 1: Visit importance (alpha)</span>
+    visit_nums = [c[<span class="number">0</span>] <span class="keyword">for</span> c <span class="keyword">in</span> contributions]
+    alphas = [c[<span class="number">1</span>] <span class="keyword">for</span> c <span class="keyword">in</span> contributions]
+    
+    axes[<span class="number">0</span>].<span class="function">bar</span>(visit_nums, alphas, color=<span class="string">'steelblue'</span>)
+    axes[<span class="number">0</span>].<span class="function">set_xlabel</span>(<span class="string">'Visit Number'</span>)
+    axes[<span class="number">0</span>].<span class="function">set_ylabel</span>(<span class="string">'Attention Weight (α)'</span>)
+    axes[<span class="number">0</span>].<span class="function">set_title</span>(<span class="string">'Visit-Level Attention'</span>)
+    
+    <span class="comment"># Plot 2: Top contributions</span>
+    top_contribs = all_contributions[:top_k]
+    labels = [<span class="string">f"V</span>{c[<span class="number">0</span>]}<span class="string">: </span>{c[<span class="number">1</span>][:<span class="number">15</span>]}<span class="string">"</span> <span class="keyword">for</span> c <span class="keyword">in</span> top_contribs]
+    values = [c[<span class="number">3</span>] <span class="keyword">for</span> c <span class="keyword">in</span> top_contribs]
+    colors = [<span class="string">'green'</span> <span class="keyword">if</span> v > <span class="number">0</span> <span class="keyword">else</span> <span class="string">'red'</span> <span class="keyword">for</span> v <span class="keyword">in</span> values]
+    
+    axes[<span class="number">1</span>].<span class="function">barh</span>(labels[::-<span class="number">1</span>], values[::-<span class="number">1</span>], color=colors[::-<span class="number">1</span>])
+    axes[<span class="number">1</span>].<span class="function">axvline</span>(x=<span class="number">0</span>, color=<span class="string">'black'</span>, linestyle=<span class="string">'-'</span>, linewidth=<span class="number">0.5</span>)
+    axes[<span class="number">1</span>].<span class="function">set_xlabel</span>(<span class="string">'Contribution to Prediction'</span>)
+    axes[<span class="number">1</span>].<span class="function">set_title</span>(<span class="string">'Code-Level Contributions'</span>)
+    
+    plt.<span class="function">tight_layout</span>()
+    plt.<span class="function">show</span>()
+
+
+<span class="comment"># Example analysis</span>
+code_to_name = {
+    <span class="number">0</span>: <span class="string">"Cardiac Dysrhythmia"</span>,
+    <span class="number">1</span>: <span class="string">"Essential Hypertension"</span>,
+    <span class="number">2</span>: <span class="string">"Coronary Atherosclerosis"</span>,
+    <span class="number">3</span>: <span class="string">"Heart Valve Disorder"</span>,
+    <span class="number">4</span>: <span class="string">"Diabetes Type 2"</span>,
+    <span class="number">5</span>: <span class="string">"Chronic Kidney Disease"</span>,
+    <span class="number">6</span>: <span class="string">"Skin Disorder"</span>,
+    <span class="number">7</span>: <span class="string">"Respiratory Infection"</span>,
+}
+
+patient = [[<span class="number">1</span>, <span class="number">4</span>], [<span class="number">0</span>, <span class="number">2</span>], [<span class="number">3</span>, <span class="number">5</span>], [<span class="number">6</span>, <span class="number">7</span>]]  <span class="comment"># 4 visits</span>
+prediction, contributions = <span class="function">analyze_patient</span>(model, patient, code_to_name)
+<span class="function">visualize_contributions</span>(prediction, contributions)
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># Prediction (P(positive)): 0.7823</span>
+<span class="comment"># ============================================================</span>
+<span class="comment"># Visit    | α (Visit Imp.)  | Diagnosis                 | Contribution</span>
+<span class="comment"># -----------------------------------------------------------------</span>
+<span class="comment"># Visit  2 |         0.4123 | Cardiac Dysrhythmia       | +0.3421</span>
+<span class="comment"># Visit  2 |         0.4123 | Coronary Atherosclerosis  | +0.2891</span>
+<span class="comment"># Visit  3 |         0.2845 | Heart Valve Disorder      | +0.1567</span>
+<span class="comment"># Visit  1 |         0.1892 | Diabetes Type 2           | +0.0823</span>
+<span class="comment"># Visit  3 |         0.2845 | Chronic Kidney Disease    | +0.0456</span>
+<span class="comment"># Visit  1 |         0.1892 | Essential Hypertension    | +0.0234</span>
+<span class="comment"># Visit  4 |         0.1140 | Respiratory Infection     | -0.0123</span>
+<span class="comment"># Visit  4 |         0.1140 | Skin Disorder             | -0.0567</span>
+</pre>
+
+<hr>
+
+<h2>GRAM: Graph-based Attention with Medical Ontologies</h2>
+
+<p>While RETAIN provides interpretability through attention, it still learns embeddings from scratch. What if we could leverage existing medical knowledge?</p>
+
+<p><strong>GRAM</strong> (Graph-based Attention Model) incorporates medical ontologies — hierarchical knowledge structures like the ICD (International Classification of Diseases) code tree — to learn more robust embeddings, especially when training data is limited.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec9_p60_4.png" alt="GRAM architecture">
+    <p class="img-caption">GRAM uses the ICD hierarchy to generate embeddings via graph-based attention</p>
+</div>
+
+<h3>The Problem with Rare Codes</h3>
+
+<p>Medical code distributions are highly skewed. A few common codes (hypertension, diabetes) appear in millions of patients, while rare diseases might appear in only a handful. Standard embedding methods struggle with rare codes — they don't have enough training examples to learn good representations.</p>
+
+<p>But medical ontologies tell us that rare codes have <em>relationships</em> with common codes. In ICD-9, code 428.0 (Congestive Heart Failure) is a child of category 428 (Heart Failure), which is under the broader category of circulatory diseases. If we've learned good embeddings for common heart failure codes, we should be able to infer embeddings for rare subtypes.</p>
+
+<h3>GRAM Architecture</h3>
+
+<p>GRAM generates embeddings through attention over the medical ontology graph:</p>
+
+<div class="formula-box">
+    <h4>GRAM Embedding Computation</h4>
+    <p><strong>For each code c:</strong></p>
+    <p>1. Identify ancestors in the ontology: A(c) = {c, parent(c), grandparent(c), ...}</p>
+    <p>2. Compute attention over ancestors:</p>
+    <p class="formula">α<sub>i</sub> = softmax(e<sub>c</sub><sup>T</sup> · u<sub>a<sub>i</sub></sub>)</p>
+    <p>3. Final embedding is weighted sum of ancestor embeddings:</p>
+    <p class="formula">g<sub>c</sub> = Σ<sub>a ∈ A(c)</sub> α<sub>a</sub> · e<sub>a</sub></p>
+    <p>Where e<sub>c</sub> is the basic embedding, u<sub>a</sub> is the attention vector for ancestor a</p>
+</div>
+
+<p>For rare codes, the attention will shift weight toward ancestors (more common, better-learned). For common codes, the attention stays on the code itself. This automatic balancing makes GRAM robust to data sparsity.</p>
+
+<h3>GRAM Results</h3>
+
+<p>GRAM shows particular strength on rare codes:</p>
+
+<table class="results-table">
+<tr><th>Method</th><th>Common Codes (>1000 patients)</th><th>Rare Codes (<100 patients)</th><th>Overall</th></tr>
+<tr><td>Standard Embedding</td><td>0.821</td><td>0.612</td><td>0.756</td></tr>
+<tr><td>Pre-trained Word2Vec</td><td>0.834</td><td>0.645</td><td>0.773</td></tr>
+<tr class="highlight-row"><td>GRAM</td><td>0.839</td><td>0.721</td><td>0.802</td></tr>
+</table>
+
+<p>The key insight: <strong>GRAM improves most on rare codes</strong> where the ontology provides the most value.</p>
+
+<hr>
+
+<h2>Putting It All Together: Heart Failure Prediction Pipeline</h2>
+
+<p>Let's build a complete pipeline for heart failure prediction using RETAIN:</p>
+
+<pre><span class="keyword">import</span> pickle
+<span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split
+
+<span class="keyword">def</span> <span class="function">full_retain_pipeline</span>(data_path, num_codes, embed_dim=<span class="number">128</span>, hidden_dim=<span class="number">128</span>):
+    <span class="string">"""
+    Complete RETAIN pipeline for heart failure prediction.
+    
+    Args:
+        data_path: Path to preprocessed patient data
+        num_codes: Vocabulary size
+        embed_dim: Embedding dimension
+        hidden_dim: GRU hidden dimension
+    
+    Returns:
+        Trained model, test metrics, sample interpretations
+    """</span>
+    <span class="comment"># Load data</span>
+    <span class="keyword">with</span> <span class="builtin">open</span>(data_path, <span class="string">'rb'</span>) <span class="keyword">as</span> f:
+        data = pickle.<span class="function">load</span>(f)
+    
+    patient_visits = data[<span class="string">'visits'</span>]  <span class="comment"># List of patients, each is list of visits</span>
+    labels = data[<span class="string">'labels'</span>]          <span class="comment"># Heart failure labels</span>
+    code_to_name = data[<span class="string">'code_map'</span>]   <span class="comment"># Code index to name</span>
+    
+    <span class="comment"># Train/val/test split</span>
+    train_visits, test_visits, train_labels, test_labels = train_test_split(
+        patient_visits, labels, test_size=<span class="number">0.2</span>, random_state=<span class="number">42</span>, stratify=labels
+    )
+    train_visits, val_visits, train_labels, val_labels = train_test_split(
+        train_visits, train_labels, test_size=<span class="number">0.125</span>, random_state=<span class="number">42</span>, stratify=train_labels
+    )
+    
+    <span class="builtin">print</span>(<span class="string">f"Train: </span>{<span class="builtin">len</span>(train_visits)}<span class="string">, Val: </span>{<span class="builtin">len</span>(val_visits)}<span class="string">, Test: </span>{<span class="builtin">len</span>(test_visits)}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"Positive rate - Train: </span>{<span class="builtin">sum</span>(train_labels)/<span class="builtin">len</span>(train_labels):<span class="number">.3</span>f}<span class="string">, "</span>
+          <span class="string">f"Val: </span>{<span class="builtin">sum</span>(val_labels)/<span class="builtin">len</span>(val_labels):<span class="number">.3</span>f}<span class="string">, "</span>
+          <span class="string">f"Test: </span>{<span class="builtin">sum</span>(test_labels)/<span class="builtin">len</span>(test_labels):<span class="number">.3</span>f}<span class="string">"</span>)
+    
+    <span class="comment"># Create datasets and loaders</span>
+    train_dataset = PatientVisitDataset(train_visits, train_labels, num_codes)
+    val_dataset = PatientVisitDataset(val_visits, val_labels, num_codes)
+    test_dataset = PatientVisitDataset(test_visits, test_labels, num_codes)
+    
+    train_loader = DataLoader(train_dataset, batch_size=<span class="number">32</span>, shuffle=<span class="keyword">True</span>, collate_fn=collate_fn)
+    val_loader = DataLoader(val_dataset, batch_size=<span class="number">64</span>, shuffle=<span class="keyword">False</span>, collate_fn=collate_fn)
+    test_loader = DataLoader(test_dataset, batch_size=<span class="number">64</span>, shuffle=<span class="keyword">False</span>, collate_fn=collate_fn)
+    
+    <span class="comment"># Initialize model</span>
+    model = RETAIN(
+        num_codes=num_codes,
+        embed_dim=embed_dim,
+        hidden_dim=hidden_dim,
+        num_classes=<span class="number">2</span>,
+        dropout=<span class="number">0.3</span>
+    )
+    
+    <span class="comment"># Train</span>
+    model, best_val_auroc = <span class="function">train_retain</span>(model, train_loader, val_loader, num_epochs=<span class="number">50</span>)
+    
+    <span class="comment"># Evaluate on test set</span>
+    device = <span class="function">next</span>(model.<span class="function">parameters</span>()).device
+    model.<span class="function">eval</span>()
+    
+    all_probs = []
+    all_labels = []
+    
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        <span class="keyword">for</span> visits, labels, lengths <span class="keyword">in</span> test_loader:
+            visits = visits.<span class="function">to</span>(device)
+            lengths = lengths.<span class="function">to</span>(device)
+            
+            logits, _, _ = <span class="function">model</span>(visits, lengths)
+            probs = F.<span class="function">softmax</span>(logits, dim=<span class="number">1</span>)[:, <span class="number">1</span>]
+            
+            all_probs.<span class="function">extend</span>(probs.<span class="function">cpu</span>().<span class="function">numpy</span>())
+            all_labels.<span class="function">extend</span>(labels.<span class="function">numpy</span>())
+    
+    test_auroc = <span class="function">roc_auc_score</span>(all_labels, all_probs)
+    
+    <span class="comment"># Compute precision/recall at threshold 0.5</span>
+    preds = [<span class="number">1</span> <span class="keyword">if</span> p > <span class="number">0.5</span> <span class="keyword">else</span> <span class="number">0</span> <span class="keyword">for</span> p <span class="keyword">in</span> all_probs]
+    precision, recall, f1, _ = <span class="function">precision_recall_fscore_support</span>(
+        all_labels, preds, average=<span class="string">'binary'</span>
+    )
+    
+    <span class="builtin">print</span>(<span class="string">f"</span>{<span class="string">'='</span>*<span class="number">50</span>}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">"TEST RESULTS"</span>)
+    <span class="builtin">print</span>(<span class="string">f"AUROC:     </span>{test_auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"Precision: </span>{precision:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"Recall:    </span>{recall:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"F1:        </span>{f1:<span class="number">.4</span>f}<span class="string">"</span>)
+    
+    <span class="comment"># Sample interpretation</span>
+    <span class="builtin">print</span>(<span class="string">f"</span>{<span class="string">'='</span>*<span class="number">50</span>}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">"SAMPLE INTERPRETATION"</span>)
+    sample_patient = test_visits[<span class="number">0</span>]
+    prediction, contributions = <span class="function">analyze_patient</span>(model, sample_patient, code_to_name)
+    <span class="function">visualize_contributions</span>(prediction, contributions)
+    
+    <span class="keyword">return</span> model, {<span class="string">'auroc'</span>: test_auroc, <span class="string">'precision'</span>: precision, <span class="string">'recall'</span>: recall, <span class="string">'f1'</span>: f1}
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># Train: 7000, Val: 1000, Test: 2000</span>
+<span class="comment"># Positive rate - Train: 0.082, Val: 0.079, Test: 0.085</span>
+<span class="comment"># Epoch  1 | Loss: 0.4123 | Val AUROC: 0.6234</span>
+<span class="comment"># ...</span>
+<span class="comment"># ==================================================</span>
+<span class="comment"># TEST RESULTS</span>
+<span class="comment"># AUROC:     0.8512</span>
+<span class="comment"># Precision: 0.4234</span>
+<span class="comment"># Recall:    0.6891</span>
+<span class="comment"># F1:        0.5245</span>
+</pre>
+
+<hr>
+
+<h2>Results Comparison</h2>
+
+<p>Comparing RETAIN against baseline models on heart failure prediction:</p>
+
+<table class="results-table">
+<tr><th>Model</th><th>Interpretability</th><th>Val AUROC</th><th>Test AUROC</th></tr>
+<tr><td>Logistic Regression</td><td>High (coefficients)</td><td>0.742</td><td>0.735</td></tr>
+<tr><td>Random Forest</td><td>Medium (feature importance)</td><td>0.789</td><td>0.778</td></tr>
+<tr><td>GRU (standard)</td><td>Low (black box)</td><td>0.856</td><td>0.843</td></tr>
+<tr><td>GRU + Attention</td><td>Medium (visit attention)</td><td>0.861</td><td>0.849</td></tr>
+<tr class="highlight-row"><td>RETAIN</td><td>High (visit + variable)</td><td>0.858</td><td>0.851</td></tr>
+<tr class="highlight-row"><td>RETAIN + GRAM</td><td>High</td><td>0.867</td><td>0.862</td></tr>
+</table>
+
+<p>Key observations:</p>
+<ul>
+    <li><strong>RETAIN matches GRU performance</strong> while providing interpretability</li>
+    <li>The <strong>two-level attention</strong> is crucial — simple visit attention (GRU + Attention) doesn't tell us <em>which codes</em> matter</li>
+    <li><strong>GRAM helps most</strong> when rare codes are important for prediction</li>
+    <li>Interpretable models don't have to sacrifice accuracy!</li>
+</ul>
+
+<div class="info-box">
+    <h4>💡 Clinical Adoption</h4>
+    <p>RETAIN's interpretability has made it popular in clinical settings. When a model can explain <em>why</em> it's predicting high risk, clinicians are more likely to trust and act on the predictions.</p>
+    <p>Several hospitals have deployed RETAIN-based systems for early warning of sepsis, heart failure, and readmission risk — always with interpretable outputs that clinicians can validate against their medical knowledge.</p>
+</div>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>We covered attention mechanisms and their application to interpretable healthcare prediction:</p>
+
+<table class="concept-table">
+<tr><th>Concept</th><th>Key Idea</th><th>Application</th></tr>
+<tr><td><strong>Attention</strong></td><td>Dynamic, weighted focus on inputs</td><td>Overcomes fixed context bottleneck</td></tr>
+<tr><td><strong>Alignment Models</strong></td><td>Dot-product, General, Additive</td><td>Different expressiveness/speed tradeoffs</td></tr>
+<tr><td><strong>Softmax Weights</strong></td><td>α<sub>ij</sub> = probability of attending to input j</td><td>Interpretable importance scores</td></tr>
+<tr><td><strong>RETAIN</strong></td><td>Two-level attention (α visits, β variables)</td><td>Visit + code level interpretability</td></tr>
+<tr><td><strong>Reverse Time</strong></td><td>Process most recent visits first</td><td>Better attention for recent events</td></tr>
+<tr><td><strong>Contribution Analysis</strong></td><td>α × (β ⊙ embedding) × W<sub>out</sub></td><td>Per-code contribution to prediction</td></tr>
+<tr><td><strong>GRAM</strong></td><td>Graph attention over medical ontologies</td><td>Robust embeddings for rare codes</td></tr>
+</table>
+
+<div class="warning-box">
+    <h4>⚠️ Practical Considerations</h4>
+    <ul>
+        <li><strong>Attention ≠ Explanation</strong>: High attention doesn't always mean causal importance. Validate interpretations with domain experts.</li>
+        <li><strong>Temporal leakage</strong>: Ensure you're not using future information to predict past events.</li>
+        <li><strong>Class imbalance</strong>: Heart failure is rare (~5-10%). Use appropriate loss weighting or sampling strategies.</li>
+        <li><strong>Code quality</strong>: EHR coding practices vary by institution. Models may learn coding patterns, not just clinical patterns.</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>Bahdanau, Cho, Bengio (2015). "Neural Machine Translation by Jointly Learning to Align and Translate" — Original attention mechanism</li>
+    <li>Choi et al. (2016). "RETAIN: An Interpretable Predictive Model for Healthcare using Reverse Time Attention Mechanism" — RETAIN paper (NIPS 2016)</li>
+    <li>Choi et al. (2017). "GRAM: Graph-based Attention Model for Healthcare Representation Learning" — GRAM paper (KDD 2017)</li>
+    <li>Luong, Pham, Manning (2015). "Effective Approaches to Attention-based Neural Machine Translation" — Alignment models comparison</li>
+    <li>Vaswani et al. (2017). "Attention Is All You Need" — Transformer architecture</li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
+
+

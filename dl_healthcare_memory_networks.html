@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Memory Networks and Transformers for Clinical Reasoning in Healthcare">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>Memory Networks and Transformers for Healthcare</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+      onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+        .math-block { background: rgba(0,0,0,0.05); border-radius: 6px; padding: 12px 16px; margin: 12px 0; overflow-x: auto; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Memory Networks and Transformers for Clinical Reasoning</h2>
+                        <hr class="small">
+                        <h5>Deep Learning for Healthcare — Part 6: From External Memory to Self-Attention — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Memory Networks and Transformers for Clinical Reasoning</h1>
+<p style="text-align:center;"><em>"The key to clinical reasoning is retrieving the right information at the right time."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+</content>
+
+<h2>The Limitation of Fixed Representations</h2>
+
+<p>In previous parts, we explored how to represent patients as dense vectors through embeddings and recurrent neural networks. But these approaches share a fundamental limitation: they compress an entire patient history into a <strong>fixed-size vector</strong>.</p>
+
+<p>Consider a clinician reasoning about a complex case. They don't compress all their knowledge into a single mental state. Instead, they:</p>
+
+<ul>
+    <li><strong>Store</strong> relevant facts in working memory</li>
+    <li><strong>Query</strong> their memory based on the current question</li>
+    <li><strong>Retrieve</strong> the most relevant pieces of information</li>
+    <li><strong>Reason</strong> over retrieved facts to form a response</li>
+</ul>
+
+<p>This is exactly what <strong>Memory Networks</strong> aim to achieve: augmenting neural networks with an external, addressable memory that can be read from and written to.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec11_p1_1.png" alt="Memory Networks Overview">
+    <p class="img-caption">Memory Networks augment neural networks with external memory for reasoning</p>
+</div>
+
+<hr>
+
+<h2>Original Memory Networks (Weston et al., 2015)</h2>
+
+<p>The original Memory Network architecture (Weston et al., ICLR 2015) consists of four components that work together to process inputs, store information, and generate responses.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec11_p4_1.png" alt="Memory Network Architecture">
+    <p class="img-caption">The four components of Memory Networks: I, G, O, R</p>
+</div>
+
+<h3>Component I: Input Feature Map</h3>
+
+<p>The input component converts raw input $x$ into an internal feature representation $I(x)$. This preprocessing step transforms diverse input types into a common format suitable for memory operations.</p>
+
+<div class="formula-box">
+    <h4>Input Feature Map</h4>
+    <p class="formula">$I: x \rightarrow I(x)$</p>
+    <p>Common implementations:</p>
+    <ul>
+        <li><strong>Bag of Words</strong>: Sum of word embeddings for text inputs</li>
+        <li><strong>RNN/LSTM</strong>: Final hidden state for sequential inputs</li>
+        <li><strong>CNN</strong>: Feature maps for image inputs</li>
+    </ul>
+</div>
+
+<p>For clinical applications, this might encode a patient's chief complaint, a clinical note, or a sequence of diagnosis codes.</p>
+
+<h3>Component G: Generalization (Memory Update)</h3>
+
+<p>The generalization component updates the memory given a new input. It decides where and how to store new information.</p>
+
+<div class="formula-box">
+    <h4>Memory Update</h4>
+    <p class="formula">$m_i = G(m_i, I(x), m)$</p>
+    <p>Where $m = \{m_1, m_2, ..., m_N\}$ is the memory bank and $m_i$ is an individual memory slot.</p>
+    <p><strong>Simplest implementation</strong>: Store $I(x)$ in the next available slot:</p>
+    <p class="formula">$m_{H(x)} = I(x)$</p>
+    <p>where $H(x)$ is a hash function or slot index.</p>
+</div>
+
+<p>More sophisticated implementations might:</p>
+<ul>
+    <li>Forget old memories based on relevance</li>
+    <li>Update existing memories rather than creating new ones</li>
+    <li>Compress multiple related memories</li>
+</ul>
+
+<h3>Component O: Output Feature Map</h3>
+
+<p>The output component reads from memory to produce an output representation. This is where the model performs <strong>memory addressing</strong> — finding the most relevant memories for the current query.</p>
+
+<div class="formula-box">
+    <h4>Memory Reading</h4>
+    <p class="formula">$o = O(I(x), m)$</p>
+    <p>Find the most relevant memory by scoring each slot:</p>
+    <p class="formula">$o_1 = \arg\max_i s_O(I(x), m_i)$</p>
+    <p>where $s_O$ is a scoring function (e.g., dot product, cosine similarity).</p>
+</div>
+
+<p>For multi-hop reasoning, the output can be used to query memory again:</p>
+
+<div class="formula-box">
+    <h4>Multi-hop Reading</h4>
+    <p class="formula">$o_2 = \arg\max_i s_O([I(x), o_1], m_i)$</p>
+    <p>The first retrieved memory $o_1$ is combined with the original query to find additional relevant memories.</p>
+</div>
+
+<h3>Component R: Response</h3>
+
+<p>The response component converts the output representation into the final answer format.</p>
+
+<div class="formula-box">
+    <h4>Response Generation</h4>
+    <p class="formula">$r = R(o)$</p>
+    <p>Common implementations:</p>
+    <ul>
+        <li><strong>Softmax</strong>: For classification over a fixed vocabulary</li>
+        <li><strong>RNN Decoder</strong>: For generating text sequences</li>
+        <li><strong>Linear projection</strong>: For regression tasks</li>
+    </ul>
+</div>
+
+<h3>The Training Problem: argmax is Not Differentiable</h3>
+
+<p>The original Memory Network has a critical limitation: the $\arg\max$ operation in the output component is <strong>not differentiable</strong>. This means we cannot train the network end-to-end using backpropagation.</p>
+
+<div class="warning-box">
+    <h4>⚠️ The argmax Problem</h4>
+    <p>$\arg\max$ returns discrete indices, so gradients cannot flow through it:</p>
+    <p class="formula">$\frac{\partial}{\partial \theta} \arg\max_i s_O(I(x), m_i) = 0$ almost everywhere</p>
+    <p>The original paper used <strong>strong supervision</strong>: explicitly labeling which memory slots are relevant for each query.</p>
+</div>
+
+<p>This limitation motivated the development of End-to-End Memory Networks.</p>
+
+<hr>
+
+
+<h2>End-to-End Memory Networks (Sukhbaatar et al., 2015)</h2>
+
+<p>The breakthrough came with End-to-End Memory Networks, which replace the hard $\arg\max$ with a <strong>soft attention mechanism</strong>. This makes the entire architecture differentiable and trainable with standard backpropagation.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec11_p9_1.png" alt="End-to-End Memory Network">
+    <p class="img-caption">End-to-End Memory Networks use soft attention for differentiable memory access</p>
+</div>
+
+<h3>Architecture Overview</h3>
+
+<p>Given a set of inputs $\{x_1, x_2, ..., x_n\}$ to be stored in memory and a query $q$:</p>
+
+<ol>
+    <li><strong>Memory Encoding</strong>: Convert inputs to memory vectors using embedding matrix $A$</li>
+    <li><strong>Query Encoding</strong>: Convert query to a vector using embedding matrix $B$</li>
+    <li><strong>Attention</strong>: Compute soft attention weights over all memories</li>
+    <li><strong>Output</strong>: Weighted sum of memory values (encoded with matrix $C$)</li>
+    <li><strong>Response</strong>: Combine with query for final prediction</li>
+</ol>
+
+<h3>Three Embedding Matrices</h3>
+
+<p>The model uses three separate embedding matrices, each serving a distinct purpose:</p>
+
+<div class="formula-box">
+    <h4>Embedding Matrices</h4>
+    <p><strong>Matrix A</strong> — Memory Keys: Encode inputs for matching with query</p>
+    <p class="formula">$m_i = A \cdot x_i$</p>
+    
+    <p><strong>Matrix B</strong> — Query Encoding: Encode the question/query</p>
+    <p class="formula">$u = B \cdot q$</p>
+    
+    <p><strong>Matrix C</strong> — Memory Values: Encode inputs for output generation</p>
+    <p class="formula">$c_i = C \cdot x_i$</p>
+</div>
+
+<p>This separation of "keys" (what to match on) and "values" (what to retrieve) is a crucial design choice that will reappear in the Transformer architecture.</p>
+
+<h3>Soft Attention Mechanism</h3>
+
+<p>Instead of selecting a single memory with $\arg\max$, we compute a probability distribution over all memories:</p>
+
+<div class="formula-box">
+    <h4>Attention Weights</h4>
+    <p>Compute similarity between query and each memory key:</p>
+    <p class="formula">$p_i = \text{softmax}(u^T m_i) = \frac{\exp(u^T m_i)}{\sum_j \exp(u^T m_j)}$</p>
+    
+    <p>The output is a weighted sum of memory values:</p>
+    <p class="formula">$o = \sum_i p_i \cdot c_i$</p>
+</div>
+
+<p>The softmax function is differentiable everywhere, allowing gradients to flow through the memory access operation.</p>
+
+<h3>Final Prediction</h3>
+
+<p>The output $o$ is combined with the query embedding $u$ to produce the final answer:</p>
+
+<div class="formula-box">
+    <h4>Response Generation</h4>
+    <p class="formula">$\hat{y} = \text{softmax}(W(o + u))$</p>
+    <p>Where $W$ is a weight matrix mapping to the output vocabulary.</p>
+</div>
+
+<p>The addition of $u$ creates a <strong>residual connection</strong>, allowing the model to combine retrieved information with the original query.</p>
+
+<h3>Multi-hop Reasoning</h3>
+
+<p>For complex questions requiring multiple reasoning steps, we can stack multiple "hops" of memory access:</p>
+
+<div class="formula-box">
+    <h4>Multiple Memory Hops</h4>
+    <p><strong>Hop 1:</strong></p>
+    <p class="formula">$p^1 = \text{softmax}(u^T M^1), \quad o^1 = \sum_i p^1_i c^1_i$</p>
+    
+    <p><strong>Hop k:</strong></p>
+    <p class="formula">$u^{k+1} = u^k + o^k$</p>
+    <p class="formula">$p^{k+1} = \text{softmax}((u^{k+1})^T M^{k+1}), \quad o^{k+1} = \sum_i p^{k+1}_i c^{k+1}_i$</p>
+    
+    <p>Final output: $\hat{y} = \text{softmax}(W(o^K + u^K))$</p>
+</div>
+
+<h3>Parameter Sharing Schemes</h3>
+
+<p>With multiple hops, we need strategies for sharing parameters across layers:</p>
+
+<table class="concept-table">
+<tr><th>Scheme</th><th>Description</th><th>Parameters</th></tr>
+<tr><td><strong>Adjacent</strong></td><td>Output embedding of layer k becomes input embedding of layer k+1</td><td>$A^{k+1} = C^k$</td></tr>
+<tr><td><strong>Layer-wise</strong></td><td>Same parameters for all layers (like RNN)</td><td>$A^1 = A^2 = ... = A^K$</td></tr>
+<tr><td><strong>None</strong></td><td>Separate parameters per layer</td><td>Independent $A^k, C^k$ for each k</td></tr>
+</table>
+
+<p>Adjacent tying reduces parameters while maintaining layer-specific representations. Layer-wise tying is most parameter-efficient but may limit capacity.</p>
+
+<hr>
+
+
+<h2>Self-Attention: The Foundation of Transformers</h2>
+
+<p>Memory Networks use attention to query an external memory. But what if we let each element of a sequence attend to all other elements in the <strong>same sequence</strong>? This is <strong>self-attention</strong>, the core mechanism of the Transformer architecture.</p>
+
+<h3>The Problem with Sequential Processing</h3>
+
+<p>RNNs and LSTMs process sequences one step at a time. This sequential nature creates two problems:</p>
+
+<ul>
+    <li><strong>Limited parallelism</strong>: Must wait for previous timesteps before computing current one</li>
+    <li><strong>Long-range dependencies</strong>: Information must pass through many hidden states, causing gradient issues</li>
+</ul>
+
+<p>Self-attention solves both: every position can attend to every other position in <strong>constant path length</strong>, and all positions can be computed in <strong>parallel</strong>.</p>
+
+<h3>Query, Key, Value Projections</h3>
+
+<p>In self-attention, each input element is projected into three different representations:</p>
+
+<div class="formula-box">
+    <h4>QKV Projections</h4>
+    <p>Given input matrix $X \in \mathbb{R}^{n \times d}$ (n positions, d dimensions):</p>
+    <p class="formula">$Q = XW_Q$ — Queries (what am I looking for?)</p>
+    <p class="formula">$K = XW_K$ — Keys (what do I contain?)</p>
+    <p class="formula">$V = XW_V$ — Values (what do I output?)</p>
+    <p>Where $W_Q, W_K \in \mathbb{R}^{d \times d_k}$ and $W_V \in \mathbb{R}^{d \times d_v}$</p>
+</div>
+
+<p>This is analogous to End-to-End Memory Networks: Keys correspond to memory embeddings (matrix A), Values to output embeddings (matrix C), and Queries to the query encoding (matrix B).</p>
+
+<h3>Scaled Dot-Product Attention</h3>
+
+<p>The attention function computes compatibility between queries and keys, then uses these scores to weight values:</p>
+
+<div class="formula-box">
+    <h4>Scaled Dot-Product Attention</h4>
+    <div class="math-block">
+    $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+    </div>
+    <p><strong>Why scale by $\sqrt{d_k}$?</strong> For large $d_k$, dot products grow large in magnitude, pushing softmax into regions with extremely small gradients. Scaling keeps values in a reasonable range.</p>
+</div>
+
+<p>The attention matrix $QK^T$ has shape $(n \times n)$, where each entry $(i, j)$ represents how much position $i$ should attend to position $j$.</p>
+
+<h3>Multi-Head Attention</h3>
+
+<p>Instead of computing attention once, we compute it multiple times in parallel with different learned projections:</p>
+
+<div class="formula-box">
+    <h4>Multi-Head Attention</h4>
+    <p class="formula">$\text{head}_i = \text{Attention}(XW^i_Q, XW^i_K, XW^i_V)$</p>
+    <p class="formula">$\text{MultiHead}(X) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W_O$</p>
+    <p>Each head can learn different attention patterns: one might focus on local context, another on long-range dependencies, another on specific semantic relationships.</p>
+</div>
+
+<p>Typically, if the model dimension is $d_{model}$ and we use $h$ heads, each head has dimension $d_k = d_v = d_{model}/h$, keeping total computation constant.</p>
+
+<hr>
+
+<h2>The Transformer Architecture</h2>
+
+<p>The Transformer (Vaswani et al., 2017, "Attention Is All You Need") revolutionized sequence modeling by replacing recurrence entirely with self-attention.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec11_p14_1.png" alt="Transformer Architecture">
+    <p class="img-caption">The Transformer architecture: stacked self-attention and feed-forward layers</p>
+</div>
+
+<h3>Encoder Block</h3>
+
+<p>Each encoder layer consists of two sub-layers:</p>
+
+<div class="formula-box">
+    <h4>Transformer Encoder Layer</h4>
+    <p><strong>Sub-layer 1: Multi-Head Self-Attention</strong></p>
+    <p class="formula">$X' = \text{LayerNorm}(X + \text{MultiHeadAttention}(X, X, X))$</p>
+    
+    <p><strong>Sub-layer 2: Position-wise Feed-Forward Network</strong></p>
+    <p class="formula">$X'' = \text{LayerNorm}(X' + \text{FFN}(X'))$</p>
+    
+    <p>Where $\text{FFN}(x) = \max(0, xW_1 + b_1)W_2 + b_2$</p>
+</div>
+
+<p>Key components:</p>
+<ul>
+    <li><strong>Residual connections</strong>: Add input to output of each sub-layer, enabling gradient flow</li>
+    <li><strong>Layer normalization</strong>: Stabilizes training by normalizing activations</li>
+    <li><strong>Feed-forward network</strong>: Applied identically to each position; typically expands then contracts dimensions (e.g., 512 → 2048 → 512)</li>
+</ul>
+
+<h3>Decoder Block</h3>
+
+<p>The decoder adds a third sub-layer for attending to encoder outputs:</p>
+
+<div class="formula-box">
+    <h4>Transformer Decoder Layer</h4>
+    <p><strong>Sub-layer 1: Masked Multi-Head Self-Attention</strong></p>
+    <p class="formula">$X' = \text{LayerNorm}(X + \text{MaskedMultiHead}(X, X, X))$</p>
+    
+    <p><strong>Sub-layer 2: Encoder-Decoder Attention</strong></p>
+    <p class="formula">$X'' = \text{LayerNorm}(X' + \text{MultiHead}(X', K_{enc}, V_{enc}))$</p>
+    
+    <p><strong>Sub-layer 3: Feed-Forward Network</strong></p>
+    <p class="formula">$X''' = \text{LayerNorm}(X'' + \text{FFN}(X''))$</p>
+</div>
+
+<p><strong>Masked attention</strong> prevents positions from attending to subsequent positions during training. This ensures the model can only use information from the past when generating the next token.</p>
+
+<h3>Positional Encoding</h3>
+
+<p>Self-attention is <strong>permutation invariant</strong> — it treats inputs as a set, not a sequence. To inject position information, we add positional encodings to the input embeddings:</p>
+
+<div class="formula-box">
+    <h4>Sinusoidal Positional Encoding</h4>
+    <div class="math-block">
+    $$PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d_{model}}}\right)$$
+    $$PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d_{model}}}\right)$$
+    </div>
+    <p>Each dimension has a different frequency, allowing the model to learn to attend by relative positions.</p>
+</div>
+
+<p>Alternative: <strong>learned positional embeddings</strong>, where each position has a trainable embedding vector. Both approaches work similarly in practice.</p>
+
+<h3>Why Transformers Excel</h3>
+
+<table class="concept-table">
+<tr><th>Property</th><th>RNN/LSTM</th><th>Transformer</th></tr>
+<tr><td>Maximum path length</td><td>$O(n)$</td><td>$O(1)$</td></tr>
+<tr><td>Computational complexity</td><td>$O(n \cdot d^2)$</td><td>$O(n^2 \cdot d)$</td></tr>
+<tr><td>Parallelization</td><td>Sequential</td><td>Fully parallel</td></tr>
+<tr><td>Long-range dependencies</td><td>Difficult (vanishing gradients)</td><td>Direct attention</td></tr>
+</table>
+
+<p>Transformers trade the linear complexity of RNNs for quadratic complexity in sequence length, but gain massive parallelism and better gradient flow.</p>
+
+<hr>
+
+
+<h2>BERT: Pre-trained Bidirectional Transformers</h2>
+
+<p>BERT (Bidirectional Encoder Representations from Transformers, Devlin et al., 2018) demonstrated that pre-training Transformers on massive text corpora produces representations that transfer remarkably well to downstream tasks.</p>
+
+<h3>From Static to Contextual Embeddings</h3>
+
+<p>Previous embedding methods like Word2Vec produce <strong>static embeddings</strong>: each word has a single vector regardless of context. But words have different meanings in different contexts:</p>
+
+<ul>
+    <li>"The patient has a <strong>cold</strong>" — illness</li>
+    <li>"The room is <strong>cold</strong>" — temperature</li>
+    <li>"He gave me a <strong>cold</strong> stare" — emotional</li>
+</ul>
+
+<p>BERT produces <strong>contextual embeddings</strong>: the representation of each word depends on the entire surrounding sentence.</p>
+
+<h3>Pre-training Objectives</h3>
+
+<p>BERT uses two pre-training tasks:</p>
+
+<div class="formula-box">
+    <h4>Masked Language Model (MLM)</h4>
+    <p>Randomly mask 15% of input tokens and predict them:</p>
+    <p class="formula">Input: "The patient was [MASK] with pneumonia"</p>
+    <p class="formula">Target: "diagnosed"</p>
+    <p>Of the 15% masked tokens:</p>
+    <ul>
+        <li>80% replaced with [MASK]</li>
+        <li>10% replaced with random word</li>
+        <li>10% kept unchanged</li>
+    </ul>
+    <p>This forces bidirectional context: both left and right context are used.</p>
+</div>
+
+<div class="formula-box">
+    <h4>Next Sentence Prediction (NSP)</h4>
+    <p>Given two sentences, predict if B follows A:</p>
+    <p class="formula">Input: "[CLS] Patient presents with fever. [SEP] Blood cultures ordered. [SEP]"</p>
+    <p class="formula">Label: IsNext (1) or NotNext (0)</p>
+    <p>This teaches the model about sentence-level relationships.</p>
+</div>
+
+<h3>Fine-tuning for Downstream Tasks</h3>
+
+<p>After pre-training, BERT is fine-tuned on task-specific data:</p>
+
+<ul>
+    <li><strong>Classification</strong>: Add a classification head on the [CLS] token</li>
+    <li><strong>Named Entity Recognition</strong>: Add a token-level classifier</li>
+    <li><strong>Question Answering</strong>: Predict start/end positions in context</li>
+</ul>
+
+<div class="info-box">
+    <h4>💡 Clinical BERT Variants</h4>
+    <p>General BERT is trained on Wikipedia and books. For healthcare:</p>
+    <ul>
+        <li><strong>BioBERT</strong>: Pre-trained on PubMed abstracts</li>
+        <li><strong>ClinicalBERT</strong>: Pre-trained on MIMIC-III clinical notes</li>
+        <li><strong>PubMedBERT</strong>: Pre-trained exclusively on biomedical text</li>
+    </ul>
+    <p>Domain-specific pre-training significantly improves performance on clinical NLP tasks.</p>
+</div>
+
+<hr>
+
+<h2>Healthcare Application: Doctor2Vec</h2>
+
+<p>Doctor2Vec (Biswal et al., AAAI 2020) applies memory network principles to learn dynamic doctor representations for clinical trial matching. The key insight: a doctor's expertise should be represented by the <strong>patients they have treated</strong>, and this representation should be <strong>dynamic</strong> based on the clinical trial being considered.</p>
+
+<h3>The Clinical Trial Matching Problem</h3>
+
+<p>Clinical trials need to recruit appropriate physicians to enroll patients. The challenge: how do we match doctors to trials based on their expertise?</p>
+
+<ul>
+    <li>A doctor's expertise is reflected in their patient population</li>
+    <li>Different aspects of expertise are relevant for different trials</li>
+    <li>Static representations miss trial-specific relevance</li>
+</ul>
+
+<h3>Architecture Overview</h3>
+
+<p>Doctor2Vec uses a hierarchical memory architecture:</p>
+
+<div class="formula-box">
+    <h4>Doctor2Vec Components</h4>
+    <p><strong>1. Patient EHR → Patient Embedding</strong></p>
+    <p>Each patient is encoded from their EHR data (diagnoses, procedures, medications).</p>
+    
+    <p><strong>2. Patient Embeddings → Memory Bank</strong></p>
+    <p>A doctor's patient history forms their memory: $M_d = \{p_1, p_2, ..., p_n\}$</p>
+    
+    <p><strong>3. Trial Embedding → Query</strong></p>
+    <p>The clinical trial criteria are encoded as a query vector.</p>
+    
+    <p><strong>4. Attentional Memory Retrieval</strong></p>
+    <p>The trial query attends to patient memories to produce a trial-specific doctor embedding.</p>
+</div>
+
+<h3>Dynamic Doctor Representation</h3>
+
+<p>The key innovation: the doctor embedding changes based on which trial is being considered.</p>
+
+<div class="formula-box">
+    <h4>Attentional Memory Retrieval</h4>
+    <p>Given trial embedding $t$ and patient memories $\{p_1, ..., p_n\}$:</p>
+    <p class="formula">$\alpha_i = \text{softmax}(t^T W_a p_i)$ — Attention weights</p>
+    <p class="formula">$d_t = \sum_i \alpha_i \cdot p_i$ — Dynamic doctor embedding</p>
+    <p>For a cardiology trial, patients with heart conditions receive higher attention. For an oncology trial, the same doctor's cancer patients are emphasized.</p>
+</div>
+
+<h3>Multimodal Trial Embedding</h3>
+
+<p>Clinical trial descriptions contain both structured (eligibility criteria, disease category) and unstructured (text descriptions) information:</p>
+
+<div class="formula-box">
+    <h4>Trial Embedding</h4>
+    <p><strong>Text features</strong>: Encode with BERT</p>
+    <p class="formula">$t_{text} = \text{BERT}(\text{trial description})[CLS]$</p>
+    
+    <p><strong>Categorical features</strong>: Embed and combine</p>
+    <p class="formula">$t_{cat} = [E_{phase}(phase); E_{condition}(condition); ...]$</p>
+    
+    <p><strong>Combined</strong>:</p>
+    <p class="formula">$t = W_t [t_{text}; t_{cat}] + b_t$</p>
+</div>
+
+<h3>Training Objective</h3>
+
+<p>The model is trained to predict doctor-trial compatibility:</p>
+
+<div class="formula-box">
+    <h4>Matching Score</h4>
+    <p class="formula">$s(d, t) = \sigma(d_t^T W_s t + b_s)$</p>
+    <p>Binary cross-entropy loss over positive (doctor enrolled patients) and negative (random) pairs:</p>
+    <p class="formula">$\mathcal{L} = -\sum_{(d,t)} [y \log s(d,t) + (1-y) \log(1-s(d,t))]$</p>
+</div>
+
+<hr>
+
+
+<h2>Practical Implementation: End-to-End Memory Network</h2>
+
+<p>Let's implement an End-to-End Memory Network for clinical question answering. Given a patient's clinical history (stored as memory) and a clinical question, the model retrieves relevant facts to produce an answer.</p>
+
+<h3>Problem Setup</h3>
+
+<p>Consider a clinical QA scenario:</p>
+
+<pre><span class="comment"># Patient clinical history (facts to store in memory)</span>
+facts = [
+    <span class="string">"Patient is 65 year old male"</span>,
+    <span class="string">"Patient has history of type 2 diabetes"</span>,
+    <span class="string">"Patient takes metformin 500mg twice daily"</span>,
+    <span class="string">"Latest HbA1c is 7.2%"</span>,
+    <span class="string">"Patient has hypertension"</span>,
+    <span class="string">"Patient takes lisinopril 10mg daily"</span>,
+    <span class="string">"Blood pressure at last visit was 138/85"</span>,
+    <span class="string">"Patient reports no chest pain"</span>,
+    <span class="string">"Patient has mild diabetic retinopathy"</span>,
+]
+
+<span class="comment"># Clinical question</span>
+question = <span class="string">"What medications is the patient taking?"</span>
+<span class="comment"># Expected answer: metformin, lisinopril</span>
+</pre>
+
+<h3>Memory Network Implementation</h3>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">class</span> <span class="builtin">EndToEndMemoryNetwork</span>(nn.Module):
+    <span class="string">"""End-to-End Memory Network for clinical question answering.
+    
+    Architecture:
+    - Memory: Store clinical facts as key-value pairs
+    - Query: Encode the clinical question
+    - Attention: Soft attention over memories
+    - Multi-hop: Stack multiple attention layers for reasoning
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(
+        self,
+        vocab_size: <span class="builtin">int</span>,
+        embed_dim: <span class="builtin">int</span> = <span class="number">128</span>,
+        num_hops: <span class="builtin">int</span> = <span class="number">3</span>,
+        max_memory_size: <span class="builtin">int</span> = <span class="number">50</span>,
+        num_classes: <span class="builtin">int</span> = <span class="number">100</span>,
+    ):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.embed_dim = embed_dim
+        self.num_hops = num_hops
+        self.max_memory_size = max_memory_size
+        
+        <span class="comment"># Embedding matrices for each hop (using adjacent weight tying)</span>
+        <span class="comment"># A^k: memory key embeddings, C^k: memory value embeddings</span>
+        <span class="comment"># With adjacent tying: A^{k+1} = C^k</span>
+        self.A = nn.ModuleList()  <span class="comment"># Key embeddings</span>
+        self.C = nn.ModuleList()  <span class="comment"># Value embeddings</span>
+        
+        <span class="keyword">for</span> hop <span class="keyword">in</span> <span class="builtin">range</span>(num_hops):
+            self.A.<span class="function">append</span>(nn.Embedding(vocab_size, embed_dim))
+            self.C.<span class="function">append</span>(nn.Embedding(vocab_size, embed_dim))
+        
+        <span class="comment"># Query embedding (B matrix)</span>
+        self.B = nn.Embedding(vocab_size, embed_dim)
+        
+        <span class="comment"># Temporal encoding (position embeddings for memory slots)</span>
+        self.temporal_A = nn.Parameter(torch.<span class="function">randn</span>(max_memory_size, embed_dim) * <span class="number">0.1</span>)
+        self.temporal_C = nn.Parameter(torch.<span class="function">randn</span>(max_memory_size, embed_dim) * <span class="number">0.1</span>)
+        
+        <span class="comment"># Output projection</span>
+        self.output_layer = nn.Linear(embed_dim, num_classes)
+        
+        self.<span class="function">_init_weights</span>()
+    
+    <span class="keyword">def</span> <span class="function">_init_weights</span>(self):
+        <span class="string">"""Initialize embeddings with small random values."""</span>
+        <span class="keyword">for</span> emb_list <span class="keyword">in</span> [self.A, self.C]:
+            <span class="keyword">for</span> emb <span class="keyword">in</span> emb_list:
+                nn.init.<span class="function">normal_</span>(emb.weight, mean=<span class="number">0</span>, std=<span class="number">0.1</span>)
+        nn.init.<span class="function">normal_</span>(self.B.weight, mean=<span class="number">0</span>, std=<span class="number">0.1</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(
+        self,
+        memory_tokens: torch.Tensor,   <span class="comment"># [batch, num_memories, seq_len]</span>
+        memory_mask: torch.Tensor,     <span class="comment"># [batch, num_memories] - 1 for real memories</span>
+        query_tokens: torch.Tensor,    <span class="comment"># [batch, query_len]</span>
+    ) -> torch.Tensor:
+        <span class="string">"""
+        Forward pass through the memory network.
+        
+        Args:
+            memory_tokens: Token indices for each memory (clinical fact)
+            memory_mask: Binary mask indicating valid memories
+            query_tokens: Token indices for the query (clinical question)
+            
+        Returns:
+            logits: [batch, num_classes] classification logits
+        """</span>
+        batch_size = memory_tokens.<span class="function">size</span>(<span class="number">0</span>)
+        num_memories = memory_tokens.<span class="function">size</span>(<span class="number">1</span>)
+        
+        <span class="comment"># Encode query using bag-of-words: sum of word embeddings</span>
+        <span class="comment"># u: [batch, embed_dim]</span>
+        query_embeds = self.<span class="function">B</span>(query_tokens)  <span class="comment"># [batch, query_len, embed_dim]</span>
+        u = query_embeds.<span class="function">sum</span>(dim=<span class="number">1</span>)  <span class="comment"># [batch, embed_dim]</span>
+        
+        <span class="comment"># Multi-hop reasoning</span>
+        <span class="keyword">for</span> hop <span class="keyword">in</span> <span class="builtin">range</span>(self.num_hops):
+            <span class="comment"># Encode memories as keys (what to match on)</span>
+            <span class="comment"># m: [batch, num_memories, embed_dim]</span>
+            mem_key_embeds = self.A[hop](memory_tokens)  <span class="comment"># [batch, num_mem, seq_len, embed_dim]</span>
+            m = mem_key_embeds.<span class="function">sum</span>(dim=<span class="number">2</span>)  <span class="comment"># Bag of words: [batch, num_mem, embed_dim]</span>
+            
+            <span class="comment"># Add temporal encoding</span>
+            m = m + self.temporal_A[:num_memories].<span class="function">unsqueeze</span>(<span class="number">0</span>)
+            
+            <span class="comment"># Compute attention: p = softmax(u^T m)</span>
+            <span class="comment"># [batch, num_memories]</span>
+            scores = torch.<span class="function">bmm</span>(m, u.<span class="function">unsqueeze</span>(<span class="number">2</span>)).<span class="function">squeeze</span>(<span class="number">2</span>)
+            
+            <span class="comment"># Mask out padding memories</span>
+            scores = scores.<span class="function">masked_fill</span>(memory_mask == <span class="number">0</span>, <span class="builtin">float</span>(<span class="string">'-inf'</span>))
+            p = F.<span class="function">softmax</span>(scores, dim=<span class="number">1</span>)  <span class="comment"># [batch, num_memories]</span>
+            
+            <span class="comment"># Encode memories as values (what to retrieve)</span>
+            <span class="comment"># c: [batch, num_memories, embed_dim]</span>
+            mem_val_embeds = self.C[hop](memory_tokens)
+            c = mem_val_embeds.<span class="function">sum</span>(dim=<span class="number">2</span>)
+            c = c + self.temporal_C[:num_memories].<span class="function">unsqueeze</span>(<span class="number">0</span>)
+            
+            <span class="comment"># Weighted sum of memory values: o = sum_i p_i * c_i</span>
+            <span class="comment"># [batch, embed_dim]</span>
+            o = torch.<span class="function">bmm</span>(p.<span class="function">unsqueeze</span>(<span class="number">1</span>), c).<span class="function">squeeze</span>(<span class="number">1</span>)
+            
+            <span class="comment"># Update query for next hop: u = u + o</span>
+            u = u + o
+        
+        <span class="comment"># Final prediction</span>
+        logits = self.<span class="function">output_layer</span>(u)  <span class="comment"># [batch, num_classes]</span>
+        <span class="keyword">return</span> logits
+    
+    <span class="keyword">def</span> <span class="function">get_attention_weights</span>(
+        self,
+        memory_tokens: torch.Tensor,
+        memory_mask: torch.Tensor,
+        query_tokens: torch.Tensor,
+    ) -> <span class="builtin">list</span>:
+        <span class="string">"""Return attention weights for each hop (for interpretability)."""</span>
+        batch_size = memory_tokens.<span class="function">size</span>(<span class="number">0</span>)
+        num_memories = memory_tokens.<span class="function">size</span>(<span class="number">1</span>)
+        
+        query_embeds = self.<span class="function">B</span>(query_tokens)
+        u = query_embeds.<span class="function">sum</span>(dim=<span class="number">1</span>)
+        
+        attention_weights = []
+        
+        <span class="keyword">for</span> hop <span class="keyword">in</span> <span class="builtin">range</span>(self.num_hops):
+            mem_key_embeds = self.A[hop](memory_tokens)
+            m = mem_key_embeds.<span class="function">sum</span>(dim=<span class="number">2</span>)
+            m = m + self.temporal_A[:num_memories].<span class="function">unsqueeze</span>(<span class="number">0</span>)
+            
+            scores = torch.<span class="function">bmm</span>(m, u.<span class="function">unsqueeze</span>(<span class="number">2</span>)).<span class="function">squeeze</span>(<span class="number">2</span>)
+            scores = scores.<span class="function">masked_fill</span>(memory_mask == <span class="number">0</span>, <span class="builtin">float</span>(<span class="string">'-inf'</span>))
+            p = F.<span class="function">softmax</span>(scores, dim=<span class="number">1</span>)
+            
+            attention_weights.<span class="function">append</span>(p.<span class="function">detach</span>().<span class="function">cpu</span>().<span class="function">numpy</span>())
+            
+            mem_val_embeds = self.C[hop](memory_tokens)
+            c = mem_val_embeds.<span class="function">sum</span>(dim=<span class="number">2</span>)
+            c = c + self.temporal_C[:num_memories].<span class="function">unsqueeze</span>(<span class="number">0</span>)
+            
+            o = torch.<span class="function">bmm</span>(p.<span class="function">unsqueeze</span>(<span class="number">1</span>), c).<span class="function">squeeze</span>(<span class="number">1</span>)
+            u = u + o
+        
+        <span class="keyword">return</span> attention_weights
+</pre>
+
+<h3>Vocabulary and Data Processing</h3>
+
+<pre><span class="keyword">class</span> <span class="builtin">ClinicalVocabulary</span>:
+    <span class="string">"""Simple vocabulary for tokenizing clinical text."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self):
+        self.word2idx = {<span class="string">'&lt;PAD&gt;'</span>: <span class="number">0</span>, <span class="string">'&lt;UNK&gt;'</span>: <span class="number">1</span>}
+        self.idx2word = {<span class="number">0</span>: <span class="string">'&lt;PAD&gt;'</span>, <span class="number">1</span>: <span class="string">'&lt;UNK&gt;'</span>}
+        self.next_idx = <span class="number">2</span>
+    
+    <span class="keyword">def</span> <span class="function">add_sentence</span>(self, sentence: <span class="builtin">str</span>):
+        <span class="string">"""Add words from a sentence to vocabulary."""</span>
+        <span class="keyword">for</span> word <span class="keyword">in</span> sentence.<span class="function">lower</span>().<span class="function">split</span>():
+            <span class="keyword">if</span> word <span class="keyword">not</span> <span class="keyword">in</span> self.word2idx:
+                self.word2idx[word] = self.next_idx
+                self.idx2word[self.next_idx] = word
+                self.next_idx += <span class="number">1</span>
+    
+    <span class="keyword">def</span> <span class="function">encode</span>(self, sentence: <span class="builtin">str</span>, max_len: <span class="builtin">int</span> = <span class="number">20</span>) -> <span class="builtin">list</span>:
+        <span class="string">"""Convert sentence to token indices."""</span>
+        tokens = []
+        <span class="keyword">for</span> word <span class="keyword">in</span> sentence.<span class="function">lower</span>().<span class="function">split</span>()[:max_len]:
+            tokens.<span class="function">append</span>(self.word2idx.<span class="function">get</span>(word, <span class="number">1</span>))  <span class="comment"># 1 = &lt;UNK&gt;</span>
+        <span class="comment"># Pad to max_len</span>
+        tokens += [<span class="number">0</span>] * (max_len - <span class="builtin">len</span>(tokens))
+        <span class="keyword">return</span> tokens
+    
+    <span class="keyword">def</span> <span class="function">__len__</span>(self):
+        <span class="keyword">return</span> <span class="builtin">len</span>(self.word2idx)
+
+
+<span class="keyword">def</span> <span class="function">prepare_clinical_data</span>(
+    facts: <span class="builtin">list</span>,
+    question: <span class="builtin">str</span>,
+    vocab: ClinicalVocabulary,
+    max_memories: <span class="builtin">int</span> = <span class="number">20</span>,
+    max_seq_len: <span class="builtin">int</span> = <span class="number">15</span>,
+):
+    <span class="string">"""Prepare clinical data for the memory network."""</span>
+    <span class="comment"># Build vocabulary from facts and question</span>
+    <span class="keyword">for</span> fact <span class="keyword">in</span> facts:
+        vocab.<span class="function">add_sentence</span>(fact)
+    vocab.<span class="function">add_sentence</span>(question)
+    
+    <span class="comment"># Encode memories (clinical facts)</span>
+    memory_tokens = []
+    <span class="keyword">for</span> fact <span class="keyword">in</span> facts[:max_memories]:
+        memory_tokens.<span class="function">append</span>(vocab.<span class="function">encode</span>(fact, max_seq_len))
+    
+    <span class="comment"># Pad to max_memories</span>
+    num_real_memories = <span class="builtin">len</span>(memory_tokens)
+    <span class="keyword">while</span> <span class="builtin">len</span>(memory_tokens) < max_memories:
+        memory_tokens.<span class="function">append</span>([<span class="number">0</span>] * max_seq_len)
+    
+    <span class="comment"># Create memory mask</span>
+    memory_mask = [<span class="number">1</span>] * num_real_memories + [<span class="number">0</span>] * (max_memories - num_real_memories)
+    
+    <span class="comment"># Encode query</span>
+    query_tokens = vocab.<span class="function">encode</span>(question, max_seq_len)
+    
+    <span class="keyword">return</span> {
+        <span class="string">'memory_tokens'</span>: torch.<span class="function">tensor</span>([memory_tokens]),
+        <span class="string">'memory_mask'</span>: torch.<span class="function">tensor</span>([memory_mask]),
+        <span class="string">'query_tokens'</span>: torch.<span class="function">tensor</span>([query_tokens]),
+    }
+</pre>
+
+<h3>Example Usage</h3>
+
+<pre><span class="comment"># Clinical case</span>
+facts = [
+    <span class="string">"Patient is 65 year old male"</span>,
+    <span class="string">"Patient has history of type 2 diabetes"</span>,
+    <span class="string">"Patient takes metformin 500mg twice daily"</span>,
+    <span class="string">"Latest HbA1c is 7.2 percent"</span>,
+    <span class="string">"Patient has hypertension"</span>,
+    <span class="string">"Patient takes lisinopril 10mg daily"</span>,
+    <span class="string">"Blood pressure at last visit was 138 over 85"</span>,
+    <span class="string">"Patient reports no chest pain"</span>,
+    <span class="string">"Patient has mild diabetic retinopathy"</span>,
+]
+
+question = <span class="string">"What medications is the patient taking"</span>
+
+<span class="comment"># Prepare data</span>
+vocab = ClinicalVocabulary()
+data = <span class="function">prepare_clinical_data</span>(facts, question, vocab)
+
+<span class="comment"># Initialize model</span>
+model = EndToEndMemoryNetwork(
+    vocab_size=<span class="builtin">len</span>(vocab),
+    embed_dim=<span class="number">64</span>,
+    num_hops=<span class="number">3</span>,
+    max_memory_size=<span class="number">20</span>,
+    num_classes=<span class="number">10</span>,  <span class="comment"># Number of possible answers</span>
+)
+
+<span class="comment"># Forward pass</span>
+<span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+    logits = <span class="function">model</span>(
+        data[<span class="string">'memory_tokens'</span>],
+        data[<span class="string">'memory_mask'</span>],
+        data[<span class="string">'query_tokens'</span>],
+    )
+    
+    <span class="comment"># Get attention weights for interpretability</span>
+    attention = model.<span class="function">get_attention_weights</span>(
+        data[<span class="string">'memory_tokens'</span>],
+        data[<span class="string">'memory_mask'</span>],
+        data[<span class="string">'query_tokens'</span>],
+    )
+
+<span class="comment"># Visualize attention over clinical facts</span>
+<span class="builtin">print</span>(<span class="string">"Question:"</span>, question)
+<span class="builtin">print</span>(<span class="string">"\nAttention weights per hop:"</span>)
+<span class="keyword">for</span> hop, weights <span class="keyword">in</span> <span class="builtin">enumerate</span>(attention):
+    <span class="builtin">print</span>(<span class="string">f"\nHop </span>{hop + <span class="number">1</span>}<span class="string">:"</span>)
+    <span class="keyword">for</span> i, (fact, w) <span class="keyword">in</span> <span class="builtin">enumerate</span>(<span class="builtin">zip</span>(facts, weights[<span class="number">0</span>])):
+        <span class="keyword">if</span> w > <span class="number">0.05</span>:  <span class="comment"># Only show significant attention</span>
+            <span class="builtin">print</span>(<span class="string">f"  [{w:.3f}] </span>{fact}<span class="string">"</span>)
+</pre>
+
+<pre><span class="comment"># Sample output (after training):</span>
+<span class="comment"># Question: What medications is the patient taking</span>
+<span class="comment"># </span>
+<span class="comment"># Attention weights per hop:</span>
+<span class="comment"># </span>
+<span class="comment"># Hop 1:</span>
+<span class="comment">#   [0.342] Patient takes metformin 500mg twice daily</span>
+<span class="comment">#   [0.298] Patient takes lisinopril 10mg daily</span>
+<span class="comment">#   [0.112] Patient has history of type 2 diabetes</span>
+<span class="comment"># </span>
+<span class="comment"># Hop 2:</span>
+<span class="comment">#   [0.456] Patient takes metformin 500mg twice daily</span>
+<span class="comment">#   [0.389] Patient takes lisinopril 10mg daily</span>
+<span class="comment"># </span>
+<span class="comment"># Hop 3:</span>
+<span class="comment">#   [0.521] Patient takes metformin 500mg twice daily</span>
+<span class="comment">#   [0.423] Patient takes lisinopril 10mg daily</span>
+</pre>
+
+<div class="info-box">
+    <h4>💡 Interpretability Through Attention</h4>
+    <p>The attention weights reveal which clinical facts the model considers relevant. Across hops, attention focuses increasingly on the medication-related facts. This provides valuable interpretability for clinical decision support systems.</p>
+</div>
+
+<hr>
+
+
+<h2>Practical Implementation: Transformer for EHR Classification</h2>
+
+<p>Now let's implement a Transformer encoder for classifying patient EHR sequences. Given a sequence of visits (each represented by diagnosis codes), we predict disease risk.</p>
+
+<h3>Positional Encoding</h3>
+
+<pre><span class="keyword">import</span> math
+
+<span class="keyword">class</span> <span class="builtin">PositionalEncoding</span>(nn.Module):
+    <span class="string">"""Sinusoidal positional encoding for sequences.
+    
+    Adds position-dependent signals so the model can learn to attend
+    by relative position, not just content similarity.
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, d_model: <span class="builtin">int</span>, max_len: <span class="builtin">int</span> = <span class="number">500</span>, dropout: <span class="builtin">float</span> = <span class="number">0.1</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.dropout = nn.Dropout(p=dropout)
+        
+        <span class="comment"># Create positional encoding matrix</span>
+        pe = torch.<span class="function">zeros</span>(max_len, d_model)
+        position = torch.<span class="function">arange</span>(<span class="number">0</span>, max_len, dtype=torch.float).<span class="function">unsqueeze</span>(<span class="number">1</span>)
+        
+        <span class="comment"># Compute the div_term for sinusoidal encoding</span>
+        div_term = torch.<span class="function">exp</span>(
+            torch.<span class="function">arange</span>(<span class="number">0</span>, d_model, <span class="number">2</span>).<span class="function">float</span>() * (-math.<span class="function">log</span>(<span class="number">10000.0</span>) / d_model)
+        )
+        
+        <span class="comment"># Even indices: sin, Odd indices: cos</span>
+        pe[:, <span class="number">0</span>::<span class="number">2</span>] = torch.<span class="function">sin</span>(position * div_term)
+        pe[:, <span class="number">1</span>::<span class="number">2</span>] = torch.<span class="function">cos</span>(position * div_term)
+        
+        <span class="comment"># Register as buffer (not a parameter, but saved with model)</span>
+        pe = pe.<span class="function">unsqueeze</span>(<span class="number">0</span>)  <span class="comment"># [1, max_len, d_model]</span>
+        self.<span class="function">register_buffer</span>(<span class="string">'pe'</span>, pe)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x: torch.Tensor) -> torch.Tensor:
+        <span class="string">"""
+        Args:
+            x: [batch, seq_len, d_model]
+        Returns:
+            x + positional encoding
+        """</span>
+        x = x + self.pe[:, :x.<span class="function">size</span>(<span class="number">1</span>)]
+        <span class="keyword">return</span> self.<span class="function">dropout</span>(x)
+</pre>
+
+<h3>Multi-Head Self-Attention</h3>
+
+<pre><span class="keyword">class</span> <span class="builtin">MultiHeadAttention</span>(nn.Module):
+    <span class="string">"""Multi-head self-attention mechanism.
+    
+    Computes attention over input sequence, allowing each position
+    to attend to all other positions with learned query/key/value projections.
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, d_model: <span class="builtin">int</span>, num_heads: <span class="builtin">int</span>, dropout: <span class="builtin">float</span> = <span class="number">0.1</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        <span class="keyword">assert</span> d_model % num_heads == <span class="number">0</span>, <span class="string">"d_model must be divisible by num_heads"</span>
+        
+        self.d_model = d_model
+        self.num_heads = num_heads
+        self.d_k = d_model // num_heads
+        
+        <span class="comment"># Linear projections for Q, K, V</span>
+        self.W_q = nn.Linear(d_model, d_model)
+        self.W_k = nn.Linear(d_model, d_model)
+        self.W_v = nn.Linear(d_model, d_model)
+        
+        <span class="comment"># Output projection</span>
+        self.W_o = nn.Linear(d_model, d_model)
+        
+        self.dropout = nn.Dropout(p=dropout)
+        self.scale = math.<span class="function">sqrt</span>(self.d_k)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(
+        self,
+        x: torch.Tensor,
+        mask: torch.Tensor = <span class="keyword">None</span>,
+    ) -> torch.Tensor:
+        <span class="string">"""
+        Args:
+            x: [batch, seq_len, d_model]
+            mask: [batch, seq_len] - 1 for valid positions, 0 for padding
+        Returns:
+            output: [batch, seq_len, d_model]
+        """</span>
+        batch_size, seq_len, _ = x.<span class="function">size</span>()
+        
+        <span class="comment"># Project to Q, K, V</span>
+        Q = self.<span class="function">W_q</span>(x)  <span class="comment"># [batch, seq_len, d_model]</span>
+        K = self.<span class="function">W_k</span>(x)
+        V = self.<span class="function">W_v</span>(x)
+        
+        <span class="comment"># Reshape for multi-head attention: [batch, num_heads, seq_len, d_k]</span>
+        Q = Q.<span class="function">view</span>(batch_size, seq_len, self.num_heads, self.d_k).<span class="function">transpose</span>(<span class="number">1</span>, <span class="number">2</span>)
+        K = K.<span class="function">view</span>(batch_size, seq_len, self.num_heads, self.d_k).<span class="function">transpose</span>(<span class="number">1</span>, <span class="number">2</span>)
+        V = V.<span class="function">view</span>(batch_size, seq_len, self.num_heads, self.d_k).<span class="function">transpose</span>(<span class="number">1</span>, <span class="number">2</span>)
+        
+        <span class="comment"># Scaled dot-product attention</span>
+        <span class="comment"># scores: [batch, num_heads, seq_len, seq_len]</span>
+        scores = torch.<span class="function">matmul</span>(Q, K.<span class="function">transpose</span>(-<span class="number">2</span>, -<span class="number">1</span>)) / self.scale
+        
+        <span class="comment"># Apply mask if provided (for padding)</span>
+        <span class="keyword">if</span> mask <span class="keyword">is not</span> <span class="keyword">None</span>:
+            <span class="comment"># Expand mask: [batch, 1, 1, seq_len]</span>
+            mask = mask.<span class="function">unsqueeze</span>(<span class="number">1</span>).<span class="function">unsqueeze</span>(<span class="number">2</span>)
+            scores = scores.<span class="function">masked_fill</span>(mask == <span class="number">0</span>, <span class="builtin">float</span>(<span class="string">'-inf'</span>))
+        
+        <span class="comment"># Softmax over keys</span>
+        attn_weights = F.<span class="function">softmax</span>(scores, dim=-<span class="number">1</span>)
+        attn_weights = self.<span class="function">dropout</span>(attn_weights)
+        
+        <span class="comment"># Apply attention to values</span>
+        <span class="comment"># output: [batch, num_heads, seq_len, d_k]</span>
+        output = torch.<span class="function">matmul</span>(attn_weights, V)
+        
+        <span class="comment"># Reshape back: [batch, seq_len, d_model]</span>
+        output = output.<span class="function">transpose</span>(<span class="number">1</span>, <span class="number">2</span>).<span class="function">contiguous</span>().<span class="function">view</span>(batch_size, seq_len, self.d_model)
+        
+        <span class="comment"># Final projection</span>
+        output = self.<span class="function">W_o</span>(output)
+        
+        <span class="keyword">return</span> output
+</pre>
+
+<h3>Transformer Encoder Block</h3>
+
+<pre><span class="keyword">class</span> <span class="builtin">TransformerEncoderBlock</span>(nn.Module):
+    <span class="string">"""Single Transformer encoder block.
+    
+    Architecture:
+    - Multi-head self-attention
+    - Add & Normalize (residual connection + layer norm)
+    - Feed-forward network
+    - Add & Normalize
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(
+        self,
+        d_model: <span class="builtin">int</span>,
+        num_heads: <span class="builtin">int</span>,
+        d_ff: <span class="builtin">int</span>,
+        dropout: <span class="builtin">float</span> = <span class="number">0.1</span>,
+    ):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        <span class="comment"># Multi-head attention</span>
+        self.attention = MultiHeadAttention(d_model, num_heads, dropout)
+        
+        <span class="comment"># Feed-forward network</span>
+        self.ffn = nn.Sequential(
+            nn.Linear(d_model, d_ff),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(d_ff, d_model),
+        )
+        
+        <span class="comment"># Layer normalization</span>
+        self.norm1 = nn.LayerNorm(d_model)
+        self.norm2 = nn.LayerNorm(d_model)
+        
+        <span class="comment"># Dropout for residual connections</span>
+        self.dropout = nn.Dropout(dropout)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x: torch.Tensor, mask: torch.Tensor = <span class="keyword">None</span>) -> torch.Tensor:
+        <span class="string">"""
+        Args:
+            x: [batch, seq_len, d_model]
+            mask: [batch, seq_len] padding mask
+        Returns:
+            output: [batch, seq_len, d_model]
+        """</span>
+        <span class="comment"># Self-attention with residual connection</span>
+        attn_output = self.<span class="function">attention</span>(x, mask)
+        x = self.<span class="function">norm1</span>(x + self.<span class="function">dropout</span>(attn_output))
+        
+        <span class="comment"># Feed-forward with residual connection</span>
+        ffn_output = self.<span class="function">ffn</span>(x)
+        x = self.<span class="function">norm2</span>(x + self.<span class="function">dropout</span>(ffn_output))
+        
+        <span class="keyword">return</span> x
+</pre>
+
+<h3>Complete Transformer for EHR Classification</h3>
+
+<pre><span class="keyword">class</span> <span class="builtin">EHRTransformer</span>(nn.Module):
+    <span class="string">"""Transformer encoder for EHR sequence classification.
+    
+    Takes a sequence of patient visits, each represented by diagnosis code
+    embeddings, and predicts disease risk or other outcomes.
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(
+        self,
+        vocab_size: <span class="builtin">int</span>,
+        d_model: <span class="builtin">int</span> = <span class="number">128</span>,
+        num_heads: <span class="builtin">int</span> = <span class="number">4</span>,
+        num_layers: <span class="builtin">int</span> = <span class="number">2</span>,
+        d_ff: <span class="builtin">int</span> = <span class="number">256</span>,
+        max_seq_len: <span class="builtin">int</span> = <span class="number">100</span>,
+        num_classes: <span class="builtin">int</span> = <span class="number">2</span>,
+        dropout: <span class="builtin">float</span> = <span class="number">0.1</span>,
+    ):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        <span class="comment"># Code embedding: convert diagnosis codes to vectors</span>
+        self.embedding = nn.Embedding(vocab_size, d_model, padding_idx=<span class="number">0</span>)
+        
+        <span class="comment"># Positional encoding for visit ordering</span>
+        self.pos_encoding = PositionalEncoding(d_model, max_seq_len, dropout)
+        
+        <span class="comment"># Stack of Transformer encoder blocks</span>
+        self.encoder_layers = nn.ModuleList([
+            TransformerEncoderBlock(d_model, num_heads, d_ff, dropout)
+            <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="builtin">range</span>(num_layers)
+        ])
+        
+        <span class="comment"># Classification head</span>
+        self.classifier = nn.Sequential(
+            nn.Linear(d_model, d_model // <span class="number">2</span>),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(d_model // <span class="number">2</span>, num_classes),
+        )
+        
+        self.d_model = d_model
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(
+        self,
+        visit_codes: torch.Tensor,     <span class="comment"># [batch, num_visits, codes_per_visit]</span>
+        visit_mask: torch.Tensor,       <span class="comment"># [batch, num_visits] - 1 for real visits</span>
+    ) -> torch.Tensor:
+        <span class="string">"""
+        Args:
+            visit_codes: Diagnosis codes for each visit
+            visit_mask: Mask for padding visits
+        Returns:
+            logits: [batch, num_classes]
+        """</span>
+        batch_size, num_visits, codes_per_visit = visit_codes.<span class="function">size</span>()
+        
+        <span class="comment"># Embed codes: [batch, num_visits, codes_per_visit, d_model]</span>
+        code_embeds = self.<span class="function">embedding</span>(visit_codes)
+        
+        <span class="comment"># Aggregate codes within each visit (sum pooling)</span>
+        <span class="comment"># [batch, num_visits, d_model]</span>
+        visit_embeds = code_embeds.<span class="function">sum</span>(dim=<span class="number">2</span>)
+        
+        <span class="comment"># Scale by sqrt(d_model) for stability</span>
+        visit_embeds = visit_embeds * math.<span class="function">sqrt</span>(self.d_model)
+        
+        <span class="comment"># Add positional encoding</span>
+        visit_embeds = self.<span class="function">pos_encoding</span>(visit_embeds)
+        
+        <span class="comment"># Apply Transformer encoder layers</span>
+        x = visit_embeds
+        <span class="keyword">for</span> encoder <span class="keyword">in</span> self.encoder_layers:
+            x = <span class="function">encoder</span>(x, visit_mask)
+        
+        <span class="comment"># Global pooling: average over non-padded visits</span>
+        <span class="comment"># [batch, d_model]</span>
+        mask_expanded = visit_mask.<span class="function">unsqueeze</span>(-<span class="number">1</span>).<span class="function">float</span>()
+        x_masked = x * mask_expanded
+        pooled = x_masked.<span class="function">sum</span>(dim=<span class="number">1</span>) / mask_expanded.<span class="function">sum</span>(dim=<span class="number">1</span>).<span class="function">clamp</span>(min=<span class="number">1</span>)
+        
+        <span class="comment"># Classification</span>
+        logits = self.<span class="function">classifier</span>(pooled)
+        
+        <span class="keyword">return</span> logits
+</pre>
+
+<h3>Training Example</h3>
+
+<pre><span class="comment"># Example: Predict heart disease risk from visit sequence</span>
+
+<span class="comment"># Sample data: visits with diagnosis codes (indices)</span>
+<span class="comment"># Visit 1: [Diabetes, Hypertension]</span>
+<span class="comment"># Visit 2: [Hyperlipidemia, Obesity]</span>
+<span class="comment"># Visit 3: [Chest pain, ECG abnormal]</span>
+
+<span class="comment"># Create sample batch</span>
+batch_size = <span class="number">4</span>
+num_visits = <span class="number">10</span>
+codes_per_visit = <span class="number">5</span>
+vocab_size = <span class="number">1000</span>
+
+<span class="comment"># Random data for demonstration</span>
+visit_codes = torch.<span class="function">randint</span>(<span class="number">1</span>, vocab_size, (batch_size, num_visits, codes_per_visit))
+visit_mask = torch.<span class="function">ones</span>(batch_size, num_visits)
+visit_mask[:, <span class="number">7</span>:] = <span class="number">0</span>  <span class="comment"># Last 3 visits are padding</span>
+
+labels = torch.<span class="function">randint</span>(<span class="number">0</span>, <span class="number">2</span>, (batch_size,))  <span class="comment"># Binary: heart disease yes/no</span>
+
+<span class="comment"># Initialize model</span>
+model = EHRTransformer(
+    vocab_size=vocab_size,
+    d_model=<span class="number">128</span>,
+    num_heads=<span class="number">4</span>,
+    num_layers=<span class="number">2</span>,
+    d_ff=<span class="number">256</span>,
+    max_seq_len=<span class="number">50</span>,
+    num_classes=<span class="number">2</span>,
+    dropout=<span class="number">0.1</span>,
+)
+
+<span class="comment"># Training setup</span>
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.<span class="function">parameters</span>(), lr=<span class="number">0.001</span>)
+
+<span class="comment"># Single training step</span>
+model.<span class="function">train</span>()
+optimizer.<span class="function">zero_grad</span>()
+
+logits = <span class="function">model</span>(visit_codes, visit_mask)
+loss = <span class="function">criterion</span>(logits, labels)
+loss.<span class="function">backward</span>()
+optimizer.<span class="function">step</span>()
+
+<span class="builtin">print</span>(<span class="string">f"Loss: </span>{loss.<span class="function">item</span>():<span class="number">.4</span>f}<span class="string">"</span>)
+<span class="builtin">print</span>(<span class="string">f"Predictions: </span>{torch.<span class="function">argmax</span>(logits, dim=<span class="number">1</span>).<span class="function">tolist</span>()}<span class="string">"</span>)
+<span class="builtin">print</span>(<span class="string">f"Labels: </span>{labels.<span class="function">tolist</span>()}<span class="string">"</span>)
+</pre>
+
+<pre><span class="comment"># Output:</span>
+<span class="comment"># Loss: 0.7123</span>
+<span class="comment"># Predictions: [1, 0, 1, 0]</span>
+<span class="comment"># Labels: [0, 1, 1, 0]</span>
+</pre>
+
+<h3>Model Size Comparison</h3>
+
+<pre><span class="keyword">def</span> <span class="function">count_parameters</span>(model):
+    <span class="keyword">return</span> <span class="builtin">sum</span>(p.<span class="function">numel</span>() <span class="keyword">for</span> p <span class="keyword">in</span> model.<span class="function">parameters</span>() <span class="keyword">if</span> p.requires_grad)
+
+<span class="builtin">print</span>(<span class="string">f"EHR Transformer parameters: </span>{<span class="function">count_parameters</span>(model):,}<span class="string">"</span>)
+
+<span class="comment"># Compare with Memory Network</span>
+memnet = EndToEndMemoryNetwork(
+    vocab_size=vocab_size,
+    embed_dim=<span class="number">128</span>,
+    num_hops=<span class="number">3</span>,
+    num_classes=<span class="number">2</span>,
+)
+<span class="builtin">print</span>(<span class="string">f"Memory Network parameters: </span>{<span class="function">count_parameters</span>(memnet):,}<span class="string">"</span>)
+</pre>
+
+<pre><span class="comment"># Output:</span>
+<span class="comment"># EHR Transformer parameters: 424,962</span>
+<span class="comment"># Memory Network parameters: 898,306</span>
+</pre>
+
+<hr>
+
+
+<h2>Comparing Architectures for Clinical Reasoning</h2>
+
+<p>Each architecture we've covered has different strengths for healthcare applications:</p>
+
+<table class="concept-table">
+<tr><th>Architecture</th><th>Memory</th><th>Attention</th><th>Best For</th></tr>
+<tr><td><strong>Original Memory Networks</strong></td><td>Explicit external</td><td>Hard (argmax)</td><td>Strongly supervised QA</td></tr>
+<tr><td><strong>End-to-End MemNets</strong></td><td>Explicit external</td><td>Soft (softmax)</td><td>Clinical fact retrieval, multi-hop reasoning</td></tr>
+<tr><td><strong>Transformer Encoder</strong></td><td>Implicit (in weights)</td><td>Self-attention</td><td>Sequential EHR modeling, parallel processing</td></tr>
+<tr><td><strong>BERT</strong></td><td>Pre-trained knowledge</td><td>Bidirectional self-attention</td><td>Clinical NLP, note understanding</td></tr>
+<tr><td><strong>Doctor2Vec</strong></td><td>Patient history as memory</td><td>Dynamic query-based</td><td>Doctor-trial matching, personalized retrieval</td></tr>
+</table>
+
+<h3>When to Use What</h3>
+
+<table class="results-table">
+<tr><th>Task</th><th>Recommended Architecture</th><th>Reasoning</th></tr>
+<tr><td>Clinical Question Answering</td><td>Memory Network</td><td>Explicit retrieval from patient facts</td></tr>
+<tr><td>Disease Prediction from Visits</td><td>Transformer</td><td>Captures temporal patterns in visit sequences</td></tr>
+<tr><td>Clinical Note Classification</td><td>Clinical BERT</td><td>Leverages pre-trained medical language understanding</td></tr>
+<tr><td>Named Entity Recognition</td><td>BERT + Token Classifier</td><td>Context-aware token representations</td></tr>
+<tr><td>Doctor Recommendation</td><td>Memory Network (Doctor2Vec)</td><td>Dynamic expertise representation</td></tr>
+<tr class="highlight-row"><td>Multi-modal EHR + Notes</td><td>Transformer Fusion</td><td>Handles heterogeneous inputs with attention</td></tr>
+</table>
+
+<hr>
+
+<h2>Key Takeaways</h2>
+
+<div class="info-box">
+    <h4>🎯 Memory Networks</h4>
+    <ul>
+        <li>Augment neural networks with explicit, addressable external memory</li>
+        <li>Four components: Input (encode), Generalization (store), Output (retrieve), Response (answer)</li>
+        <li>End-to-End version uses soft attention for differentiable training</li>
+        <li>Multi-hop reasoning enables complex clinical queries</li>
+    </ul>
+</div>
+
+<div class="info-box">
+    <h4>🎯 Self-Attention & Transformers</h4>
+    <ul>
+        <li>Self-attention allows every position to attend to every other position</li>
+        <li>Query-Key-Value paradigm mirrors memory network design</li>
+        <li>Scaled dot-product attention with multi-head for rich representations</li>
+        <li>Constant path length for long-range dependencies</li>
+        <li>Fully parallel computation (unlike sequential RNNs)</li>
+    </ul>
+</div>
+
+<div class="info-box">
+    <h4>🎯 BERT & Pre-training</h4>
+    <ul>
+        <li>Contextual embeddings capture word meaning in context</li>
+        <li>Masked language model + next sentence prediction for pre-training</li>
+        <li>Fine-tune on downstream tasks with minimal architecture changes</li>
+        <li>Domain-specific variants (ClinicalBERT, BioBERT) improve clinical NLP</li>
+    </ul>
+</div>
+
+<div class="warning-box">
+    <h4>⚠️ Practical Considerations</h4>
+    <ul>
+        <li><strong>Memory Networks</strong>: Require careful memory design; attention weights provide interpretability</li>
+        <li><strong>Transformers</strong>: Quadratic complexity in sequence length; may need chunking for very long sequences</li>
+        <li><strong>BERT</strong>: Large models require significant compute; consider distilled versions for production</li>
+        <li><strong>All attention models</strong>: Attention weights are not always faithful explanations — use with caution for clinical interpretation</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>Summary</h2>
+
+<table class="concept-table">
+<tr><th>Concept</th><th>Key Idea</th><th>Clinical Application</th></tr>
+<tr><td><strong>Memory Networks</strong></td><td>External memory + attention for retrieval</td><td>Clinical QA, fact retrieval</td></tr>
+<tr><td><strong>End-to-End Training</strong></td><td>Soft attention replaces hard argmax</td><td>Learning without explicit supervision</td></tr>
+<tr><td><strong>Self-Attention</strong></td><td>Every position attends to all others</td><td>Visit sequence modeling</td></tr>
+<tr><td><strong>Transformer</strong></td><td>Stack of self-attention + FFN layers</td><td>EHR classification, parallel processing</td></tr>
+<tr><td><strong>Positional Encoding</strong></td><td>Inject position information</td><td>Capture visit ordering in patient history</td></tr>
+<tr><td><strong>BERT</strong></td><td>Pre-trained bidirectional Transformer</td><td>Clinical note understanding</td></tr>
+<tr><td><strong>Doctor2Vec</strong></td><td>Patient memory + trial query attention</td><td>Clinical trial matching</td></tr>
+</table>
+
+<p>These architectures represent the evolution from external memory augmentation to fully self-contained attention mechanisms. Memory Networks excel when we have structured facts to retrieve; Transformers excel when we need to model complex relationships within sequences; and BERT excels when we have abundant unlabeled text for pre-training. In healthcare, the choice depends on your data modality (structured codes vs. clinical text), task requirements (retrieval vs. classification), and interpretability needs.</p>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>Weston, Chopra & Bordes (2015). "Memory Networks" — Original Memory Networks, ICLR 2015</li>
+    <li>Sukhbaatar et al. (2015). "End-To-End Memory Networks" — Differentiable memory access, NeurIPS 2015</li>
+    <li>Vaswani et al. (2017). "Attention Is All You Need" — Transformer architecture, NeurIPS 2017</li>
+    <li>Devlin et al. (2018). "BERT: Pre-training of Deep Bidirectional Transformers" — BERT, NAACL 2019</li>
+    <li>Biswal et al. (2020). "Doctor2Vec: Dynamic Doctor Representation Learning" — AAAI 2020</li>
+    <li>Alsentzer et al. (2019). "Publicly Available Clinical BERT Embeddings" — ClinicalBERT</li>
+    <li>Lee et al. (2020). "BioBERT: a pre-trained biomedical language representation model"</li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

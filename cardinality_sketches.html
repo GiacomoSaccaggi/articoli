@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="The complete evolution of probabilistic cardinality estimation algorithms — from Flajolet-Martin to HyperReal — with runnable Python from CardinalityKit.">
+    <meta name="author" content="Giacomo Saccaggi">
+    <title>The Upside Down of Data — Deep Dives</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+      onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        code { white-space: pre; }
+        pre:not([class]) { background-color: white; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background: #f8f9fa; padding: 1rem; border-radius: 4px; overflow-x: auto; }
+        code { font-family: 'Source Code Pro', monospace; font-size: 0.9em; }
+        img { max-width: 100%; height: auto; margin: 1rem 0; }
+        .epigraph { font-style: italic; color: #555; border-left: 3px solid #ccc; padding-left: 1rem; margin: 2rem 0; }
+        .byline { color: #777; margin-bottom: 2rem; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>The Upside Down of Data</h2>
+                        <hr class="small">
+                        <h5>Counting What Disappears</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+<div class="epigraph">
+"Will is alive. I know it. I can feel it in the lights."
+</div>
+<p class="byline"><strong>June 2026 · Giacomo Saccaggi</strong></p>
+
+<div class="section level2">
+<h2>Gone to the Upside Down</h2>
+
+<p>In Hawkins, Indiana, people vanish. Will Byers cycles home one evening and is simply <em>gone</em> — pulled into a parallel dimension where his body doesn't exist anymore on this side of the membrane. No corpse, no trace, no data point. Just absence.</p>
+
+<p>But Joyce Byers figured something out before anyone else: the vanished leave residual signals. Christmas lights flicker. Walls bulge and ripple. A faint electromagnetic echo bleeds through from the other side. You can't <em>see</em> Will, but you can count the flickers and know he's there.</p>
+
+<p>Probabilistic cardinality algorithms do exactly this to your data.</p>
+
+<p>Every element you feed into a sketch <em>disappears</em>. It crosses the membrane of a hash function and never comes back in its original form. The identifier is gone — destroyed, irrecoverable, dragged into the Upside Down of binary entropy. What remains on this side is a faint statistical residue: a maximum rank in a bucket, a minimum float in a register. A flicker in the Christmas lights.</p>
+
+<p>And from those flickers alone — from the <em>pattern of residues</em> across hundreds of buckets — you reconstruct the answer: how many distinct elements vanished into the sketch?</p>
+
+<p>You never stored them. You can't retrieve them. You can't name them. But you know how many there were.</p>
+
+<p>This is the architecture behind:</p>
+<ul>
+<li>Redis <code>PFCOUNT</code> (unique page views)</li>
+<li>BigQuery <code>APPROX_COUNT_DISTINCT</code></li>
+<li>Presto / Trino sketch aggregations</li>
+<li>Privacy-preserving audience measurement systems</li>
+</ul>
+
+<p>The family of algorithms that implements it went through four evolutionary leaps between 1985 and the present. Each one refined the same core trick: send data to the Upside Down, read the residue, report the count.</p>
+
+<p>Grab your walkie-talkie. We're going to follow the entire lineage, with working Python from <a href="https://giacomosaccaggi.github.io/CardinalityKit/">CardinalityKit</a>.</p>
+</div>
+
+<div class="section level2">
+<h2>The Naive Baseline: Keeping Everyone on This Side</h2>
+
+<p>The deterministic answer is simple: don't let anyone vanish. Maintain a set. Insert every element. Count the set. Everyone stays in the real world, accounted for, visible.</p>
+
+<pre><code class="python">seen = set()
+for event in stream:
+    seen.add(event.user_id)
+cardinality = len(seen)
+</code></pre>
+
+<p>Space: $O(n)$. A billion user IDs at 64 bytes each → 64 GB of RAM to answer a single integer question. In a distributed scenario, you'd need to ship those sets between cells for deduplication — a bandwidth catastrophe that also doubles as a privacy breach.</p>
+
+<p>The question Philippe Flajolet asked in 1985: what if you <em>let</em> the data vanish — and could still count it from the echo?</p>
+</div>
+
+<div class="section level2">
+<h2>Generation I: Flajolet-Martin (1985) — The First Portal</h2>
+
+<p>The founding paper: <em>"Probabilistic counting algorithms for data base applications."</em> This is the moment someone built the first gate to the Upside Down and proved you could read the flickers from the other side.</p>
+
+<p>The insight: hash each element uniformly into a binary string. The element itself is <em>gone</em> — destroyed in transit, irretrievable. But the hash it leaves behind has exploitable properties. Specifically, the number of trailing zeros is a noisy thermometer for how many distinct elements have vanished through the gate — because long runs of zeros are exponentially rare.</p>
+
+<table class="table table-condensed">
+<thead><tr><th>Trailing zeros ($k$)</th><th>Probability</th><th>Expected distinct to trigger</th></tr></thead>
+<tbody>
+<tr><td>0</td><td>$1/2$</td><td>1</td></tr>
+<tr><td>1</td><td>$1/4$</td><td>4</td></tr>
+<tr><td>2</td><td>$1/8$</td><td>8</td></tr>
+<tr><td>3</td><td>$1/16$</td><td>16</td></tr>
+<tr><td>$k$</td><td>$1/2^{k+1}$</td><td>$2^{k+1}$</td></tr>
+</tbody>
+</table>
+
+<p>Think of it this way: if Eleven's signature hashes to <code>...0001</code> (three trailing zeros), that's not remarkable. But if Subject 001's hash ends in <code>...00000000001</code> — ten trailing zeros — something statistically interesting happened. You must have processed enough distinct subjects that a $1/2048$ event was bound to occur.</p>
+
+<p>The algorithm records these occurrences in a 32-bit bitmap. The estimate: $2^R / 0.7735$, where $R$ is the position of the leftmost unset bit.</p>
+
+<pre><code class="python">from cardinalitykit import FlajoletMartinEstimator
+import hashlib
+
+fm = FlajoletMartinEstimator()
+subjects = [f"subject_{i:03d}" for i in range(500)]
+
+for s in subjects:
+    hash_val = '{:32b}'.format(int(hashlib.sha256(s.encode()).hexdigest()[:8], 16))
+    fm.update(hash_val)
+
+print(f"FM estimate: {fm.estimate():.0f}")   # Actual: 500
+print(f"Memory: {fm.memory_usage()} bytes")  # ~300 bytes (Python object overhead on a 32-bit bitmap)
+</code></pre>
+
+<p>The error is savage — ±30% on a good day. One bitmap, one roll of the dice. But the memory is <em>constant</em>. The data is gone — vanished into the Upside Down of the hash function, never coming back. Yet the count persists, flickering in the bitmap like Joyce's Christmas lights. That single principle — <em>let the data disappear, read the residue</em> — is the Rosetta Stone for everything that follows.</p>
+</div>
+
+<div class="section level2">
+<h2>Generation II: LogLog and SuperLogLog (2003)</h2>
+
+<p>Eighteen years pass. Flajolet, Durand, and Gandouet realize that FM's high variance comes from relying on a single flicker. One wall of lights isn't enough — the signal is too noisy. The fix: build <em>$m$ walls</em>. Split the hash space into $m = 2^b$ independent lanes, each tracking its own deepest echo.</p>
+
+<h3>The Bucket Architecture</h3>
+
+<p>Split the hash space into $m = 2^b$ independent lanes. Route each element to its lane based on the first $b$ bits of its hash. Each lane tracks only its own maximum rank — the longest run of zeros it's ever witnessed.</p>
+
+<p>Step by step, when a hash arrives:</p>
+
+<ol>
+<li>First $b$ bits → bucket index $j$ (which safe house in the network)</li>
+<li>Remaining bits → count trailing zeros → rank $\rho$ (how loud the psychic signal was)</li>
+<li><code>buckets[j] = max(buckets[j], ρ)</code></li>
+</ol>
+
+<p>The estimate averages across all buckets with a correction factor:</p>
+
+$$\hat{n} = \alpha_m \cdot m \cdot 2^{\frac{1}{m}\sum_{j=1}^{m} M[j]}$$
+
+<p>where $\alpha_m \approx 0.397$ is the LogLog bias constant.</p>
+
+<p>Why "LogLog"? Each bucket stores a rank that grows as $\log_2(\log_2(n_{\max}))$ bits. To count up to $2^{32}$ distinct elements, you need 5 bits per bucket. With 1024 buckets: 5 × 1024 = 640 bytes. That's it. Six hundred forty bytes to count four billion things.</p>
+
+<pre><code class="python">from cardinalitykit import LogLogEstimator, SuperLogLogEstimator
+import hashlib
+
+data = [f"subject_{i}" for i in range(10000)]
+
+ll = LogLogEstimator(k=10)
+sll = SuperLogLogEstimator(k=10)
+
+for item in data:
+    h = '{:32b}'.format(int(hashlib.sha256(item.encode()).hexdigest()[:8], 16))
+    ll.update(h)
+    sll.update(h)
+
+print(f"LogLog:      {ll.estimate():.0f}")   # ~10000
+print(f"SuperLogLog: {sll.estimate():.0f}")   # ~10000, tighter
+</code></pre>
+
+<h3>The SuperLogLog Refinement</h3>
+
+<p>Same paper, second insight. Some buckets get lucky — a freak hash deposits an absurdly high rank, pulling the average up. SuperLogLog's fix: sort the bucket values, throw away the top 30%, average only the survivors.</p>
+
+<p>A brute-force outlier trimming that cuts the standard error from $1.30/\sqrt{m}$ to $1.05/\sqrt{m}$. Crude, effective, no additional memory.</p>
+</div>
+
+<div class="section level2">
+<h2>Generation III: HyperLogLog (2007)</h2>
+
+<p>Flajolet's final algorithm. The one that ended the search.</p>
+
+<p>The problem with the arithmetic mean — even after trimming — is that it treats all bucket values linearly. A bucket reading 20 contributes as much to the average as a bucket reading 5, despite representing a $2^{15}$-fold difference in implied cardinality. The arithmetic mean doesn't care about the <em>exponential</em> relationship between rank and count.</p>
+
+<p>The harmonic mean does.</p>
+
+$$\hat{n} = \alpha_m \cdot m^2 \cdot \left(\sum_{j=1}^{m} 2^{-M[j]}\right)^{-1}$$
+
+<p>The harmonic mean is the reciprocal of the arithmetic mean of reciprocals. It's naturally dominated by <em>small</em> values — which is exactly what you want when outliers always push <em>up</em>. A bucket with an anomalously high rank barely moves the needle. The formula self-corrects.</p>
+
+<p>Standard error: $1.04/\sqrt{m}$. With $m = 16384$ (the Redis default, k=14): <strong>±0.81% error in 16 KB</strong>.</p>
+
+<p>HLL also automated three correction zones to handle edge cases:</p>
+
+<table class="table table-condensed">
+<thead><tr><th>Range</th><th>Correction</th><th>Reason</th></tr></thead>
+<tbody>
+<tr><td>$\hat{n} < 2.5m$</td><td>Linear Counting</td><td>Too few elements to fill all buckets; count empties instead</td></tr>
+<tr><td>$2.5m \leq \hat{n} \leq 2^{32}/30$</td><td>None</td><td>Formula's sweet spot</td></tr>
+<tr><td>$\hat{n} > 2^{32}/30$</td><td>$-2^{32}\ln(1-\hat{n}/2^{32})$</td><td>Hash collision compensation near saturation</td></tr>
+</tbody>
+</table>
+
+<pre><code class="python">from cardinalitykit import HyperLogLogEstimator
+import hashlib
+
+hll = HyperLogLogEstimator(k=14)
+data = [f"user_{i}" for i in range(1_000_000)]
+
+for item in data:
+    h = '{:32b}'.format(int(hashlib.sha256(item.encode()).hexdigest()[:8], 16))
+    hll.update(h)
+
+estimate = hll.estimate()
+error = abs(estimate - 1_000_000) / 1_000_000 * 100
+print(f"HLL estimate: {estimate:.0f}")
+print(f"Error: {error:.2f}%")
+print(f"Memory: {hll.memory_usage()} bytes")
+</code></pre>
+
+<p>This is the algorithm. The one running behind <code>PFADD</code>/<code>PFCOUNT</code> in Redis. Behind Spark's approximate distinct. Behind Google's Sawzall. It's not a research curiosity — it's deployed infrastructure counting billions of things with kilobytes of state, every second, on every continent.</p>
+</div>
+
+<div class="section level2">
+<h2>Generation IV: HyperReal — Deeper Into the Upside Down</h2>
+
+<p>HLL operates on integers. Ranks are discrete: 1, 2, 3, ... The correction zones exist precisely because discrete bit-space has hard boundaries — like a wall between dimensions that occasionally warps but never fully dissolves. Below a few thousand elements, the formula undershoots. Above $2^{32}$, the hash space saturates.</p>
+
+<p>HyperReal dissolves the wall entirely. Instead of mapping hashes to integer bit ranks, it maps them to <em>continuous floats</em> in $(0, 1)$ — a smooth, boundaryless Upside Down where the echoes don't discretize. Each bucket tracks the <strong>minimum</strong> value it has ever seen (initialized to 1.0).</p>
+
+<p>The probability model: if you throw $n$ uniform samples into $m$ buckets, the minimum value in any bucket follows a scaled exponential distribution:</p>
+
+$$M[j] \sim \frac{m}{n} \cdot \text{Exp}(1)$$
+
+<p>The expected value of $M[j]$ is $m/n$. Sum all $m$ buckets: $\sum M[j] \approx m^2/n$. Invert:</p>
+
+$$\hat{n} = \frac{m^2}{\sum_{j=1}^{m} M[j]}$$
+
+<p>No correction zones. No bias lookup tables. No ceiling at $2^{32}$. The continuous minimum scales inversely with cardinality <em>by nature of the exponential distribution</em>. The estimator is unbiased straight out of the box.</p>
+
+<pre><code class="python">from cardinalitykit import HyperRealEstimator
+import hashlib
+
+hr = HyperRealEstimator(k=14)
+data = [f"user_{i}" for i in range(1_000_000)]
+
+for item in data:
+    h = '{:32b}'.format(int(hashlib.sha256(item.encode()).hexdigest()[:8], 16))
+    hr.update(h)
+
+print(f"HyperReal estimate: {hr.estimate():.0f}")
+print(f"Memory: {hr.memory_usage()} bytes")
+</code></pre>
+
+<p>The cost: 8 bytes per bucket (a full float64) instead of HLL's 5–6 bits. For the same register count, HyperReal uses roughly 10× more memory. But the simplicity of the estimator — a single division — and the absence of edge-case machinery makes it compelling for research systems and high-precision applications where memory isn't the binding constraint.</p>
+</div>
+
+<div class="section level2">
+<h2>The Merge Property: Counting Across Dimensions</h2>
+
+<p>Here's where the Upside Down metaphor stops being a metaphor and becomes architecture.</p>
+
+<p>Imagine two monitoring stations — Hawkins Lab and the Wheeler basement — each with its own wall of flickering lights (its sketch). Each station has observed its own stream of vanishing subjects. They want to know the <em>total</em> number of unique subjects across both stations, but they can't transmit the raw observations (the radio is tapped, and Vecna is always listening).</p>
+
+<p>They transmit only the flicker patterns. Fixed-size arrays of numbers that mean nothing to an interceptor.</p>
+
+<p>To compute the <strong>union cardinality</strong> (total unique vanished across both stations), merge the sketches:</p>
+
+<pre><code class="python"># HyperLogLog: element-wise MAX
+merged_hll = [max(a, b) for a, b in zip(hawkins.buckets, chicago.buckets)]
+
+# HyperReal: element-wise MIN
+merged_hr = [min(a, b) for a, b in zip(hawkins.buckets, chicago.buckets)]
+</code></pre>
+
+<p>The merged sketch produces the cardinality of the union — as if all subjects had vanished through a single gate. The math works because MAX preserves the deepest echo (HLL's "max leading zeros" semantics) and MIN preserves the faintest signal (HyperReal's "minimum value" semantics) across the combined stream.</p>
+
+<p>For <strong>intersections</strong> — "is the same subject operating in both cells?" — you apply inclusion-exclusion:</p>
+
+$$|A \cap B| = |A| + |B| - |A \cup B|$$
+
+<p>Each cell knows its own cardinality. The merged sketch gives the union. Subtraction gives the overlap. All without revealing <em>which</em> specific elements overlap.</p>
+
+<p>Joyce knows 3 lights are flickering on <em>both</em> her wall and the one in Murray's basement. She doesn't know which 3 subjects they correspond to. And anyone tapping the radio sees nothing but arrays of floating-point numbers — residues of the vanished, meaningless without the hash function's secret salt.</p>
+</div>
+
+<div class="section level2">
+<h2>Extended Sketches: Demographics Without Identifiers</h2>
+
+<p>Raw cardinality answers "how many?" but not "how many of <em>what kind</em>?" In audience measurement, you need demographic breakdowns — age groups, device types, content categories — without ever tying them back to individuals.</p>
+
+<p>CardinalityKit's <code>ExtendedHyperRealSketch</code> solves this by storing, alongside each bucket's minimum value, the <em>attribute</em> of the element that produced it:</p>
+
+<pre><code class="python">from cardinalitykit import ExtendedHyperRealSketch
+
+sketch = ExtendedHyperRealSketch(b_m=10)
+
+events = [
+    {'id_to_count': 'subject_011', 'attribute': 'telekinesis'},
+    {'id_to_count': 'subject_008', 'attribute': 'illusion'},
+    {'id_to_count': 'subject_003', 'attribute': 'precognition'},
+    {'id_to_count': 'subject_011', 'attribute': 'telekinesis'},  # duplicate — ignored
+]
+
+for event in events:
+    sketch.update_sketch(event)
+
+total = sketch.get_cardinality_estimate()
+by_power = sketch.get_frequency_for_attr()
+print(f"Total subjects: {total:.0f}")
+print(f"By ability type: {by_power}")
+</code></pre>
+
+<p>The mechanism: when an element wins a bucket (produces the new minimum), its attribute is recorded. The attribute distribution across won buckets approximates the true demographic proportions of the underlying population. You get per-segment cardinality from the same fixed-memory structure.</p>
+</div>
+
+<div class="section level2">
+<h2>The Full Arc</h2>
+
+<img src="img/09-cardinality-sketches_img1.png" alt="Algorithm evolution: error vs. memory across four generations of cardinality estimators" />
+
+<table class="table table-condensed">
+<thead><tr><th>Algorithm</th><th>Year</th><th>Aggregation</th><th>Bits/Register</th><th>Std. Error</th><th>Corrections</th></tr></thead>
+<tbody>
+<tr><td>Flajolet-Martin</td><td>1985</td><td>Single bitmap</td><td>1</td><td>~30%</td><td>Bias constant</td></tr>
+<tr><td>LogLog</td><td>2003</td><td>Arithmetic mean</td><td>~5</td><td>$1.30/\sqrt{m}$</td><td>Bias constant</td></tr>
+<tr><td>SuperLogLog</td><td>2003</td><td>Trimmed arith. mean</td><td>~5</td><td>$1.05/\sqrt{m}$</td><td>Bias + truncation</td></tr>
+<tr><td>HyperLogLog</td><td>2007</td><td>Harmonic mean</td><td>5–6</td><td>$1.04/\sqrt{m}$</td><td>Three zones</td></tr>
+<tr><td>HyperReal</td><td>—</td><td>Sum of minimums</td><td>64 (float)</td><td>Unbiased</td><td>None</td></tr>
+</tbody>
+</table>
+
+<p>One thread connects them: <em>compress an unbounded stream into a fixed-memory fingerprint, then extract cardinality from the statistical properties of that fingerprint.</em> Each generation found a better aggregation function or a better probability model. The data structure shrank while the accuracy grew.</p>
+</div>
+
+<div class="section level2">
+<h2>What's Next</h2>
+
+<p>The full <a href="https://giacomosaccaggi.github.io/CardinalityKit/">CardinalityKit</a> repository provides production-ready Python implementations of every algorithm in this lineage — plus extended sketches for demographic tracking and sample-to-population conversion for panel data extrapolation.</p>
+
+<p>Every element you feed into a sketch goes to the Upside Down. It's not coming back. The identifier is destroyed, the original form is lost, the membrane has sealed behind it. But the Christmas lights still flicker — and if you know how to read the pattern of residues across the buckets, you'll always know how many vanished.</p>
+
+<p>The data is gone. The count remains.</p>
+</div>
+
+            </div>
+        </div>
+    </div>
+    <hr>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p class="copyright text-muted">Giacomo Saccaggi 2024</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
