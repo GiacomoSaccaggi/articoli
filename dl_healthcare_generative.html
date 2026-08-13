@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Generative Models for Synthetic Healthcare Data: VAEs and GANs for Privacy-Preserving EHR">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>Generative Models for Healthcare</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- MathJax for LaTeX rendering -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Generative Models for Synthetic Healthcare Data</h2>
+                        <hr class="small">
+                        <h5>Deep Learning for Healthcare — Part 7: VAEs and GANs for Privacy-Preserving EHR — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Generative Models: VAEs and GANs for Healthcare</h1>
+<p style="text-align:center;"><em>"The goal is not to generate any data, but to generate data that is indistinguishable from real patient records while revealing nothing about actual patients."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>Why Generate Healthcare Data?</h2>
+
+<p>Healthcare data is among the most sensitive and valuable resources in machine learning. Electronic Health Records (EHRs) contain detailed information about diagnoses, treatments, lab results, and outcomes — exactly what we need to train predictive models. But there's a fundamental tension:</p>
+
+<ul>
+    <li><strong>Privacy constraints</strong>: HIPAA, GDPR, and institutional policies restrict data sharing</li>
+    <li><strong>Data scarcity</strong>: Rare diseases have few examples; new hospitals have limited history</li>
+    <li><strong>Class imbalance</strong>: Adverse events (mortality, readmission) are rare but important</li>
+    <li><strong>Research reproducibility</strong>: Researchers can't share patient data, hindering replication</li>
+</ul>
+
+<p><strong>Generative models</strong> offer a solution: learn the underlying distribution of real patient data, then generate synthetic records that preserve statistical properties without exposing any individual patient.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec12_p12_7.png" alt="Generative models overview">
+    <p class="img-caption">Generative models learn to produce new samples from the data distribution</p>
+</div>
+
+<hr>
+
+<h2>Generative vs Discriminative Models</h2>
+
+<p>Before diving into specific architectures, let's understand the fundamental distinction between two paradigms in machine learning:</p>
+
+<table class="concept-table">
+<tr><th>Aspect</th><th>Discriminative Models</th><th>Generative Models</th></tr>
+<tr><td><strong>Goal</strong></td><td>Learn decision boundary</td><td>Learn data distribution</td></tr>
+<tr><td><strong>Models</strong></td><td>P(y|x) — label given features</td><td>P(x) or P(x,y) — joint distribution</td></tr>
+<tr><td><strong>Examples</strong></td><td>Logistic regression, SVM, DNNs</td><td>GANs, VAEs, Normalizing Flows</td></tr>
+<tr><td><strong>Output</strong></td><td>Class labels, predictions</td><td>New samples from learned distribution</td></tr>
+<tr><td><strong>Use case</strong></td><td>Classification, regression</td><td>Data augmentation, synthesis, imputation</td></tr>
+</table>
+
+<div class="formula-box">
+    <h4>The Core Difference</h4>
+    <p><strong>Discriminative</strong>: Given a patient's features x, what is the probability of mortality?</p>
+    <p class="formula">P(mortality = 1 | diagnoses, labs, vitals)</p>
+    <p><strong>Generative</strong>: What does a typical diabetic patient with heart failure look like?</p>
+    <p class="formula">P(diagnoses, labs, vitals | diabetes ∧ heart_failure)</p>
+</div>
+
+<p>Generative models are strictly more powerful — if you can model P(x,y), you can derive P(y|x) via Bayes' rule. But this power comes with complexity: modeling high-dimensional distributions is fundamentally harder than learning decision boundaries.</p>
+
+
+<hr>
+
+<h2>Generative Adversarial Networks (GANs)</h2>
+
+<p>GANs, introduced by Goodfellow et al. in 2014, represent one of the most influential ideas in deep learning. The core insight is brilliant: instead of explicitly modeling the data distribution, pit two neural networks against each other in a game.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec12_p13_2.png" alt="GAN architecture">
+    <p class="img-caption">GAN architecture: Generator creates fake samples, Discriminator distinguishes real from fake</p>
+</div>
+
+<h3>The Two Players</h3>
+
+<p><strong>Generator G</strong>: Takes random noise z ~ P(z) and transforms it into fake samples G(z) that should look like real data. Think of it as a counterfeiter trying to produce convincing fake currency.</p>
+
+<p><strong>Discriminator D</strong>: Takes a sample (real or generated) and outputs the probability that it came from the real data distribution. Think of it as a detective trying to catch counterfeits.</p>
+
+<h3>The Minimax Game</h3>
+
+<p>The two networks play a minimax game with the following objective:</p>
+
+<div class="formula-box">
+    <h4>GAN Objective Function</h4>
+    <p class="formula">min<sub>G</sub> max<sub>D</sub> V(D, G) = 𝔼<sub>x~p<sub>data</sub></sub>[log D(x)] + 𝔼<sub>z~p<sub>z</sub></sub>[log(1 - D(G(z)))]</p>
+    <p><strong>Discriminator's goal</strong>: Maximize V — correctly classify real samples as real (D(x)→1) and fake samples as fake (D(G(z))→0)</p>
+    <p><strong>Generator's goal</strong>: Minimize V — fool the discriminator so D(G(z))→1</p>
+</div>
+
+<h3>Training Procedure</h3>
+
+<p>Training alternates between updating D and G:</p>
+
+<pre><span class="comment"># GAN Training Algorithm (simplified)</span>
+<span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+    <span class="keyword">for</span> real_batch <span class="keyword">in</span> dataloader:
+        
+        <span class="comment"># ============ Train Discriminator ============</span>
+        <span class="comment"># Goal: maximize log D(x) + log(1 - D(G(z)))</span>
+        
+        <span class="comment"># Sample random noise</span>
+        z = torch.<span class="function">randn</span>(batch_size, latent_dim)
+        
+        <span class="comment"># Generate fake samples</span>
+        fake_batch = <span class="function">G</span>(z).<span class="function">detach</span>()  <span class="comment"># detach to avoid backprop through G</span>
+        
+        <span class="comment"># Discriminator predictions</span>
+        real_pred = <span class="function">D</span>(real_batch)
+        fake_pred = <span class="function">D</span>(fake_batch)
+        
+        <span class="comment"># Discriminator loss: maximize log D(real) + log(1 - D(fake))</span>
+        <span class="comment"># Equivalent to minimize -log D(real) - log(1 - D(fake))</span>
+        d_loss = -torch.<span class="function">mean</span>(torch.<span class="function">log</span>(real_pred)) - torch.<span class="function">mean</span>(torch.<span class="function">log</span>(<span class="number">1</span> - fake_pred))
+        
+        d_optimizer.<span class="function">zero_grad</span>()
+        d_loss.<span class="function">backward</span>()
+        d_optimizer.<span class="function">step</span>()
+        
+        <span class="comment"># ============ Train Generator ============</span>
+        <span class="comment"># Goal: minimize log(1 - D(G(z))) ≈ maximize log D(G(z))</span>
+        
+        z = torch.<span class="function">randn</span>(batch_size, latent_dim)
+        fake_batch = <span class="function">G</span>(z)
+        fake_pred = <span class="function">D</span>(fake_batch)
+        
+        <span class="comment"># Generator loss: maximize log D(G(z))</span>
+        <span class="comment"># In practice, minimize -log D(G(z)) for better gradients</span>
+        g_loss = -torch.<span class="function">mean</span>(torch.<span class="function">log</span>(fake_pred))
+        
+        g_optimizer.<span class="function">zero_grad</span>()
+        g_loss.<span class="function">backward</span>()
+        g_optimizer.<span class="function">step</span>()
+</pre>
+
+<div class="warning-box">
+    <h4>⚠️ Training Instability</h4>
+    <p>GAN training is notoriously unstable. Common issues:</p>
+    <ul>
+        <li><strong>Mode collapse</strong>: Generator produces limited variety of samples</li>
+        <li><strong>Vanishing gradients</strong>: If D becomes too good, G gets no useful gradient signal</li>
+        <li><strong>Oscillation</strong>: D and G alternate between winning, never converging</li>
+    </ul>
+    <p>Convergence is an open problem — there's no guarantee GANs reach equilibrium!</p>
+</div>
+
+<h3>The Generator Loss Trick</h3>
+
+<p>In the original formulation, G minimizes log(1 - D(G(z))). But when D is confident (D(G(z)) ≈ 0), this gradient vanishes. In practice, we use:</p>
+
+<div class="formula-box">
+    <h4>Practical Generator Loss</h4>
+    <p><strong>Original</strong>: min<sub>G</sub> log(1 - D(G(z))) — saturates when D is good</p>
+    <p><strong>Practical</strong>: max<sub>G</sub> log D(G(z)) — stronger gradients early in training</p>
+    <p>Both have the same fixed point, but the practical version has better gradient flow.</p>
+</div>
+
+
+<hr>
+
+<h2>MedGAN: Generating Synthetic EHR Data</h2>
+
+<p>Standard GANs work well for continuous data like images, but EHR data is fundamentally different: it's <strong>discrete</strong> (binary diagnosis codes), <strong>multi-label</strong> (patients have multiple conditions), and <strong>high-dimensional</strong> (thousands of possible codes).</p>
+
+<p>MedGAN (Choi et al., 2017) addresses these challenges by combining an autoencoder with a GAN, operating in a continuous latent space rather than directly on discrete codes.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec12_p21_5.png" alt="MedGAN architecture">
+    <p class="img-caption">MedGAN architecture: Autoencoder + GAN for discrete EHR generation</p>
+</div>
+
+<h3>The Discrete Data Problem</h3>
+
+<p>Why can't we use a standard GAN for binary medical codes?</p>
+
+<ul>
+    <li><strong>Non-differentiable</strong>: Binary outputs break gradient flow</li>
+    <li><strong>Sparse</strong>: Most patients have very few codes out of thousands</li>
+    <li><strong>Structured</strong>: Codes have semantic relationships (ICD hierarchy)</li>
+</ul>
+
+<h3>MedGAN Architecture</h3>
+
+<p>MedGAN uses a two-stage approach:</p>
+
+<table class="concept-table">
+<tr><th>Component</th><th>Input</th><th>Output</th><th>Purpose</th></tr>
+<tr><td><strong>Encoder (Enc)</strong></td><td>Binary codes x</td><td>Continuous h</td><td>Map discrete to continuous</td></tr>
+<tr><td><strong>Decoder (Dec)</strong></td><td>Continuous h</td><td>Binary codes x̂</td><td>Map continuous to discrete</td></tr>
+<tr><td><strong>Generator (G)</strong></td><td>Noise z</td><td>Continuous h'</td><td>Generate in latent space</td></tr>
+<tr><td><strong>Discriminator (D)</strong></td><td>Binary codes</td><td>Real/Fake prob</td><td>Distinguish real from fake</td></tr>
+</table>
+
+<h3>Training Procedure</h3>
+
+<p><strong>Stage 1: Pre-train Autoencoder</strong></p>
+<p>Train Enc/Dec to reconstruct real patient records:</p>
+
+<div class="formula-box">
+    <h4>Autoencoder Loss</h4>
+    <p class="formula">L<sub>AE</sub> = ||x - Dec(Enc(x))||²</p>
+    <p>This creates a smooth latent space where similar patients map to nearby points.</p>
+</div>
+
+<p><strong>Stage 2: Train GAN in Latent Space</strong></p>
+<p>Generator produces latent codes, Decoder maps to discrete, Discriminator judges:</p>
+
+<pre><span class="comment"># MedGAN Training (Stage 2)</span>
+<span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+    <span class="keyword">for</span> real_x <span class="keyword">in</span> dataloader:
+        
+        <span class="comment"># ============ Train Discriminator ============</span>
+        z = torch.<span class="function">randn</span>(batch_size, noise_dim)
+        
+        <span class="comment"># Generator produces latent representation</span>
+        fake_h = <span class="function">G</span>(z)
+        
+        <span class="comment"># Decoder maps to discrete codes</span>
+        fake_x = <span class="function">Dec</span>(fake_h)
+        
+        <span class="comment"># Discriminator sees discrete codes (real or fake)</span>
+        real_pred = <span class="function">D</span>(real_x)
+        fake_pred = <span class="function">D</span>(fake_x.<span class="function">detach</span>())
+        
+        d_loss = bce_loss(real_pred, ones) + bce_loss(fake_pred, zeros)
+        
+        <span class="comment"># ============ Train Generator ============</span>
+        z = torch.<span class="function">randn</span>(batch_size, noise_dim)
+        fake_h = <span class="function">G</span>(z)
+        fake_x = <span class="function">Dec</span>(fake_h)
+        fake_pred = <span class="function">D</span>(fake_x)
+        
+        g_loss = bce_loss(fake_pred, ones)  <span class="comment"># Fool discriminator</span>
+</pre>
+
+<h3>Privacy Guarantee</h3>
+
+<p>The key insight: once trained, the Generator + Decoder can produce unlimited synthetic patients <strong>without ever seeing real data again</strong>. The synthetic records:</p>
+
+<ul>
+    <li>Preserve population-level statistics (disease prevalence, comorbidities)</li>
+    <li>Cannot be traced back to any individual patient</li>
+    <li>Can be safely shared for research and model development</li>
+</ul>
+
+<h3>Evaluation Metrics</h3>
+
+<p>How do we know synthetic data is "good"? MedGAN uses two complementary metrics:</p>
+
+<div class="info-box">
+    <h4>📊 Dimension-wise Probability</h4>
+    <p>Compare the frequency of each diagnosis code between real and synthetic data:</p>
+    <p><strong>For each code j</strong>: |P<sub>real</sub>(code_j = 1) - P<sub>synthetic</sub>(code_j = 1)|</p>
+    <p>Lower is better — synthetic data should have similar disease prevalence.</p>
+</div>
+
+<div class="info-box">
+    <h4>🎯 Dimension-wise Prediction</h4>
+    <p>Train a classifier on synthetic data, test on real data:</p>
+    <ol>
+        <li>For each code j, train logistic regression: other codes → code j</li>
+        <li>Train on synthetic data, evaluate on real data</li>
+        <li>Compare F1 score to training on real data</li>
+    </ol>
+    <p>Higher is better — synthetic data should capture the same predictive relationships.</p>
+</div>
+
+
+<hr>
+
+<h2>Variational Autoencoders (VAEs)</h2>
+
+<p>While GANs learn through adversarial training, Variational Autoencoders (Kingma & Welling, 2014) take a probabilistic approach. VAEs provide a principled framework for learning latent representations while enabling generation of new samples.</p>
+
+<h3>Standard Autoencoders: The Limitation</h3>
+
+<p>A standard autoencoder compresses input x to a latent code z, then reconstructs x̂:</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec12_p23_3.png" alt="Standard autoencoder">
+    <p class="img-caption">Standard autoencoder: deterministic encoding creates discontinuous latent space</p>
+</div>
+
+<pre><span class="comment"># Standard Autoencoder</span>
+<span class="keyword">class</span> <span class="builtin">Autoencoder</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, input_dim, latent_dim):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.encoder = nn.Sequential(
+            nn.Linear(input_dim, <span class="number">256</span>),
+            nn.ReLU(),
+            nn.Linear(<span class="number">256</span>, latent_dim)  <span class="comment"># Deterministic z</span>
+        )
+        self.decoder = nn.Sequential(
+            nn.Linear(latent_dim, <span class="number">256</span>),
+            nn.ReLU(),
+            nn.Linear(<span class="number">256</span>, input_dim),
+            nn.Sigmoid()
+        )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        z = self.<span class="function">encoder</span>(x)      <span class="comment"># Encode to latent</span>
+        x_hat = self.<span class="function">decoder</span>(z)  <span class="comment"># Reconstruct</span>
+        <span class="keyword">return</span> x_hat
+</pre>
+
+<p><strong>The problem</strong>: The latent space is not continuous or regularized. If we sample a random point z, the decoder may produce garbage — it's only trained to decode the specific z values produced by the encoder.</p>
+
+<h3>VAE: Probabilistic Encoding</h3>
+
+<p>VAEs solve this by making the encoder output <strong>distribution parameters</strong> rather than deterministic points:</p>
+
+<div class="formula-box">
+    <h4>VAE Encoder Output</h4>
+    <p>Instead of: z = Encoder(x)</p>
+    <p>VAE outputs: μ, σ² = Encoder(x)</p>
+    <p>Then samples: z ~ N(μ, σ²)</p>
+    <p>The latent code z is now a <strong>sample from a distribution</strong>, not a fixed point.</p>
+</div>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec12_p29_8.png" alt="VAE architecture">
+    <p class="img-caption">VAE: Encoder outputs distribution parameters, sample z from this distribution</p>
+</div>
+
+<h3>The Reparameterization Trick</h3>
+
+<p>There's a problem: we can't backpropagate through a sampling operation. The reparameterization trick makes this differentiable:</p>
+
+<div class="formula-box">
+    <h4>Reparameterization Trick</h4>
+    <p><strong>Original</strong>: z ~ N(μ, σ²) — sampling breaks gradient flow</p>
+    <p><strong>Reparameterized</strong>: z = μ + σ · ε, where ε ~ N(0, 1)</p>
+    <p>The randomness is now external (ε), and z is a deterministic function of μ, σ, and ε.</p>
+    <p>Gradients can flow through μ and σ back to the encoder!</p>
+</div>
+
+<pre><span class="keyword">def</span> <span class="function">reparameterize</span>(mu, log_var):
+    <span class="string">"""
+    Reparameterization trick: z = mu + std * epsilon
+    log_var used instead of var for numerical stability
+    """</span>
+    std = torch.<span class="function">exp</span>(<span class="number">0.5</span> * log_var)  <span class="comment"># σ = exp(0.5 * log(σ²))</span>
+    eps = torch.<span class="function">randn_like</span>(std)        <span class="comment"># ε ~ N(0, 1)</span>
+    z = mu + std * eps                 <span class="comment"># z = μ + σ * ε</span>
+    <span class="keyword">return</span> z
+</pre>
+
+<h3>VAE Loss Function</h3>
+
+<p>The VAE loss has two components that work together:</p>
+
+<div class="formula-box">
+    <h4>VAE Evidence Lower Bound (ELBO)</h4>
+    <p class="formula">L = -𝔼<sub>q(z|x)</sub>[log p(x|z)] + KL(q(z|x) || p(z))</p>
+    <p><strong>Reconstruction Loss</strong>: -𝔼[log p(x|z)] — how well can we reconstruct x from z?</p>
+    <p><strong>KL Divergence</strong>: KL(q(z|x) || p(z)) — how close is our learned distribution to the prior?</p>
+</div>
+
+<p><strong>Reconstruction loss</strong> forces the model to preserve information about x in z.</p>
+
+<p><strong>KL divergence</strong> regularizes the latent space, pushing it toward a standard normal distribution N(0, I). This ensures:</p>
+
+<ul>
+    <li>The latent space is <strong>continuous</strong> — nearby points decode to similar outputs</li>
+    <li>The latent space is <strong>complete</strong> — we can sample anywhere and get valid outputs</li>
+    <li>We can generate new samples by sampling z ~ N(0, I) and decoding</li>
+</ul>
+
+<h3>Closed-Form KL Divergence</h3>
+
+<p>For Gaussian distributions, the KL divergence has a closed form:</p>
+
+<div class="formula-box">
+    <h4>KL Divergence for Gaussians</h4>
+    <p>If q(z|x) = N(μ, σ²) and p(z) = N(0, 1):</p>
+    <p class="formula">KL(q||p) = -½ Σ<sub>j</sub> (1 + log(σ<sub>j</sub>²) - μ<sub>j</sub>² - σ<sub>j</sub>²)</p>
+    <p>This can be computed analytically — no sampling required!</p>
+</div>
+
+<pre><span class="keyword">def</span> <span class="function">vae_loss</span>(x, x_reconstructed, mu, log_var):
+    <span class="string">"""
+    VAE loss = Reconstruction + KL divergence
+    """</span>
+    <span class="comment"># Reconstruction loss (binary cross-entropy for binary data)</span>
+    recon_loss = F.<span class="function">binary_cross_entropy</span>(x_reconstructed, x, reduction=<span class="string">'sum'</span>)
+    
+    <span class="comment"># KL divergence: -0.5 * sum(1 + log(σ²) - μ² - σ²)</span>
+    kl_loss = -<span class="number">0.5</span> * torch.<span class="function">sum</span>(<span class="number">1</span> + log_var - mu.<span class="function">pow</span>(<span class="number">2</span>) - log_var.<span class="function">exp</span>())
+    
+    <span class="keyword">return</span> recon_loss + kl_loss
+</pre>
+
+<h3>Generation with VAEs</h3>
+
+<p>Once trained, generating new samples is simple:</p>
+
+<pre><span class="comment"># Generate new synthetic patient</span>
+<span class="keyword">def</span> <span class="function">generate_samples</span>(decoder, num_samples, latent_dim):
+    <span class="comment"># Sample from prior: z ~ N(0, I)</span>
+    z = torch.<span class="function">randn</span>(num_samples, latent_dim)
+    
+    <span class="comment"># Decode to data space</span>
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        generated = <span class="function">decoder</span>(z)
+    
+    <span class="keyword">return</span> generated
+
+<span class="comment"># Generate 100 synthetic patients</span>
+synthetic_patients = <span class="function">generate_samples</span>(vae.decoder, <span class="number">100</span>, latent_dim=<span class="number">64</span>)
+</pre>
+
+<h3>Latent Space Interpolation</h3>
+
+<p>A key advantage of VAEs: the latent space is smooth and meaningful. We can interpolate between patients:</p>
+
+<pre><span class="comment"># Interpolate between two patients</span>
+<span class="keyword">def</span> <span class="function">interpolate</span>(vae, x1, x2, steps=<span class="number">10</span>):
+    <span class="comment"># Encode both patients</span>
+    mu1, _ = vae.<span class="function">encode</span>(x1)
+    mu2, _ = vae.<span class="function">encode</span>(x2)
+    
+    <span class="comment"># Linear interpolation in latent space</span>
+    interpolations = []
+    <span class="keyword">for</span> alpha <span class="keyword">in</span> np.<span class="function">linspace</span>(<span class="number">0</span>, <span class="number">1</span>, steps):
+        z = (<span class="number">1</span> - alpha) * mu1 + alpha * mu2
+        x_interp = vae.<span class="function">decode</span>(z)
+        interpolations.<span class="function">append</span>(x_interp)
+    
+    <span class="keyword">return</span> interpolations
+
+<span class="comment"># Result: smooth transition from patient 1's conditions to patient 2's</span>
+</pre>
+
+
+<hr>
+
+<h2>VAE Application: Molecule Generation for Drug Discovery</h2>
+
+<p>One of the most exciting applications of generative models in healthcare is <strong>de novo drug design</strong>: generating novel molecular structures with desired therapeutic properties.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec12_p37_1.png" alt="Molecule generation with VAE">
+    <p class="img-caption">VAE for molecule generation: encode molecular structure, manipulate in latent space, decode to novel molecules</p>
+</div>
+
+<h3>The Drug Discovery Problem</h3>
+
+<p>Traditional drug discovery is slow and expensive:</p>
+
+<ul>
+    <li>Chemical space is vast: ~10<sup>60</sup> possible drug-like molecules</li>
+    <li>High-throughput screening tests ~10<sup>6</sup> compounds — a tiny fraction</li>
+    <li>Average time to market: 10-15 years</li>
+    <li>Average cost: $2.6 billion per approved drug</li>
+</ul>
+
+<p>Generative models can <strong>guide exploration</strong> by learning what makes molecules drug-like and generating candidates with desired properties.</p>
+
+<h3>Molecular Representations</h3>
+
+<p>Molecules can be represented in several ways:</p>
+
+<table class="concept-table">
+<tr><th>Representation</th><th>Example (Aspirin)</th><th>Pros/Cons</th></tr>
+<tr><td><strong>SMILES</strong></td><td>CC(=O)OC1=CC=CC=C1C(=O)O</td><td>String format, easy to process; not unique</td></tr>
+<tr><td><strong>Molecular Graph</strong></td><td>Nodes=atoms, edges=bonds</td><td>Preserves structure; requires GNNs</td></tr>
+<tr><td><strong>Fingerprints</strong></td><td>Binary vector of substructures</td><td>Fixed size; loses some information</td></tr>
+</table>
+
+<h3>VAE for SMILES Strings</h3>
+
+<p>The simplest approach encodes SMILES strings character-by-character:</p>
+
+<pre><span class="comment"># Character-level VAE for molecules</span>
+<span class="keyword">class</span> <span class="builtin">MoleculeVAE</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, vocab_size, max_len, latent_dim, hidden_dim=<span class="number">256</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        <span class="comment"># Encoder: SMILES → latent</span>
+        self.encoder = nn.GRU(vocab_size, hidden_dim, batch_first=<span class="keyword">True</span>)
+        self.fc_mu = nn.Linear(hidden_dim, latent_dim)
+        self.fc_logvar = nn.Linear(hidden_dim, latent_dim)
+        
+        <span class="comment"># Decoder: latent → SMILES</span>
+        self.fc_decode = nn.Linear(latent_dim, hidden_dim)
+        self.decoder = nn.GRU(vocab_size, hidden_dim, batch_first=<span class="keyword">True</span>)
+        self.fc_out = nn.Linear(hidden_dim, vocab_size)
+        
+        self.max_len = max_len
+    
+    <span class="keyword">def</span> <span class="function">encode</span>(self, x):
+        <span class="comment"># x: one-hot encoded SMILES [batch, seq_len, vocab_size]</span>
+        _, h = self.<span class="function">encoder</span>(x)
+        h = h.<span class="function">squeeze</span>(<span class="number">0</span>)
+        mu = self.<span class="function">fc_mu</span>(h)
+        logvar = self.<span class="function">fc_logvar</span>(h)
+        <span class="keyword">return</span> mu, logvar
+    
+    <span class="keyword">def</span> <span class="function">decode</span>(self, z, max_len=<span class="keyword">None</span>):
+        <span class="comment"># Autoregressive decoding</span>
+        max_len = max_len <span class="keyword">or</span> self.max_len
+        h = self.<span class="function">fc_decode</span>(z).<span class="function">unsqueeze</span>(<span class="number">0</span>)
+        
+        <span class="comment"># Start with start token</span>
+        outputs = []
+        <span class="comment"># ... autoregressive generation ...</span>
+        <span class="keyword">return</span> outputs
+</pre>
+
+<h3>Property Optimization in Latent Space</h3>
+
+<p>The real power: we can optimize molecular properties by moving in latent space:</p>
+
+<div class="info-box">
+    <h4>🧬 Latent Space Drug Design</h4>
+    <ol>
+        <li><strong>Encode</strong> a known active molecule to z</li>
+        <li><strong>Train a property predictor</strong> on latent vectors (e.g., binding affinity)</li>
+        <li><strong>Gradient ascent</strong> in latent space toward desired properties</li>
+        <li><strong>Decode</strong> optimized z to novel molecular structure</li>
+    </ol>
+    <p>This enables targeted generation of molecules with specific properties!</p>
+</div>
+
+<h3>MolGAN: Graph-based Molecule Generation</h3>
+
+<p>MolGAN (De Cao & Kipf, 2018) generates molecular graphs directly using a GAN with graph neural networks:</p>
+
+<ul>
+    <li><strong>Generator</strong>: Outputs adjacency matrix and node features</li>
+    <li><strong>Discriminator</strong>: Graph neural network that processes molecular graphs</li>
+    <li><strong>Reward network</strong>: Predicts molecular properties (solubility, drug-likeness)</li>
+</ul>
+
+<p>The reward network allows <strong>reinforcement learning</strong> to guide generation toward desired properties.</p>
+
+<hr>
+
+<h2>GAN vs VAE: When to Use Which?</h2>
+
+<p>Both GANs and VAEs can generate synthetic data, but they have different strengths:</p>
+
+<table class="results-table">
+<tr><th>Aspect</th><th>GAN</th><th>VAE</th></tr>
+<tr><td>Sample Quality</td><td>Sharper, more realistic</td><td>Slightly blurrier</td></tr>
+<tr><td>Training Stability</td><td>Difficult, mode collapse risk</td><td>Stable, well-defined loss</td></tr>
+<tr><td>Latent Space</td><td>Not explicitly regularized</td><td>Smooth, interpretable</td></tr>
+<tr><td>Mode Coverage</td><td>May miss modes (mode collapse)</td><td>Better coverage of distribution</td></tr>
+<tr><td>Likelihood</td><td>Cannot compute P(x)</td><td>Provides lower bound on P(x)</td></tr>
+<tr class="highlight-row"><td>Interpolation</td><td>Not guaranteed to work</td><td>Smooth interpolation</td></tr>
+<tr class="highlight-row"><td>Attribute Control</td><td>Conditional GAN needed</td><td>Natural via latent manipulation</td></tr>
+</table>
+
+<div class="info-box">
+    <h4>🏥 Recommendations for Healthcare</h4>
+    <p><strong>Use GANs when</strong>:</p>
+    <ul>
+        <li>Sample realism is critical (medical images)</li>
+        <li>You have large training datasets</li>
+        <li>You can invest in hyperparameter tuning</li>
+    </ul>
+    <p><strong>Use VAEs when</strong>:</p>
+    <ul>
+        <li>You need interpretable latent representations</li>
+        <li>You want to interpolate between patients/molecules</li>
+        <li>Training stability is important</li>
+        <li>You need uncertainty estimates</li>
+    </ul>
+</div>
+
+
+<hr>
+
+<h2>Practical Implementation: VAE for Synthetic EHR</h2>
+
+<p>Let's build a complete VAE for generating synthetic patient records. We'll work with binary multi-hot encoded diagnoses — the same representation used in medical embeddings.</p>
+
+<h3>Data Format</h3>
+
+<p>Each patient is represented as a binary vector where 1 indicates presence of a diagnosis code:</p>
+
+<pre><span class="comment"># Patient representation</span>
+<span class="comment"># Assume 1000 possible diagnosis codes</span>
+<span class="comment"># Patient with diabetes (idx 250), hypertension (idx 401), CKD (idx 585):</span>
+<span class="comment"># x = [0, 0, ..., 1, ..., 1, ..., 1, ..., 0]  # 1s at indices 250, 401, 585</span>
+<span class="comment">#                  ^250    ^401    ^585</span>
+</pre>
+
+<h3>VAE Architecture</h3>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">class</span> <span class="builtin">EHR_VAE</span>(nn.Module):
+    <span class="string">"""
+    Variational Autoencoder for binary EHR diagnosis codes.
+    
+    Input: Multi-hot encoded patient record [batch_size, num_codes]
+    Output: Reconstructed record + latent parameters (mu, log_var)
+    """</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_codes, hidden_dims=[<span class="number">512</span>, <span class="number">256</span>], latent_dim=<span class="number">64</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.num_codes = num_codes
+        self.latent_dim = latent_dim
+        
+        <span class="comment"># ============ Encoder ============</span>
+        encoder_layers = []
+        prev_dim = num_codes
+        <span class="keyword">for</span> hidden_dim <span class="keyword">in</span> hidden_dims:
+            encoder_layers.<span class="function">extend</span>([
+                nn.Linear(prev_dim, hidden_dim),
+                nn.BatchNorm1d(hidden_dim),
+                nn.ReLU(),
+                nn.Dropout(<span class="number">0.2</span>)
+            ])
+            prev_dim = hidden_dim
+        
+        self.encoder = nn.Sequential(*encoder_layers)
+        
+        <span class="comment"># Latent space parameters</span>
+        self.fc_mu = nn.Linear(hidden_dims[-<span class="number">1</span>], latent_dim)
+        self.fc_logvar = nn.Linear(hidden_dims[-<span class="number">1</span>], latent_dim)
+        
+        <span class="comment"># ============ Decoder ============</span>
+        decoder_layers = []
+        decoder_dims = [latent_dim] + hidden_dims[::-<span class="number">1</span>]  <span class="comment"># Reverse hidden dims</span>
+        
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(<span class="builtin">len</span>(decoder_dims) - <span class="number">1</span>):
+            decoder_layers.<span class="function">extend</span>([
+                nn.Linear(decoder_dims[i], decoder_dims[i+<span class="number">1</span>]),
+                nn.BatchNorm1d(decoder_dims[i+<span class="number">1</span>]),
+                nn.ReLU(),
+                nn.Dropout(<span class="number">0.2</span>)
+            ])
+        
+        <span class="comment"># Output layer</span>
+        decoder_layers.<span class="function">append</span>(nn.Linear(decoder_dims[-<span class="number">1</span>], num_codes))
+        decoder_layers.<span class="function">append</span>(nn.Sigmoid())  <span class="comment"># Binary output</span>
+        
+        self.decoder = nn.Sequential(*decoder_layers)
+    
+    <span class="keyword">def</span> <span class="function">encode</span>(self, x):
+        <span class="string">"""Encode input to latent distribution parameters."""</span>
+        h = self.<span class="function">encoder</span>(x)
+        mu = self.<span class="function">fc_mu</span>(h)
+        logvar = self.<span class="function">fc_logvar</span>(h)
+        <span class="keyword">return</span> mu, logvar
+    
+    <span class="keyword">def</span> <span class="function">reparameterize</span>(self, mu, logvar):
+        <span class="string">"""Reparameterization trick: z = mu + std * epsilon"""</span>
+        std = torch.<span class="function">exp</span>(<span class="number">0.5</span> * logvar)
+        eps = torch.<span class="function">randn_like</span>(std)
+        <span class="keyword">return</span> mu + std * eps
+    
+    <span class="keyword">def</span> <span class="function">decode</span>(self, z):
+        <span class="string">"""Decode latent vector to reconstructed input."""</span>
+        <span class="keyword">return</span> self.<span class="function">decoder</span>(z)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="string">"""Full forward pass: encode, sample, decode."""</span>
+        mu, logvar = self.<span class="function">encode</span>(x)
+        z = self.<span class="function">reparameterize</span>(mu, logvar)
+        x_recon = self.<span class="function">decode</span>(z)
+        <span class="keyword">return</span> x_recon, mu, logvar
+    
+    <span class="keyword">def</span> <span class="function">generate</span>(self, num_samples):
+        <span class="string">"""Generate new synthetic patients."""</span>
+        <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+            <span class="comment"># Sample from prior N(0, I)</span>
+            z = torch.<span class="function">randn</span>(num_samples, self.latent_dim)
+            samples = self.<span class="function">decode</span>(z)
+        <span class="keyword">return</span> samples
+
+
+<span class="comment"># Initialize model</span>
+num_codes = <span class="number">1000</span>  <span class="comment"># Vocabulary of diagnosis codes</span>
+vae = EHR_VAE(num_codes=num_codes, hidden_dims=[<span class="number">512</span>, <span class="number">256</span>], latent_dim=<span class="number">64</span>)
+<span class="builtin">print</span>(vae)
+</pre>
+
+<pre><span class="comment"># Model architecture:</span>
+<span class="comment"># EHR_VAE(</span>
+<span class="comment">#   (encoder): Sequential(</span>
+<span class="comment">#     (0): Linear(in_features=1000, out_features=512)</span>
+<span class="comment">#     (1): BatchNorm1d(512)</span>
+<span class="comment">#     (2): ReLU()</span>
+<span class="comment">#     (3): Dropout(p=0.2)</span>
+<span class="comment">#     (4): Linear(in_features=512, out_features=256)</span>
+<span class="comment">#     (5): BatchNorm1d(256)</span>
+<span class="comment">#     (6): ReLU()</span>
+<span class="comment">#     (7): Dropout(p=0.2)</span>
+<span class="comment">#   )</span>
+<span class="comment">#   (fc_mu): Linear(in_features=256, out_features=64)</span>
+<span class="comment">#   (fc_logvar): Linear(in_features=256, out_features=64)</span>
+<span class="comment">#   (decoder): Sequential(...)</span>
+<span class="comment"># )</span>
+</pre>
+
+<h3>Loss Function</h3>
+
+<pre><span class="keyword">def</span> <span class="function">vae_loss_function</span>(x_recon, x, mu, logvar, beta=<span class="number">1.0</span>):
+    <span class="string">"""
+    VAE loss = Reconstruction + β * KL divergence
+    
+    Args:
+        x_recon: Reconstructed input [batch, num_codes]
+        x: Original input [batch, num_codes]
+        mu: Latent mean [batch, latent_dim]
+        logvar: Latent log variance [batch, latent_dim]
+        beta: Weight for KL term (β-VAE)
+    
+    Returns:
+        total_loss, recon_loss, kl_loss
+    """</span>
+    <span class="comment"># Reconstruction loss: Binary Cross Entropy</span>
+    <span class="comment"># Sum over codes, mean over batch</span>
+    recon_loss = F.<span class="function">binary_cross_entropy</span>(x_recon, x, reduction=<span class="string">'none'</span>)
+    recon_loss = recon_loss.<span class="function">sum</span>(dim=<span class="number">1</span>).<span class="function">mean</span>()
+    
+    <span class="comment"># KL divergence: -0.5 * sum(1 + log(σ²) - μ² - σ²)</span>
+    kl_loss = -<span class="number">0.5</span> * torch.<span class="function">sum</span>(<span class="number">1</span> + logvar - mu.<span class="function">pow</span>(<span class="number">2</span>) - logvar.<span class="function">exp</span>(), dim=<span class="number">1</span>)
+    kl_loss = kl_loss.<span class="function">mean</span>()
+    
+    <span class="comment"># Total loss</span>
+    total_loss = recon_loss + beta * kl_loss
+    
+    <span class="keyword">return</span> total_loss, recon_loss, kl_loss
+</pre>
+
+<h3>Training Loop</h3>
+
+<pre><span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader, TensorDataset
+<span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
+
+<span class="keyword">def</span> <span class="function">train_vae</span>(vae, train_data, num_epochs=<span class="number">50</span>, batch_size=<span class="number">64</span>, lr=<span class="number">1e-3</span>, beta=<span class="number">1.0</span>):
+    <span class="string">"""
+    Train VAE on binary EHR data.
+    
+    Args:
+        vae: EHR_VAE model
+        train_data: numpy array [num_patients, num_codes]
+        num_epochs: Training epochs
+        batch_size: Batch size
+        lr: Learning rate
+        beta: KL weight (use β < 1 for better reconstruction)
+    """</span>
+    device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+    vae = vae.<span class="function">to</span>(device)
+    
+    <span class="comment"># Create DataLoader</span>
+    dataset = TensorDataset(torch.<span class="function">tensor</span>(train_data, dtype=torch.float32))
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=<span class="keyword">True</span>)
+    
+    optimizer = optim.Adam(vae.<span class="function">parameters</span>(), lr=lr)
+    
+    history = {<span class="string">'total_loss'</span>: [], <span class="string">'recon_loss'</span>: [], <span class="string">'kl_loss'</span>: []}
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+        vae.<span class="function">train</span>()
+        epoch_total, epoch_recon, epoch_kl = <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>
+        
+        <span class="keyword">for</span> batch <span class="keyword">in</span> dataloader:
+            x = batch[<span class="number">0</span>].<span class="function">to</span>(device)
+            
+            optimizer.<span class="function">zero_grad</span>()
+            
+            <span class="comment"># Forward pass</span>
+            x_recon, mu, logvar = <span class="function">vae</span>(x)
+            
+            <span class="comment"># Compute loss</span>
+            total_loss, recon_loss, kl_loss = <span class="function">vae_loss_function</span>(
+                x_recon, x, mu, logvar, beta=beta
+            )
+            
+            <span class="comment"># Backward pass</span>
+            total_loss.<span class="function">backward</span>()
+            optimizer.<span class="function">step</span>()
+            
+            epoch_total += total_loss.<span class="function">item</span>()
+            epoch_recon += recon_loss.<span class="function">item</span>()
+            epoch_kl += kl_loss.<span class="function">item</span>()
+        
+        <span class="comment"># Record history</span>
+        n_batches = <span class="builtin">len</span>(dataloader)
+        history[<span class="string">'total_loss'</span>].<span class="function">append</span>(epoch_total / n_batches)
+        history[<span class="string">'recon_loss'</span>].<span class="function">append</span>(epoch_recon / n_batches)
+        history[<span class="string">'kl_loss'</span>].<span class="function">append</span>(epoch_kl / n_batches)
+        
+        <span class="keyword">if</span> (epoch + <span class="number">1</span>) % <span class="number">10</span> == <span class="number">0</span>:
+            <span class="builtin">print</span>(<span class="string">f"Epoch </span>{epoch+<span class="number">1</span>:<span class="number">3</span>d}<span class="string"> | Total: </span>{history[<span class="string">'total_loss'</span>][-<span class="number">1</span>]:<span class="number">.2</span>f}<span class="string"> | "</span>
+                  <span class="string">f"Recon: </span>{history[<span class="string">'recon_loss'</span>][-<span class="number">1</span>]:<span class="number">.2</span>f}<span class="string"> | KL: </span>{history[<span class="string">'kl_loss'</span>][-<span class="number">1</span>]:<span class="number">.2</span>f}<span class="string">"</span>)
+    
+    <span class="keyword">return</span> history
+
+<span class="comment"># Train the model</span>
+<span class="comment"># history = train_vae(vae, train_data, num_epochs=50, beta=0.5)</span>
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># Epoch  10 | Total: 142.35 | Recon: 138.42 | KL: 7.86</span>
+<span class="comment"># Epoch  20 | Total: 98.23 | Recon: 91.18 | KL: 14.10</span>
+<span class="comment"># Epoch  30 | Total: 76.45 | Recon: 67.32 | KL: 18.26</span>
+<span class="comment"># Epoch  40 | Total: 64.12 | Recon: 53.89 | KL: 20.46</span>
+<span class="comment"># Epoch  50 | Total: 58.34 | Recon: 47.21 | KL: 22.26</span>
+</pre>
+
+<h3>Generating Synthetic Patients</h3>
+
+<pre><span class="keyword">def</span> <span class="function">generate_synthetic_patients</span>(vae, num_patients, threshold=<span class="number">0.5</span>):
+    <span class="string">"""
+    Generate synthetic patient records.
+    
+    Args:
+        vae: Trained VAE model
+        num_patients: Number of synthetic patients to generate
+        threshold: Probability threshold for binary codes
+    
+    Returns:
+        Binary array of synthetic patients [num_patients, num_codes]
+    """</span>
+    vae.<span class="function">eval</span>()
+    
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        <span class="comment"># Sample from prior</span>
+        z = torch.<span class="function">randn</span>(num_patients, vae.latent_dim)
+        
+        <span class="comment"># Decode to probabilities</span>
+        probs = vae.<span class="function">decode</span>(z)
+        
+        <span class="comment"># Threshold to binary</span>
+        synthetic = (probs > threshold).<span class="function">float</span>().<span class="function">numpy</span>()
+    
+    <span class="keyword">return</span> synthetic
+
+<span class="comment"># Generate 1000 synthetic patients</span>
+<span class="comment"># synthetic_patients = generate_synthetic_patients(vae, 1000)</span>
+<span class="comment"># print(f"Generated {synthetic_patients.shape[0]} synthetic patients")</span>
+<span class="comment"># print(f"Average codes per patient: {synthetic_patients.sum(axis=1).mean():.1f}")</span>
+</pre>
+
+<h3>Evaluating Synthetic Data Quality</h3>
+
+<pre><span class="keyword">def</span> <span class="function">evaluate_synthetic_quality</span>(real_data, synthetic_data):
+    <span class="string">"""
+    Evaluate quality of synthetic data.
+    
+    Metrics:
+    1. Dimension-wise probability difference
+    2. Average codes per patient
+    3. Code co-occurrence similarity
+    """</span>
+    results = {}
+    
+    <span class="comment"># 1. Dimension-wise probability (code prevalence)</span>
+    real_prevalence = real_data.<span class="function">mean</span>(axis=<span class="number">0</span>)
+    synth_prevalence = synthetic_data.<span class="function">mean</span>(axis=<span class="number">0</span>)
+    
+    <span class="comment"># Mean absolute difference</span>
+    prevalence_diff = np.<span class="function">abs</span>(real_prevalence - synth_prevalence).<span class="function">mean</span>()
+    results[<span class="string">'prevalence_MAE'</span>] = prevalence_diff
+    
+    <span class="comment"># Correlation of prevalences</span>
+    prevalence_corr = np.<span class="function">corrcoef</span>(real_prevalence, synth_prevalence)[<span class="number">0</span>, <span class="number">1</span>]
+    results[<span class="string">'prevalence_corr'</span>] = prevalence_corr
+    
+    <span class="comment"># 2. Average codes per patient</span>
+    real_avg_codes = real_data.<span class="function">sum</span>(axis=<span class="number">1</span>).<span class="function">mean</span>()
+    synth_avg_codes = synthetic_data.<span class="function">sum</span>(axis=<span class="number">1</span>).<span class="function">mean</span>()
+    results[<span class="string">'real_avg_codes'</span>] = real_avg_codes
+    results[<span class="string">'synth_avg_codes'</span>] = synth_avg_codes
+    
+    <span class="comment"># 3. Code co-occurrence (correlation matrix)</span>
+    <span class="comment"># Select top 50 most common codes for efficiency</span>
+    top_codes = np.<span class="function">argsort</span>(real_prevalence)[-<span class="number">50</span>:]
+    
+    real_cooc = np.<span class="function">corrcoef</span>(real_data[:, top_codes].T)
+    synth_cooc = np.<span class="function">corrcoef</span>(synthetic_data[:, top_codes].T)
+    
+    <span class="comment"># Frobenius norm of difference</span>
+    cooc_diff = np.<span class="function">linalg</span>.<span class="function">norm</span>(real_cooc - synth_cooc, <span class="string">'fro'</span>)
+    results[<span class="string">'cooccurrence_diff'</span>] = cooc_diff
+    
+    <span class="keyword">return</span> results
+
+<span class="comment"># Example evaluation output:</span>
+<span class="comment"># {'prevalence_MAE': 0.0234,</span>
+<span class="comment">#  'prevalence_corr': 0.9812,</span>
+<span class="comment">#  'real_avg_codes': 8.3,</span>
+<span class="comment">#  'synth_avg_codes': 7.9,</span>
+<span class="comment">#  'cooccurrence_diff': 2.45}</span>
+</pre>
+
+
+<hr>
+
+<h2>Practical Implementation: Simple GAN for Tabular Medical Data</h2>
+
+<p>Now let's implement a basic GAN for generating tabular medical data. This is simpler than MedGAN but illustrates the core concepts.</p>
+
+<h3>Generator and Discriminator Networks</h3>
+
+<pre><span class="keyword">class</span> <span class="builtin">Generator</span>(nn.Module):
+    <span class="string">"""
+    Generator network: transforms random noise into fake patient records.
+    """</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, noise_dim, output_dim, hidden_dims=[<span class="number">256</span>, <span class="number">512</span>, <span class="number">256</span>]):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        layers = []
+        prev_dim = noise_dim
+        
+        <span class="keyword">for</span> hidden_dim <span class="keyword">in</span> hidden_dims:
+            layers.<span class="function">extend</span>([
+                nn.Linear(prev_dim, hidden_dim),
+                nn.BatchNorm1d(hidden_dim),
+                nn.LeakyReLU(<span class="number">0.2</span>),
+            ])
+            prev_dim = hidden_dim
+        
+        <span class="comment"># Output layer with sigmoid for binary codes</span>
+        layers.<span class="function">append</span>(nn.Linear(prev_dim, output_dim))
+        layers.<span class="function">append</span>(nn.Sigmoid())
+        
+        self.model = nn.Sequential(*layers)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, z):
+        <span class="keyword">return</span> self.<span class="function">model</span>(z)
+
+
+<span class="keyword">class</span> <span class="builtin">Discriminator</span>(nn.Module):
+    <span class="string">"""
+    Discriminator network: classifies inputs as real or fake.
+    """</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, input_dim, hidden_dims=[<span class="number">256</span>, <span class="number">128</span>, <span class="number">64</span>]):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        layers = []
+        prev_dim = input_dim
+        
+        <span class="keyword">for</span> hidden_dim <span class="keyword">in</span> hidden_dims:
+            layers.<span class="function">extend</span>([
+                nn.Linear(prev_dim, hidden_dim),
+                nn.LeakyReLU(<span class="number">0.2</span>),
+                nn.Dropout(<span class="number">0.3</span>),
+            ])
+            prev_dim = hidden_dim
+        
+        <span class="comment"># Output: probability that input is real</span>
+        layers.<span class="function">append</span>(nn.Linear(prev_dim, <span class="number">1</span>))
+        layers.<span class="function">append</span>(nn.Sigmoid())
+        
+        self.model = nn.Sequential(*layers)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="keyword">return</span> self.<span class="function">model</span>(x)
+
+
+<span class="comment"># Initialize networks</span>
+noise_dim = <span class="number">128</span>
+num_codes = <span class="number">1000</span>
+
+generator = Generator(noise_dim=noise_dim, output_dim=num_codes)
+discriminator = Discriminator(input_dim=num_codes)
+</pre>
+
+<h3>GAN Training Loop</h3>
+
+<pre><span class="keyword">def</span> <span class="function">train_gan</span>(generator, discriminator, train_data, num_epochs=<span class="number">100</span>, 
+              batch_size=<span class="number">64</span>, noise_dim=<span class="number">128</span>, lr_g=<span class="number">2e-4</span>, lr_d=<span class="number">2e-4</span>):
+    <span class="string">"""
+    Train GAN on binary EHR data.
+    
+    Uses Binary Cross Entropy loss with alternating G/D updates.
+    """</span>
+    device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+    generator = generator.<span class="function">to</span>(device)
+    discriminator = discriminator.<span class="function">to</span>(device)
+    
+    <span class="comment"># Optimizers</span>
+    optimizer_G = optim.Adam(generator.<span class="function">parameters</span>(), lr=lr_g, betas=(<span class="number">0.5</span>, <span class="number">0.999</span>))
+    optimizer_D = optim.Adam(discriminator.<span class="function">parameters</span>(), lr=lr_d, betas=(<span class="number">0.5</span>, <span class="number">0.999</span>))
+    
+    <span class="comment"># Loss function</span>
+    criterion = nn.BCELoss()
+    
+    <span class="comment"># Data loader</span>
+    dataset = TensorDataset(torch.<span class="function">tensor</span>(train_data, dtype=torch.float32))
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=<span class="keyword">True</span>)
+    
+    history = {<span class="string">'d_loss'</span>: [], <span class="string">'g_loss'</span>: [], <span class="string">'d_real'</span>: [], <span class="string">'d_fake'</span>: []}
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+        epoch_d_loss, epoch_g_loss = <span class="number">0</span>, <span class="number">0</span>
+        epoch_d_real, epoch_d_fake = <span class="number">0</span>, <span class="number">0</span>
+        
+        <span class="keyword">for</span> batch <span class="keyword">in</span> dataloader:
+            real_data = batch[<span class="number">0</span>].<span class="function">to</span>(device)
+            batch_size_actual = real_data.<span class="function">size</span>(<span class="number">0</span>)
+            
+            <span class="comment"># Labels</span>
+            real_labels = torch.<span class="function">ones</span>(batch_size_actual, <span class="number">1</span>).<span class="function">to</span>(device)
+            fake_labels = torch.<span class="function">zeros</span>(batch_size_actual, <span class="number">1</span>).<span class="function">to</span>(device)
+            
+            <span class="comment"># ============ Train Discriminator ============</span>
+            optimizer_D.<span class="function">zero_grad</span>()
+            
+            <span class="comment"># Real data</span>
+            real_pred = <span class="function">discriminator</span>(real_data)
+            d_loss_real = <span class="function">criterion</span>(real_pred, real_labels)
+            
+            <span class="comment"># Fake data</span>
+            noise = torch.<span class="function">randn</span>(batch_size_actual, noise_dim).<span class="function">to</span>(device)
+            fake_data = <span class="function">generator</span>(noise).<span class="function">detach</span>()
+            fake_pred = <span class="function">discriminator</span>(fake_data)
+            d_loss_fake = <span class="function">criterion</span>(fake_pred, fake_labels)
+            
+            <span class="comment"># Combined discriminator loss</span>
+            d_loss = d_loss_real + d_loss_fake
+            d_loss.<span class="function">backward</span>()
+            optimizer_D.<span class="function">step</span>()
+            
+            <span class="comment"># ============ Train Generator ============</span>
+            optimizer_G.<span class="function">zero_grad</span>()
+            
+            noise = torch.<span class="function">randn</span>(batch_size_actual, noise_dim).<span class="function">to</span>(device)
+            fake_data = <span class="function">generator</span>(noise)
+            fake_pred = <span class="function">discriminator</span>(fake_data)
+            
+            <span class="comment"># Generator wants discriminator to think fake is real</span>
+            g_loss = <span class="function">criterion</span>(fake_pred, real_labels)
+            g_loss.<span class="function">backward</span>()
+            optimizer_G.<span class="function">step</span>()
+            
+            <span class="comment"># Track metrics</span>
+            epoch_d_loss += d_loss.<span class="function">item</span>()
+            epoch_g_loss += g_loss.<span class="function">item</span>()
+            epoch_d_real += real_pred.<span class="function">mean</span>().<span class="function">item</span>()
+            epoch_d_fake += fake_pred.<span class="function">mean</span>().<span class="function">item</span>()
+        
+        <span class="comment"># Record history</span>
+        n_batches = <span class="builtin">len</span>(dataloader)
+        history[<span class="string">'d_loss'</span>].<span class="function">append</span>(epoch_d_loss / n_batches)
+        history[<span class="string">'g_loss'</span>].<span class="function">append</span>(epoch_g_loss / n_batches)
+        history[<span class="string">'d_real'</span>].<span class="function">append</span>(epoch_d_real / n_batches)
+        history[<span class="string">'d_fake'</span>].<span class="function">append</span>(epoch_d_fake / n_batches)
+        
+        <span class="keyword">if</span> (epoch + <span class="number">1</span>) % <span class="number">20</span> == <span class="number">0</span>:
+            <span class="builtin">print</span>(<span class="string">f"Epoch </span>{epoch+<span class="number">1</span>:<span class="number">3</span>d}<span class="string"> | D_loss: </span>{history[<span class="string">'d_loss'</span>][-<span class="number">1</span>]:<span class="number">.3</span>f}<span class="string"> | "</span>
+                  <span class="string">f"G_loss: </span>{history[<span class="string">'g_loss'</span>][-<span class="number">1</span>]:<span class="number">.3</span>f}<span class="string"> | "</span>
+                  <span class="string">f"D(real): </span>{history[<span class="string">'d_real'</span>][-<span class="number">1</span>]:<span class="number">.3</span>f}<span class="string"> | "</span>
+                  <span class="string">f"D(fake): </span>{history[<span class="string">'d_fake'</span>][-<span class="number">1</span>]:<span class="number">.3</span>f}<span class="string">"</span>)
+    
+    <span class="keyword">return</span> history
+
+<span class="comment"># Train GAN</span>
+<span class="comment"># history = train_gan(generator, discriminator, train_data, num_epochs=100)</span>
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># Epoch  20 | D_loss: 1.245 | G_loss: 0.823 | D(real): 0.712 | D(fake): 0.341</span>
+<span class="comment"># Epoch  40 | D_loss: 1.189 | G_loss: 0.891 | D(real): 0.683 | D(fake): 0.398</span>
+<span class="comment"># Epoch  60 | D_loss: 1.156 | G_loss: 0.934 | D(real): 0.654 | D(fake): 0.421</span>
+<span class="comment"># Epoch  80 | D_loss: 1.134 | G_loss: 0.967 | D(real): 0.632 | D(fake): 0.445</span>
+<span class="comment"># Epoch 100 | D_loss: 1.112 | G_loss: 0.989 | D(real): 0.612 | D(fake): 0.468</span>
+</pre>
+
+<h3>Generating Samples from GAN</h3>
+
+<pre><span class="keyword">def</span> <span class="function">generate_from_gan</span>(generator, num_samples, noise_dim, threshold=<span class="number">0.5</span>):
+    <span class="string">"""Generate synthetic patients using trained generator."""</span>
+    generator.<span class="function">eval</span>()
+    
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        noise = torch.<span class="function">randn</span>(num_samples, noise_dim)
+        probs = <span class="function">generator</span>(noise)
+        synthetic = (probs > threshold).<span class="function">float</span>().<span class="function">numpy</span>()
+    
+    <span class="keyword">return</span> synthetic
+
+<span class="comment"># Generate and compare distributions</span>
+<span class="comment"># synthetic_gan = generate_from_gan(generator, 1000, noise_dim)</span>
+<span class="comment"># quality_metrics = evaluate_synthetic_quality(real_data, synthetic_gan)</span>
+</pre>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>We covered the theory and implementation of generative models for healthcare:</p>
+
+<table class="concept-table">
+<tr><th>Model</th><th>Key Idea</th><th>Strengths</th><th>Healthcare Applications</th></tr>
+<tr><td><strong>GAN</strong></td><td>Adversarial training: Generator vs Discriminator</td><td>Sharp, realistic samples</td><td>Medical imaging, synthetic EHR</td></tr>
+<tr><td><strong>MedGAN</strong></td><td>Autoencoder + GAN for discrete codes</td><td>Handles binary multi-label data</td><td>Privacy-preserving EHR generation</td></tr>
+<tr><td><strong>VAE</strong></td><td>Probabilistic encoder, regularized latent space</td><td>Stable training, interpretable latent space</td><td>Patient representation, interpolation</td></tr>
+<tr><td><strong>MolVAE/MolGAN</strong></td><td>Generate molecular structures</td><td>Property optimization in latent space</td><td>Drug discovery, lead optimization</td></tr>
+</table>
+
+<div class="warning-box">
+    <h4>⚠️ Important Considerations for Healthcare</h4>
+    <ul>
+        <li><strong>Privacy validation</strong>: Synthetic data should be rigorously tested to ensure no real patient can be identified. Use differential privacy or membership inference attacks to validate.</li>
+        <li><strong>Distribution shift</strong>: Synthetic data may not capture rare but important patterns (outliers, rare diseases). Always validate with domain experts.</li>
+        <li><strong>Downstream utility</strong>: The true test is whether models trained on synthetic data perform well on real data tasks.</li>
+        <li><strong>Regulatory considerations</strong>: Even synthetic data may fall under regulations if derived from real patient data. Consult legal/compliance teams.</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>Goodfellow et al. (2014). "Generative Adversarial Nets" — Original GAN paper, NIPS 2014</li>
+    <li>Kingma & Welling (2014). "Auto-Encoding Variational Bayes" — VAE paper</li>
+    <li>Choi et al. (2017). "Generating Multi-label Discrete Patient Records using Generative Adversarial Networks" — MedGAN</li>
+    <li>De Cao & Kipf (2018). "MolGAN: An implicit generative model for small molecular graphs"</li>
+    <li>Gómez-Bombarelli et al. (2018). "Automatic Chemical Design Using a Data-Driven Continuous Representation of Molecules" — Molecular VAE</li>
+    <li>Yale et al. (2020). "Privacy Preserving Synthetic Health Data" — Survey on synthetic EHR generation</li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

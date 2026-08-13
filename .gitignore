@@ -21,3 +21,5 @@ medium-articles/
 /.celebrimbot/palantir_index.json
 /pyproject.toml
 /uv.lock
+/.junie/
+/.celebrimbot/

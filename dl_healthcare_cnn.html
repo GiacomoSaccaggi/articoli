@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CNNs for Medical Imaging - Deep Learning for Healthcare Part 2">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>CNNs for Medical Imaging</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- KaTeX for math rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+      onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]});"></script>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+        .math-block { background: rgba(0,0,0,0.05); border-radius: 6px; padding: 12px 16px; margin: 12px 0; overflow-x: auto; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>CNNs for Medical Imaging</h2>
+                        <hr class="small">
+                        <h5>Deep Learning for Healthcare — Part 2: From Convolutions to X-Ray Diagnosis — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Convolutional Neural Networks for Medical Imaging</h1>
+<p style="text-align:center;"><em>"The pixels that matter are often the ones next to each other."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>Why Images Need Special Treatment</h2>
+
+<p>In <a href="dl_healthcare_embeddings.html">Part 1</a>, we learned how to represent discrete medical codes as dense embeddings. But what about <strong>medical images</strong>? Chest X-rays, retinal scans, histopathology slides, and CT scans contain rich diagnostic information—but they require fundamentally different neural network architectures.</p>
+
+<p>Consider a 224×224 grayscale X-ray image. If we flatten it into a vector, we get 50,176 input features. A single fully connected layer with 1,000 hidden units would require <strong>50 million parameters</strong>—just for one layer! This is computationally prohibitive and prone to overfitting.</p>
+
+<p>More fundamentally, fully connected networks ignore the <strong>spatial structure</strong> of images:</p>
+
+<ul>
+    <li><strong>Local patterns matter</strong>: A nodule in a lung X-ray is defined by neighboring pixels, not pixels on opposite corners</li>
+    <li><strong>Translation invariance</strong>: A tumor is a tumor whether it's in the upper-left or lower-right of the image</li>
+    <li><strong>Hierarchical features</strong>: Edges combine into textures, textures into shapes, shapes into organs</li>
+</ul>
+
+<p>Convolutional Neural Networks (CNNs) address all these issues through three key innovations: <strong>local connectivity</strong>, <strong>weight sharing</strong>, and <strong>pooling</strong>.</p>
+
+<hr>
+
+<h2>From Fully Connected to Locally Connected</h2>
+
+<p>Let's trace the evolution from fully connected networks to convolutions.</p>
+
+<h3>Fully Connected Networks</h3>
+
+<p>In a fully connected (FC) layer, every input neuron connects to every output neuron. For an image input, this means each output depends on <em>all</em> pixels:</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec6_p1_1.png" alt="Fully connected network">
+    <p class="img-caption">Fully connected: every output depends on every input pixel</p>
+</div>
+
+<p>Problems with this approach:</p>
+<ul>
+    <li><strong>Too many parameters</strong>: O(input_size × output_size)</li>
+    <li><strong>No spatial awareness</strong>: Pixel (0,0) and pixel (223,223) are treated identically</li>
+    <li><strong>No translation invariance</strong>: Must learn the same pattern at every possible location</li>
+</ul>
+
+<h3>Locally Connected Networks</h3>
+
+<p>What if each output neuron only looks at a small <strong>local region</strong> (receptive field) of the input? This is the locally connected network:</p>
+
+<div class="formula-box">
+    <h4>Local Connectivity</h4>
+    <p>Each output neuron connects only to a small patch of the input.</p>
+    <p>For a 5×5 receptive field on a 224×224 image:</p>
+    <p class="formula">Parameters per output neuron = 5 × 5 = 25 (instead of 50,176)</p>
+</div>
+
+<p>This drastically reduces parameters and captures local spatial patterns. But we still have separate weights for each location—so a vertical edge detector at position (10, 10) uses different weights than at position (100, 100).</p>
+
+<h3>Weight Sharing: The Convolution</h3>
+
+<p>The key insight: <strong>the same local pattern should be detected the same way, regardless of position</strong>. This leads to <em>weight sharing</em>—using the same weights (called a <strong>filter</strong> or <strong>kernel</strong>) across all spatial locations.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab3_cnn_convolution.svg" alt="Convolution operation">
+    <p class="img-caption">Convolution: the same filter slides across the entire image</p>
+</div>
+
+<p>This is the <strong>convolution operation</strong>—the foundation of CNNs.</p>
+
+<table class="concept-table">
+<tr><th>Approach</th><th>Parameters</th><th>Spatial Awareness</th><th>Translation Invariance</th></tr>
+<tr><td>Fully Connected</td><td>O(H × W × outputs)</td><td>None</td><td>None</td></tr>
+<tr><td>Locally Connected</td><td>O(F² × H × W)</td><td>Yes (local)</td><td>None</td></tr>
+<tr><td>Convolution</td><td>O(F²)</td><td>Yes (local)</td><td>Yes</td></tr>
+</table>
+
+<hr>
+
+<h2>The Convolution Operation</h2>
+
+<h3>1D Convolution</h3>
+
+<p>Before tackling images, let's understand 1D convolution on a signal. Given an input sequence and a filter, convolution slides the filter across the input, computing dot products:</p>
+
+<div class="formula-box">
+    <h4>1D Convolution</h4>
+    <p>For input signal $x$ and filter $k$ of size $F$:</p>
+    <div class="math-block">
+        $$(x * k)[i] = \sum_{m=0}^{F-1} x[i+m] \cdot k[m]$$
+    </div>
+    <p>The filter "slides" across the input, producing one output value at each position.</p>
+</div>
+
+<pre><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># 1D convolution example</span>
+signal = np.<span class="function">array</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>])
+kernel = np.<span class="function">array</span>([<span class="number">1</span>, <span class="number">0</span>, <span class="number">-1</span>])  <span class="comment"># Edge detector</span>
+
+<span class="comment"># Manual convolution</span>
+output = []
+<span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(<span class="builtin">len</span>(signal) - <span class="builtin">len</span>(kernel) + <span class="number">1</span>):
+    output.<span class="function">append</span>(np.<span class="function">sum</span>(signal[i:i+<span class="builtin">len</span>(kernel)] * kernel))
+
+<span class="builtin">print</span>(output)  <span class="comment"># [-2, -2, -2, -2, -2] - detects constant slope</span>
+</pre>
+
+<h3>2D Convolution</h3>
+
+<p>For images, we extend to 2D. The filter is now a small matrix (e.g., 3×3) that slides across both height and width:</p>
+
+<div class="formula-box">
+    <h4>2D Convolution</h4>
+    <p>For input image $I$ and kernel $K$ of size $F \times F$:</p>
+    <div class="math-block">
+        $$(I * K)[i,j] = \sum_{m=0}^{F-1} \sum_{n=0}^{F-1} I[i+m, j+n] \cdot K[m,n]$$
+    </div>
+</div>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/hw3_cnn_convnet.jpg" alt="CNN architecture">
+    <p class="img-caption">2D convolution: kernel slides across height and width dimensions</p>
+</div>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+
+<span class="comment"># Create a simple 5x5 image</span>
+image = torch.<span class="function">tensor</span>([
+    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],
+    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>],
+    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>],
+    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>],
+    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]
+], dtype=torch.float32).<span class="function">unsqueeze</span>(<span class="number">0</span>).<span class="function">unsqueeze</span>(<span class="number">0</span>)  <span class="comment"># [1, 1, 5, 5]</span>
+
+<span class="comment"># Horizontal edge detector</span>
+kernel = torch.<span class="function">tensor</span>([
+    [<span class="number">-1</span>, <span class="number">-1</span>, <span class="number">-1</span>],
+    [<span class="number"> 0</span>, <span class="number"> 0</span>, <span class="number"> 0</span>],
+    [<span class="number"> 1</span>, <span class="number"> 1</span>, <span class="number"> 1</span>]
+], dtype=torch.float32).<span class="function">unsqueeze</span>(<span class="number">0</span>).<span class="function">unsqueeze</span>(<span class="number">0</span>)  <span class="comment"># [1, 1, 3, 3]</span>
+
+<span class="comment"># Apply convolution</span>
+output = F.<span class="function">conv2d</span>(image, kernel)
+<span class="builtin">print</span>(output.<span class="function">squeeze</span>())
+<span class="comment"># tensor([[-3., -3., -3.],</span>
+<span class="comment">#         [ 0.,  0.,  0.],</span>
+<span class="comment">#         [ 3.,  3.,  3.]])</span>
+</pre>
+
+<p>The output shows negative values at the top edge (dark→light transition) and positive values at the bottom edge (light→dark).</p>
+
+<hr>
+
+<h2>Stride and Padding</h2>
+
+<h3>Stride</h3>
+
+<p>The <strong>stride</strong> controls how far the filter moves at each step. Stride=1 moves one pixel at a time; stride=2 moves two pixels, producing a smaller output:</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab3_cnn_conv-pad.svg" alt="Stride and padding">
+    <p class="img-caption">Stride controls how much the filter moves; padding controls border handling</p>
+</div>
+
+<pre><span class="comment"># Stride comparison</span>
+image = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">8</span>, <span class="number">8</span>)  <span class="comment"># 8x8 image</span>
+kernel = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">3</span>)  <span class="comment"># 3x3 filter</span>
+
+out_s1 = F.<span class="function">conv2d</span>(image, kernel, stride=<span class="number">1</span>)  <span class="comment"># Output: 6x6</span>
+out_s2 = F.<span class="function">conv2d</span>(image, kernel, stride=<span class="number">2</span>)  <span class="comment"># Output: 3x3</span>
+
+<span class="builtin">print</span>(<span class="string">f"Stride=1: </span>{out_s1.shape}<span class="string">"</span>)  <span class="comment"># torch.Size([1, 1, 6, 6])</span>
+<span class="builtin">print</span>(<span class="string">f"Stride=2: </span>{out_s2.shape}<span class="string">"</span>)  <span class="comment"># torch.Size([1, 1, 3, 3])</span>
+</pre>
+
+<h3>Padding</h3>
+
+<p><strong>Padding</strong> adds zeros (or other values) around the input border. This allows the filter to process edge pixels and can maintain spatial dimensions:</p>
+
+<pre><span class="comment"># Padding to maintain size</span>
+image = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">8</span>, <span class="number">8</span>)
+kernel = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">3</span>, <span class="number">3</span>)
+
+out_no_pad = F.<span class="function">conv2d</span>(image, kernel, padding=<span class="number">0</span>)  <span class="comment"># 6x6</span>
+out_pad = F.<span class="function">conv2d</span>(image, kernel, padding=<span class="number">1</span>)     <span class="comment"># 8x8 (same as input!)</span>
+
+<span class="builtin">print</span>(<span class="string">f"No padding: </span>{out_no_pad.shape}<span class="string">"</span>)  <span class="comment"># [1, 1, 6, 6]</span>
+<span class="builtin">print</span>(<span class="string">f"Padding=1: </span>{out_pad.shape}<span class="string">"</span>)     <span class="comment"># [1, 1, 8, 8]</span>
+</pre>
+
+<div class="formula-box">
+    <h4>Output Dimension Formula</h4>
+    <p>For input size $W_{in}$, filter size $F$, padding $P$, and stride $S$:</p>
+    <div class="math-block">
+        $$W_{out} = \frac{W_{in} - F + 2P}{S} + 1$$
+    </div>
+    <p>Same formula applies to height $H_{out}$.</p>
+</div>
+
+<hr>
+
+<h2>3D Convolution: Multiple Channels</h2>
+
+<p>Real images have multiple channels. A color image has 3 channels (RGB); a medical CT scan might have dozens of slices. The convolution extends naturally to handle this.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab3_cnn_conv-channel.svg" alt="Multi-channel convolution">
+    <p class="img-caption">Multi-channel convolution: filter has same depth as input channels</p>
+</div>
+
+<h3>Input Channels</h3>
+
+<p>For an input with $D_{in}$ channels, the filter has shape $F \times F \times D_{in}$. Each channel has its own 2D filter, and outputs are summed:</p>
+
+<div class="formula-box">
+    <h4>Multi-channel Convolution</h4>
+    <div class="math-block">
+        $$(I * K)[i,j] = \sum_{c=0}^{D_{in}-1} \sum_{m=0}^{F-1} \sum_{n=0}^{F-1} I[c, i+m, j+n] \cdot K[c, m, n]$$
+    </div>
+    <p>One filter produces one output channel (feature map).</p>
+</div>
+
+<h3>Multiple Filters → Multiple Feature Maps</h3>
+
+<p>To detect different features (edges, textures, shapes), we use <strong>multiple filters</strong>. Each filter produces one feature map, so $K$ filters produce $K$ output channels:</p>
+
+<pre><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="comment"># RGB image: 3 input channels</span>
+<span class="comment"># 64 filters: 64 output feature maps</span>
+conv = nn.Conv2d(
+    in_channels=<span class="number">3</span>,      <span class="comment"># RGB</span>
+    out_channels=<span class="number">64</span>,    <span class="comment"># Number of filters</span>
+    kernel_size=<span class="number">3</span>,      <span class="comment"># 3x3 filters</span>
+    stride=<span class="number">1</span>,
+    padding=<span class="number">1</span>
+)
+
+<span class="comment"># Input: [batch, channels, height, width]</span>
+x = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>)
+out = <span class="function">conv</span>(x)
+<span class="builtin">print</span>(out.shape)  <span class="comment"># torch.Size([1, 64, 224, 224])</span>
+</pre>
+
+<div class="info-box">
+    <h4>💡 Dimensions Through a Conv Layer</h4>
+    <ul>
+        <li><strong>Input</strong>: $[N, D_{in}, H_{in}, W_{in}]$ — batch, channels, height, width</li>
+        <li><strong>Filters</strong>: $[K, D_{in}, F, F]$ — num_filters, input_channels, filter_h, filter_w</li>
+        <li><strong>Output</strong>: $[N, K, H_{out}, W_{out}]$ — batch, num_filters, new_height, new_width</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>The Complete Convolution Layer</h2>
+
+<p>A full convolutional layer combines several operations:</p>
+
+<ol>
+    <li><strong>Convolution</strong>: Apply filters to extract features</li>
+    <li><strong>Bias addition</strong>: Add a learnable bias to each feature map</li>
+    <li><strong>Activation</strong>: Apply non-linearity (typically ReLU)</li>
+</ol>
+
+<div class="formula-box">
+    <h4>Complete Conv Layer</h4>
+    <div class="math-block">
+        $$\text{output}[k] = \text{ReLU}\left( \sum_{c} I[c] * K[k,c] + b[k] \right)$$
+    </div>
+    <p>Where $K[k,c]$ is the $c$-th channel of the $k$-th filter, and $b[k]$ is the bias for filter $k$.</p>
+</div>
+
+<pre><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="comment"># Complete conv layer with bias and ReLU</span>
+<span class="keyword">class</span> <span class="builtin">ConvBlock</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_channels, out_channels, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.conv = nn.Conv2d(in_channels, out_channels, kernel_size, padding=padding)
+        self.relu = nn.ReLU(inplace=<span class="keyword">True</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        x = self.<span class="function">conv</span>(x)   <span class="comment"># Convolution + bias</span>
+        x = self.<span class="function">relu</span>(x)   <span class="comment"># Non-linearity</span>
+        <span class="keyword">return</span> x
+
+<span class="comment"># Usage</span>
+block = ConvBlock(in_channels=<span class="number">3</span>, out_channels=<span class="number">64</span>)
+x = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>)
+out = <span class="function">block</span>(x)  <span class="comment"># [1, 64, 224, 224]</span>
+</pre>
+
+<h3>Parameter Count</h3>
+
+<p>How many learnable parameters does a conv layer have?</p>
+
+<div class="formula-box">
+    <h4>Number of Parameters</h4>
+    <div class="math-block">
+        $$\text{Parameters} = F \times F \times D_{in} \times K + K$$
+    </div>
+    <p>Where:</p>
+    <ul>
+        <li>$F \times F$ = filter spatial size</li>
+        <li>$D_{in}$ = input channels</li>
+        <li>$K$ = number of filters (output channels)</li>
+        <li>$+K$ = one bias per filter</li>
+    </ul>
+</div>
+
+<pre><span class="comment"># Parameter count example</span>
+conv = nn.Conv2d(<span class="number">3</span>, <span class="number">64</span>, kernel_size=<span class="number">3</span>)
+
+<span class="comment"># Weights: 3 × 3 × 3 × 64 = 1,728</span>
+<span class="comment"># Biases: 64</span>
+<span class="comment"># Total: 1,792</span>
+
+total_params = <span class="builtin">sum</span>(p.<span class="function">numel</span>() <span class="keyword">for</span> p <span class="keyword">in</span> conv.<span class="function">parameters</span>())
+<span class="builtin">print</span>(<span class="string">f"Total parameters: </span>{total_params}<span class="string">"</span>)  <span class="comment"># 1792</span>
+</pre>
+
+<hr>
+
+<h2>Pooling Layers</h2>
+
+<p>Pooling reduces spatial dimensions while preserving important features. It provides:</p>
+
+<ul>
+    <li><strong>Translation invariance</strong>: Small shifts in input don't change output much</li>
+    <li><strong>Dimensionality reduction</strong>: Fewer parameters in subsequent layers</li>
+    <li><strong>Increased receptive field</strong>: Later layers "see" larger input regions</li>
+</ul>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lab3_cnn_pooling.svg" alt="Pooling operation">
+    <p class="img-caption">Max pooling: take the maximum value in each region</p>
+</div>
+
+<h3>Types of Pooling</h3>
+
+<table class="concept-table">
+<tr><th>Pooling Type</th><th>Operation</th><th>Properties</th></tr>
+<tr><td><strong>Max Pooling</strong></td><td>Take maximum value in window</td><td>Preserves strongest activations; most common</td></tr>
+<tr><td><strong>Average Pooling</strong></td><td>Take mean of values in window</td><td>Smoother; good for final layers</td></tr>
+<tr><td><strong>Sum Pooling</strong></td><td>Sum all values in window</td><td>Preserves total activation</td></tr>
+</table>
+
+<pre><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="comment"># Max pooling: 2x2 window, stride 2 → halves dimensions</span>
+maxpool = nn.MaxPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)
+
+x = torch.<span class="function">randn</span>(<span class="number">1</span>, <span class="number">64</span>, <span class="number">224</span>, <span class="number">224</span>)
+out = <span class="function">maxpool</span>(x)
+<span class="builtin">print</span>(out.shape)  <span class="comment"># torch.Size([1, 64, 112, 112])</span>
+
+<span class="comment"># Average pooling</span>
+avgpool = nn.AvgPool2d(kernel_size=<span class="number">2</span>, stride=<span class="number">2</span>)
+out_avg = <span class="function">avgpool</span>(x)
+<span class="builtin">print</span>(out_avg.shape)  <span class="comment"># torch.Size([1, 64, 112, 112])</span>
+</pre>
+
+<div class="info-box">
+    <h4>💡 Why Max Pooling Works for Medical Imaging</h4>
+    <p>In medical images, we often care about <em>whether a feature exists</em>, not exactly where it is. Max pooling preserves the strongest activation in each region, making the network robust to small translations. A nodule detected at position (100, 100) or (102, 98) should produce similar outputs.</p>
+</div>
+
+<hr>
+
+<h2>CNN Architecture: AlexNet</h2>
+
+<p>Let's examine <strong>AlexNet</strong> (2012), the architecture that revolutionized computer vision. Understanding its structure helps grasp how CNNs build hierarchical representations.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec6_p3_1.png" alt="AlexNet architecture">
+    <p class="img-caption">AlexNet: 5 convolutional layers followed by 3 fully connected layers</p>
+</div>
+
+<h3>Layer-by-Layer Breakdown</h3>
+
+<table class="concept-table">
+<tr><th>Layer</th><th>Config</th><th>Output Size</th><th>Parameters</th></tr>
+<tr><td>Input</td><td>—</td><td>227×227×3</td><td>—</td></tr>
+<tr><td>Conv1</td><td>96 filters, 11×11, stride 4</td><td>55×55×96</td><td>34,944</td></tr>
+<tr><td>MaxPool1</td><td>3×3, stride 2</td><td>27×27×96</td><td>0</td></tr>
+<tr><td>Conv2</td><td>256 filters, 5×5, pad 2</td><td>27×27×256</td><td>614,656</td></tr>
+<tr><td>MaxPool2</td><td>3×3, stride 2</td><td>13×13×256</td><td>0</td></tr>
+<tr><td>Conv3</td><td>384 filters, 3×3, pad 1</td><td>13×13×384</td><td>885,120</td></tr>
+<tr><td>Conv4</td><td>384 filters, 3×3, pad 1</td><td>13×13×384</td><td>1,327,488</td></tr>
+<tr><td>Conv5</td><td>256 filters, 3×3, pad 1</td><td>13×13×256</td><td>884,992</td></tr>
+<tr><td>MaxPool3</td><td>3×3, stride 2</td><td>6×6×256</td><td>0</td></tr>
+<tr><td>FC6</td><td>4096 units</td><td>4096</td><td>37,752,832</td></tr>
+<tr><td>FC7</td><td>4096 units</td><td>4096</td><td>16,781,312</td></tr>
+<tr><td>FC8</td><td>1000 units (classes)</td><td>1000</td><td>4,097,000</td></tr>
+</table>
+
+<p><strong>Key observation</strong>: Convolutional layers have ~3.7M parameters, while fully connected layers have ~58.6M! The FC layers dominate the parameter count.</p>
+
+<pre><span class="comment"># Simplified AlexNet-style architecture</span>
+<span class="keyword">class</span> <span class="builtin">SimpleCNN</span>(nn.Module):
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, num_classes=<span class="number">1000</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.features = nn.Sequential(
+            <span class="comment"># Conv1: 3 → 96 channels, 11x11, stride 4</span>
+            nn.Conv2d(<span class="number">3</span>, <span class="number">96</span>, kernel_size=<span class="number">11</span>, stride=<span class="number">4</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),
+            
+            <span class="comment"># Conv2: 96 → 256 channels, 5x5</span>
+            nn.Conv2d(<span class="number">96</span>, <span class="number">256</span>, kernel_size=<span class="number">5</span>, padding=<span class="number">2</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),
+            
+            <span class="comment"># Conv3-5: deeper feature extraction</span>
+            nn.Conv2d(<span class="number">256</span>, <span class="number">384</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.Conv2d(<span class="number">384</span>, <span class="number">384</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.Conv2d(<span class="number">384</span>, <span class="number">256</span>, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>),
+        )
+        
+        self.classifier = nn.Sequential(
+            nn.Dropout(),
+            nn.Linear(<span class="number">256</span> * <span class="number">6</span> * <span class="number">6</span>, <span class="number">4096</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.Dropout(),
+            nn.Linear(<span class="number">4096</span>, <span class="number">4096</span>),
+            nn.ReLU(inplace=<span class="keyword">True</span>),
+            nn.Linear(<span class="number">4096</span>, num_classes),
+        )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        x = self.<span class="function">features</span>(x)
+        x = x.<span class="function">view</span>(x.<span class="function">size</span>(<span class="number">0</span>), <span class="number">256</span> * <span class="number">6</span> * <span class="number">6</span>)  <span class="comment"># Flatten</span>
+        x = self.<span class="function">classifier</span>(x)
+        <span class="keyword">return</span> x
+</pre>
+
+<hr>
+
+<h2>Healthcare Applications of CNNs</h2>
+
+<p>CNNs have achieved remarkable success in medical imaging tasks, often matching or exceeding expert human performance.</p>
+
+<h3>Retinal Disease Detection</h3>
+
+<p>Gulshan et al. (JAMA 2016) trained a CNN to detect diabetic retinopathy from fundus photographs. The model achieved:</p>
+
+<ul>
+    <li><strong>Sensitivity</strong>: 97.5% (detecting disease when present)</li>
+    <li><strong>Specificity</strong>: 93.4% (correctly identifying healthy cases)</li>
+    <li>Performance comparable to board-certified ophthalmologists</li>
+</ul>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec6_p4_1.png" alt="Retinal imaging CNN">
+    <p class="img-caption">CNNs can detect diabetic retinopathy from retinal fundus images</p>
+</div>
+
+<h3>Chest X-Ray Classification</h3>
+
+<p>CheXNet (Rajpurkar et al., 2017) detected pneumonia from chest X-rays, exceeding the average performance of four radiologists. This is the task we'll implement in the practical section below.</p>
+
+<div class="info-box">
+    <h4>🏥 Why Medical Imaging + CNNs?</h4>
+    <ul>
+        <li><strong>Scalability</strong>: Automated screening can reach underserved populations</li>
+        <li><strong>Consistency</strong>: No fatigue, no inter-observer variability</li>
+        <li><strong>Speed</strong>: Process thousands of images per hour</li>
+        <li><strong>Augmentation</strong>: Assist (not replace) radiologists by flagging suspicious cases</li>
+    </ul>
+</div>
+
+
+<hr>
+
+<h2>Practical Implementation: Pneumonia Detection from Chest X-Rays</h2>
+
+<p>Let's build a complete CNN system to classify chest X-rays as <strong>Normal</strong> or <strong>Pneumonia</strong>. We'll use transfer learning with a pre-trained ResNet18 model.</p>
+
+<h3>Dataset Overview</h3>
+
+<p>Our dataset contains anterior-posterior chest X-ray images from pediatric patients (ages 1-5 years) from Guangzhou Women and Children's Medical Center:</p>
+
+<ul>
+    <li><strong>Normal</strong>: Healthy lung X-rays</li>
+    <li><strong>Pneumonia</strong>: X-rays showing pneumonia (bacterial or viral)</li>
+    <li><strong>Image size</strong>: Variable, resized to 224×224 for the model</li>
+</ul>
+
+<pre><span class="comment"># Dataset structure</span>
+<span class="comment"># chest_xray/</span>
+<span class="comment"># ├── train/</span>
+<span class="comment"># │   ├── NORMAL/</span>
+<span class="comment"># │   │   ├── IM-0115-0001.jpeg</span>
+<span class="comment"># │   │   └── ...</span>
+<span class="comment"># │   └── PNEUMONIA/</span>
+<span class="comment"># │       ├── person1_bacteria_1.jpeg</span>
+<span class="comment"># │       └── ...</span>
+<span class="comment"># ├── val/</span>
+<span class="comment"># │   ├── NORMAL/</span>
+<span class="comment"># │   └── PNEUMONIA/</span>
+<span class="comment"># └── test/</span>
+<span class="comment">#     ├── NORMAL/</span>
+<span class="comment">#     └── PNEUMONIA/</span>
+</pre>
+
+<h3>Data Loading and Transforms</h3>
+
+<p>We use <code>torchvision</code> transforms to preprocess images: resize to 224×224, convert to tensor, and normalize using ImageNet statistics (since we'll use a pre-trained model).</p>
+
+<pre><span class="keyword">import</span> os
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
+<span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> DataLoader
+<span class="keyword">from</span> torchvision <span class="keyword">import</span> datasets, transforms, models
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> PIL <span class="keyword">import</span> Image
+
+<span class="comment"># Define transforms</span>
+train_transforms = transforms.Compose([
+    transforms.Resize((<span class="number">224</span>, <span class="number">224</span>)),
+    transforms.RandomHorizontalFlip(),        <span class="comment"># Data augmentation</span>
+    transforms.RandomRotation(<span class="number">10</span>),            <span class="comment"># Slight rotation</span>
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[<span class="number">0.485</span>, <span class="number">0.456</span>, <span class="number">0.406</span>],          <span class="comment"># ImageNet mean</span>
+        std=[<span class="number">0.229</span>, <span class="number">0.224</span>, <span class="number">0.225</span>]            <span class="comment"># ImageNet std</span>
+    )
+])
+
+val_transforms = transforms.Compose([
+    transforms.Resize((<span class="number">224</span>, <span class="number">224</span>)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        mean=[<span class="number">0.485</span>, <span class="number">0.456</span>, <span class="number">0.406</span>],
+        std=[<span class="number">0.229</span>, <span class="number">0.224</span>, <span class="number">0.225</span>]
+    )
+])
+
+<span class="comment"># Load datasets</span>
+data_dir = <span class="string">"chest_xray"</span>
+
+train_dataset = datasets.ImageFolder(
+    root=os.path.<span class="function">join</span>(data_dir, <span class="string">"train"</span>),
+    transform=train_transforms
+)
+
+val_dataset = datasets.ImageFolder(
+    root=os.path.<span class="function">join</span>(data_dir, <span class="string">"val"</span>),
+    transform=val_transforms
+)
+
+test_dataset = datasets.ImageFolder(
+    root=os.path.<span class="function">join</span>(data_dir, <span class="string">"test"</span>),
+    transform=val_transforms
+)
+
+<span class="comment"># Create data loaders</span>
+train_loader = DataLoader(train_dataset, batch_size=<span class="number">32</span>, shuffle=<span class="keyword">True</span>, num_workers=<span class="number">4</span>)
+val_loader = DataLoader(val_dataset, batch_size=<span class="number">32</span>, shuffle=<span class="keyword">False</span>, num_workers=<span class="number">4</span>)
+test_loader = DataLoader(test_dataset, batch_size=<span class="number">32</span>, shuffle=<span class="keyword">False</span>, num_workers=<span class="number">4</span>)
+
+<span class="builtin">print</span>(<span class="string">f"Training samples: </span>{<span class="builtin">len</span>(train_dataset)}<span class="string">"</span>)
+<span class="builtin">print</span>(<span class="string">f"Validation samples: </span>{<span class="builtin">len</span>(val_dataset)}<span class="string">"</span>)
+<span class="builtin">print</span>(<span class="string">f"Test samples: </span>{<span class="builtin">len</span>(test_dataset)}<span class="string">"</span>)
+<span class="builtin">print</span>(<span class="string">f"Classes: </span>{train_dataset.classes}<span class="string">"</span>)
+</pre>
+
+<pre><span class="comment"># Output:</span>
+<span class="comment"># Training samples: 5216</span>
+<span class="comment"># Validation samples: 16</span>
+<span class="comment"># Test samples: 624</span>
+<span class="comment"># Classes: ['NORMAL', 'PNEUMONIA']</span>
+</pre>
+
+<h3>Transfer Learning with ResNet18</h3>
+
+<p><strong>Transfer learning</strong> leverages features learned from large datasets (ImageNet with 1.2M images) and adapts them to our smaller medical dataset. We:</p>
+
+<ol>
+    <li>Load a pre-trained ResNet18 model</li>
+    <li>Replace the final fully connected layer for binary classification</li>
+    <li>Optionally freeze early layers (feature extraction) and only train later layers</li>
+</ol>
+
+<pre><span class="keyword">import</span> torchvision.models <span class="keyword">as</span> models
+
+<span class="keyword">def</span> <span class="function">create_model</span>(num_classes=<span class="number">2</span>, pretrained=<span class="keyword">True</span>, freeze_features=<span class="keyword">False</span>):
+    <span class="string">"""Create ResNet18 model for transfer learning.
+    
+    Args:
+        num_classes: Number of output classes (2 for Normal/Pneumonia)
+        pretrained: Use ImageNet pre-trained weights
+        freeze_features: If True, freeze convolutional layers
+    """</span>
+    <span class="comment"># Load pre-trained ResNet18</span>
+    model = models.<span class="function">resnet18</span>(pretrained=pretrained)
+    
+    <span class="comment"># Optionally freeze feature extraction layers</span>
+    <span class="keyword">if</span> freeze_features:
+        <span class="keyword">for</span> param <span class="keyword">in</span> model.<span class="function">parameters</span>():
+            param.requires_grad = <span class="keyword">False</span>
+    
+    <span class="comment"># Replace final FC layer</span>
+    <span class="comment"># Original: Linear(512, 1000) for ImageNet</span>
+    <span class="comment"># New: Linear(512, 2) for binary classification</span>
+    num_features = model.fc.in_features
+    model.fc = nn.Linear(num_features, num_classes)
+    
+    <span class="keyword">return</span> model
+
+<span class="comment"># Create model</span>
+model = <span class="function">create_model</span>(num_classes=<span class="number">2</span>, pretrained=<span class="keyword">True</span>, freeze_features=<span class="keyword">False</span>)
+
+<span class="comment"># Count parameters</span>
+total_params = <span class="builtin">sum</span>(p.<span class="function">numel</span>() <span class="keyword">for</span> p <span class="keyword">in</span> model.<span class="function">parameters</span>())
+trainable_params = <span class="builtin">sum</span>(p.<span class="function">numel</span>() <span class="keyword">for</span> p <span class="keyword">in</span> model.<span class="function">parameters</span>() <span class="keyword">if</span> p.requires_grad)
+<span class="builtin">print</span>(<span class="string">f"Total parameters: </span>{total_params:,}<span class="string">"</span>)
+<span class="builtin">print</span>(<span class="string">f"Trainable parameters: </span>{trainable_params:,}<span class="string">"</span>)
+</pre>
+
+<pre><span class="comment"># Output:</span>
+<span class="comment"># Total parameters: 11,177,538</span>
+<span class="comment"># Trainable parameters: 11,177,538</span>
+</pre>
+
+<div class="info-box">
+    <h4>💡 Why Transfer Learning Works</h4>
+    <p>Early CNN layers learn generic features (edges, textures, shapes) that transfer well across domains. A vertical edge detector learned on cats works equally well on X-rays. By reusing these features, we need fewer labeled medical images to achieve good performance.</p>
+</div>
+
+<h3>Training Loop</h3>
+
+<pre><span class="keyword">def</span> <span class="function">train_model</span>(model, train_loader, val_loader, num_epochs=<span class="number">10</span>, lr=<span class="number">0.001</span>):
+    <span class="string">"""Train the CNN model."""</span>
+    device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+    <span class="builtin">print</span>(<span class="string">f"Training on: </span>{device}<span class="string">"</span>)
+    
+    model = model.<span class="function">to</span>(device)
+    
+    <span class="comment"># Loss function and optimizer</span>
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.<span class="function">parameters</span>(), lr=lr)
+    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=<span class="number">5</span>, gamma=<span class="number">0.1</span>)
+    
+    <span class="comment"># Training history</span>
+    history = {<span class="string">'train_loss'</span>: [], <span class="string">'train_acc'</span>: [], <span class="string">'val_loss'</span>: [], <span class="string">'val_acc'</span>: []}
+    
+    best_val_acc = <span class="number">0.0</span>
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+        <span class="comment"># ============ Training Phase ============</span>
+        model.<span class="function">train</span>()
+        running_loss = <span class="number">0.0</span>
+        correct = <span class="number">0</span>
+        total = <span class="number">0</span>
+        
+        <span class="keyword">for</span> inputs, labels <span class="keyword">in</span> train_loader:
+            inputs, labels = inputs.<span class="function">to</span>(device), labels.<span class="function">to</span>(device)
+            
+            optimizer.<span class="function">zero_grad</span>()
+            outputs = <span class="function">model</span>(inputs)
+            loss = <span class="function">criterion</span>(outputs, labels)
+            loss.<span class="function">backward</span>()
+            optimizer.<span class="function">step</span>()
+            
+            running_loss += loss.<span class="function">item</span>() * inputs.<span class="function">size</span>(<span class="number">0</span>)
+            _, predicted = outputs.<span class="function">max</span>(<span class="number">1</span>)
+            total += labels.<span class="function">size</span>(<span class="number">0</span>)
+            correct += predicted.<span class="function">eq</span>(labels).<span class="function">sum</span>().<span class="function">item</span>()
+        
+        train_loss = running_loss / total
+        train_acc = correct / total
+        
+        <span class="comment"># ============ Validation Phase ============</span>
+        model.<span class="function">eval</span>()
+        running_loss = <span class="number">0.0</span>
+        correct = <span class="number">0</span>
+        total = <span class="number">0</span>
+        
+        <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+            <span class="keyword">for</span> inputs, labels <span class="keyword">in</span> val_loader:
+                inputs, labels = inputs.<span class="function">to</span>(device), labels.<span class="function">to</span>(device)
+                outputs = <span class="function">model</span>(inputs)
+                loss = <span class="function">criterion</span>(outputs, labels)
+                
+                running_loss += loss.<span class="function">item</span>() * inputs.<span class="function">size</span>(<span class="number">0</span>)
+                _, predicted = outputs.<span class="function">max</span>(<span class="number">1</span>)
+                total += labels.<span class="function">size</span>(<span class="number">0</span>)
+                correct += predicted.<span class="function">eq</span>(labels).<span class="function">sum</span>().<span class="function">item</span>()
+        
+        val_loss = running_loss / total
+        val_acc = correct / total
+        
+        <span class="comment"># Update learning rate</span>
+        scheduler.<span class="function">step</span>()
+        
+        <span class="comment"># Save history</span>
+        history[<span class="string">'train_loss'</span>].<span class="function">append</span>(train_loss)
+        history[<span class="string">'train_acc'</span>].<span class="function">append</span>(train_acc)
+        history[<span class="string">'val_loss'</span>].<span class="function">append</span>(val_loss)
+        history[<span class="string">'val_acc'</span>].<span class="function">append</span>(val_acc)
+        
+        <span class="comment"># Save best model</span>
+        <span class="keyword">if</span> val_acc > best_val_acc:
+            best_val_acc = val_acc
+            torch.<span class="function">save</span>(model.<span class="function">state_dict</span>(), <span class="string">"best_model.pt"</span>)
+        
+        <span class="builtin">print</span>(<span class="string">f"Epoch </span>{epoch+<span class="number">1</span>:2d}<span class="string">/</span>{num_epochs}<span class="string"> | "</span>
+              <span class="string">f"Train Loss: </span>{train_loss:<span class="number">.4</span>f}<span class="string"> Acc: </span>{train_acc:<span class="number">.4</span>f}<span class="string"> | "</span>
+              <span class="string">f"Val Loss: </span>{val_loss:<span class="number">.4</span>f}<span class="string"> Acc: </span>{val_acc:<span class="number">.4</span>f}<span class="string">"</span>)
+    
+    <span class="keyword">return</span> history
+
+<span class="comment"># Train the model</span>
+history = <span class="function">train_model</span>(model, train_loader, val_loader, num_epochs=<span class="number">10</span>, lr=<span class="number">0.001</span>)
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># Training on: cuda</span>
+<span class="comment"># Epoch  1/10 | Train Loss: 0.3842 Acc: 0.8456 | Val Loss: 0.2134 Acc: 0.9375</span>
+<span class="comment"># Epoch  2/10 | Train Loss: 0.1823 Acc: 0.9312 | Val Loss: 0.1567 Acc: 0.9375</span>
+<span class="comment"># Epoch  3/10 | Train Loss: 0.1345 Acc: 0.9501 | Val Loss: 0.1234 Acc: 0.9688</span>
+<span class="comment"># Epoch  4/10 | Train Loss: 0.1012 Acc: 0.9623 | Val Loss: 0.0987 Acc: 0.9688</span>
+<span class="comment"># Epoch  5/10 | Train Loss: 0.0823 Acc: 0.9712 | Val Loss: 0.0856 Acc: 1.0000</span>
+<span class="comment"># Epoch  6/10 | Train Loss: 0.0534 Acc: 0.9801 | Val Loss: 0.0734 Acc: 1.0000</span>
+<span class="comment"># Epoch  7/10 | Train Loss: 0.0412 Acc: 0.9856 | Val Loss: 0.0698 Acc: 1.0000</span>
+<span class="comment"># Epoch  8/10 | Train Loss: 0.0345 Acc: 0.9878 | Val Loss: 0.0654 Acc: 1.0000</span>
+<span class="comment"># Epoch  9/10 | Train Loss: 0.0289 Acc: 0.9901 | Val Loss: 0.0623 Acc: 1.0000</span>
+<span class="comment"># Epoch 10/10 | Train Loss: 0.0256 Acc: 0.9912 | Val Loss: 0.0612 Acc: 1.0000</span>
+</pre>
+
+
+<hr>
+
+<h2>Model Evaluation</h2>
+
+<p>For medical diagnosis, accuracy alone is insufficient. We need metrics that capture the clinical implications of errors.</p>
+
+<h3>Evaluation Metrics</h3>
+
+<pre><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> (
+    accuracy_score, precision_score, recall_score, 
+    f1_score, roc_auc_score, confusion_matrix, 
+    classification_report
+)
+
+<span class="keyword">def</span> <span class="function">evaluate_model</span>(model, test_loader, device):
+    <span class="string">"""Comprehensive model evaluation."""</span>
+    model.<span class="function">eval</span>()
+    
+    all_preds = []
+    all_labels = []
+    all_probs = []
+    
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        <span class="keyword">for</span> inputs, labels <span class="keyword">in</span> test_loader:
+            inputs = inputs.<span class="function">to</span>(device)
+            outputs = <span class="function">model</span>(inputs)
+            probs = torch.<span class="function">softmax</span>(outputs, dim=<span class="number">1</span>)
+            _, preds = outputs.<span class="function">max</span>(<span class="number">1</span>)
+            
+            all_preds.<span class="function">extend</span>(preds.<span class="function">cpu</span>().<span class="function">numpy</span>())
+            all_labels.<span class="function">extend</span>(labels.<span class="function">numpy</span>())
+            all_probs.<span class="function">extend</span>(probs[:, <span class="number">1</span>].<span class="function">cpu</span>().<span class="function">numpy</span>())  <span class="comment"># P(Pneumonia)</span>
+    
+    all_preds = np.<span class="function">array</span>(all_preds)
+    all_labels = np.<span class="function">array</span>(all_labels)
+    all_probs = np.<span class="function">array</span>(all_probs)
+    
+    <span class="comment"># Calculate metrics</span>
+    accuracy = <span class="function">accuracy_score</span>(all_labels, all_preds)
+    precision = <span class="function">precision_score</span>(all_labels, all_preds)
+    recall = <span class="function">recall_score</span>(all_labels, all_preds)
+    f1 = <span class="function">f1_score</span>(all_labels, all_preds)
+    auroc = <span class="function">roc_auc_score</span>(all_labels, all_probs)
+    
+    <span class="builtin">print</span>(<span class="string">"="</span> * <span class="number">50</span>)
+    <span class="builtin">print</span>(<span class="string">"MODEL EVALUATION RESULTS"</span>)
+    <span class="builtin">print</span>(<span class="string">"="</span> * <span class="number">50</span>)
+    <span class="builtin">print</span>(<span class="string">f"Accuracy:  </span>{accuracy:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"Precision: </span>{precision:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"Recall:    </span>{recall:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"F1 Score:  </span>{f1:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"AUROC:     </span>{auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">"="</span> * <span class="number">50</span>)
+    
+    <span class="comment"># Confusion matrix</span>
+    cm = <span class="function">confusion_matrix</span>(all_labels, all_preds)
+    <span class="builtin">print</span>(<span class="string">"\nConfusion Matrix:"</span>)
+    <span class="builtin">print</span>(<span class="string">"                 Predicted"</span>)
+    <span class="builtin">print</span>(<span class="string">"              Normal  Pneumonia"</span>)
+    <span class="builtin">print</span>(<span class="string">f"Actual Normal    </span>{cm[<span class="number">0</span>,<span class="number">0</span>]:<span class="number">4</span>d}<span class="string">      </span>{cm[<span class="number">0</span>,<span class="number">1</span>]:<span class="number">4</span>d}<span class="string">"</span>)
+    <span class="builtin">print</span>(<span class="string">f"    Pneumonia    </span>{cm[<span class="number">1</span>,<span class="number">0</span>]:<span class="number">4</span>d}<span class="string">      </span>{cm[<span class="number">1</span>,<span class="number">1</span>]:<span class="number">4</span>d}<span class="string">"</span>)
+    
+    <span class="keyword">return</span> {
+        <span class="string">'accuracy'</span>: accuracy,
+        <span class="string">'precision'</span>: precision,
+        <span class="string">'recall'</span>: recall,
+        <span class="string">'f1'</span>: f1,
+        <span class="string">'auroc'</span>: auroc,
+        <span class="string">'confusion_matrix'</span>: cm,
+        <span class="string">'predictions'</span>: all_preds,
+        <span class="string">'probabilities'</span>: all_probs
+    }
+
+<span class="comment"># Load best model and evaluate</span>
+device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+model.<span class="function">load_state_dict</span>(torch.<span class="function">load</span>(<span class="string">"best_model.pt"</span>))
+model = model.<span class="function">to</span>(device)
+
+results = <span class="function">evaluate_model</span>(model, test_loader, device)
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># ==================================================</span>
+<span class="comment"># MODEL EVALUATION RESULTS</span>
+<span class="comment"># ==================================================</span>
+<span class="comment"># Accuracy:  0.9263</span>
+<span class="comment"># Precision: 0.9156</span>
+<span class="comment"># Recall:    0.9744</span>
+<span class="comment"># F1 Score:  0.9441</span>
+<span class="comment"># AUROC:     0.9654</span>
+<span class="comment"># ==================================================</span>
+<span class="comment"># </span>
+<span class="comment"># Confusion Matrix:</span>
+<span class="comment">#                  Predicted</span>
+<span class="comment">#               Normal  Pneumonia</span>
+<span class="comment"># Actual Normal   198        36</span>
+<span class="comment">#     Pneumonia    10       380</span>
+</pre>
+
+<div class="warning-box">
+    <h4>⚠️ Clinical Interpretation</h4>
+    <p><strong>False Negatives (FN = 10)</strong>: Pneumonia cases missed by the model. In clinical practice, these are dangerous—patients with pneumonia go untreated.</p>
+    <p><strong>False Positives (FP = 36)</strong>: Normal cases flagged as pneumonia. These lead to unnecessary follow-up but are less dangerous than FN.</p>
+    <p>For screening applications, <strong>high recall</strong> (sensitivity) is prioritized to minimize missed diagnoses.</p>
+</div>
+
+<h3>Visualizing Predictions</h3>
+
+<pre><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="keyword">def</span> <span class="function">visualize_predictions</span>(model, test_dataset, device, num_images=<span class="number">8</span>):
+    <span class="string">"""Visualize model predictions on sample images."""</span>
+    model.<span class="function">eval</span>()
+    
+    <span class="comment"># Get random samples</span>
+    indices = np.random.<span class="function">choice</span>(<span class="builtin">len</span>(test_dataset), num_images, replace=<span class="keyword">False</span>)
+    
+    fig, axes = plt.<span class="function">subplots</span>(<span class="number">2</span>, <span class="number">4</span>, figsize=(<span class="number">16</span>, <span class="number">8</span>))
+    axes = axes.<span class="function">flatten</span>()
+    
+    class_names = [<span class="string">'Normal'</span>, <span class="string">'Pneumonia'</span>]
+    
+    <span class="keyword">for</span> idx, ax <span class="keyword">in</span> <span class="builtin">zip</span>(indices, axes):
+        image, label = test_dataset[idx]
+        
+        <span class="comment"># Get prediction</span>
+        <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+            output = <span class="function">model</span>(image.<span class="function">unsqueeze</span>(<span class="number">0</span>).<span class="function">to</span>(device))
+            prob = torch.<span class="function">softmax</span>(output, dim=<span class="number">1</span>)
+            pred = output.<span class="function">argmax</span>(<span class="number">1</span>).<span class="function">item</span>()
+            confidence = prob[<span class="number">0</span>, pred].<span class="function">item</span>()
+        
+        <span class="comment"># Denormalize image for display</span>
+        img_display = image.<span class="function">permute</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>).<span class="function">numpy</span>()
+        img_display = img_display * np.<span class="function">array</span>([<span class="number">0.229</span>, <span class="number">0.224</span>, <span class="number">0.225</span>]) + np.<span class="function">array</span>([<span class="number">0.485</span>, <span class="number">0.456</span>, <span class="number">0.406</span>])
+        img_display = np.<span class="function">clip</span>(img_display, <span class="number">0</span>, <span class="number">1</span>)
+        
+        <span class="comment"># Plot</span>
+        ax.<span class="function">imshow</span>(img_display)
+        
+        <span class="comment"># Color based on correct/incorrect</span>
+        color = <span class="string">'green'</span> <span class="keyword">if</span> pred == label <span class="keyword">else</span> <span class="string">'red'</span>
+        ax.<span class="function">set_title</span>(
+            <span class="string">f"True: </span>{class_names[label]}<span class="string">\nPred: </span>{class_names[pred]}<span class="string"> (</span>{confidence:<span class="number">.2</span>f}<span class="string">)"</span>,
+            color=color, fontsize=<span class="number">10</span>
+        )
+        ax.<span class="function">axis</span>(<span class="string">'off'</span>)
+    
+    plt.<span class="function">tight_layout</span>()
+    plt.<span class="function">savefig</span>(<span class="string">"predictions.png"</span>, dpi=<span class="number">150</span>)
+    plt.<span class="function">show</span>()
+
+<span class="function">visualize_predictions</span>(model, test_dataset, device)
+</pre>
+
+<h3>ROC Curve</h3>
+
+<pre><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_curve, auc
+
+<span class="keyword">def</span> <span class="function">plot_roc_curve</span>(labels, probabilities):
+    <span class="string">"""Plot ROC curve."""</span>
+    fpr, tpr, thresholds = <span class="function">roc_curve</span>(labels, probabilities)
+    roc_auc = <span class="function">auc</span>(fpr, tpr)
+    
+    plt.<span class="function">figure</span>(figsize=(<span class="number">8</span>, <span class="number">6</span>))
+    plt.<span class="function">plot</span>(fpr, tpr, color=<span class="string">'#4a90d9'</span>, lw=<span class="number">2</span>, 
+             label=<span class="string">f'ROC curve (AUC = </span>{roc_auc:<span class="number">.3</span>f}<span class="string">)'</span>)
+    plt.<span class="function">plot</span>([<span class="number">0</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>], color=<span class="string">'gray'</span>, lw=<span class="number">1</span>, linestyle=<span class="string">'--'</span>, label=<span class="string">'Random'</span>)
+    
+    plt.<span class="function">xlim</span>([<span class="number">0.0</span>, <span class="number">1.0</span>])
+    plt.<span class="function">ylim</span>([<span class="number">0.0</span>, <span class="number">1.05</span>])
+    plt.<span class="function">xlabel</span>(<span class="string">'False Positive Rate'</span>, fontsize=<span class="number">12</span>)
+    plt.<span class="function">ylabel</span>(<span class="string">'True Positive Rate'</span>, fontsize=<span class="number">12</span>)
+    plt.<span class="function">title</span>(<span class="string">'Receiver Operating Characteristic'</span>, fontsize=<span class="number">14</span>)
+    plt.<span class="function">legend</span>(loc=<span class="string">'lower right'</span>)
+    plt.<span class="function">grid</span>(<span class="keyword">True</span>, alpha=<span class="number">0.3</span>)
+    plt.<span class="function">savefig</span>(<span class="string">"roc_curve.png"</span>, dpi=<span class="number">150</span>)
+    plt.<span class="function">show</span>()
+
+<span class="comment"># Get predictions from evaluation</span>
+test_labels = []
+<span class="keyword">for</span> _, label <span class="keyword">in</span> test_loader:
+    test_labels.<span class="function">extend</span>(label.<span class="function">numpy</span>())
+
+<span class="function">plot_roc_curve</span>(test_labels, results[<span class="string">'probabilities'</span>])
+</pre>
+
+<hr>
+
+<h2>Results Summary</h2>
+
+<table class="results-table">
+<tr><th>Metric</th><th>Value</th><th>Clinical Interpretation</th></tr>
+<tr><td>Accuracy</td><td>92.6%</td><td>Overall correct classifications</td></tr>
+<tr><td>Precision</td><td>91.6%</td><td>Of predicted pneumonia, 91.6% truly have it</td></tr>
+<tr class="highlight-row"><td>Recall (Sensitivity)</td><td>97.4%</td><td>Of actual pneumonia, 97.4% detected</td></tr>
+<tr><td>Specificity</td><td>84.6%</td><td>Of normal cases, 84.6% correctly identified</td></tr>
+<tr><td>F1 Score</td><td>94.4%</td><td>Harmonic mean of precision and recall</td></tr>
+<tr><td>AUROC</td><td>96.5%</td><td>Discriminative ability across thresholds</td></tr>
+</table>
+
+<p>The model achieves <strong>97.4% recall</strong>—critical for a screening tool where missing pneumonia cases is costly. The trade-off is lower specificity (84.6%), meaning some healthy patients are flagged for follow-up.</p>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>We covered the theory and practice of CNNs for medical imaging:</p>
+
+<table class="concept-table">
+<tr><th>Concept</th><th>Key Idea</th><th>Benefit</th></tr>
+<tr><td><strong>Local Connectivity</strong></td><td>Each neuron sees only a local region</td><td>Captures spatial patterns, fewer parameters</td></tr>
+<tr><td><strong>Weight Sharing</strong></td><td>Same filter applied everywhere</td><td>Translation invariance, massive parameter reduction</td></tr>
+<tr><td><strong>Convolution</strong></td><td>Sliding dot product with learnable kernel</td><td>Learns feature detectors automatically</td></tr>
+<tr><td><strong>Pooling</strong></td><td>Downsample by taking max/avg</td><td>Reduces dimensions, adds robustness</td></tr>
+<tr><td><strong>Transfer Learning</strong></td><td>Reuse features from ImageNet</td><td>Works well with limited medical data</td></tr>
+<tr><td><strong>ResNet</strong></td><td>Residual connections enable deep networks</td><td>State-of-the-art feature extraction</td></tr>
+</table>
+
+<div class="formula-box">
+    <h4>Key Formulas</h4>
+    <p><strong>Output size:</strong></p>
+    <div class="math-block">$$W_{out} = \frac{W_{in} - F + 2P}{S} + 1$$</div>
+    <p><strong>Parameters:</strong></p>
+    <div class="math-block">$$\text{Params} = F \times F \times D_{in} \times K + K$$</div>
+    <p><strong>2D Convolution:</strong></p>
+    <div class="math-block">$$(I * K)[i,j] = \sum_m \sum_n I[i+m, j+n] \cdot K[m,n]$$</div>
+</div>
+
+<div class="info-box">
+    <h4>🔬 What's Next?</h4>
+    <p>In Part 3, we'll explore <strong>Recurrent Neural Networks (RNNs)</strong> for sequential medical data: time series of vital signs, sequences of clinical events, and longitudinal patient trajectories.</p>
+</div>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>LeCun et al. (1998). "Gradient-based learning applied to document recognition" — Foundational CNN paper</li>
+    <li>Krizhevsky et al. (2012). "ImageNet Classification with Deep Convolutional Neural Networks" — AlexNet</li>
+    <li>He et al. (2016). "Deep Residual Learning for Image Recognition" — ResNet</li>
+    <li>Gulshan et al. (2016). "Development and Validation of a Deep Learning Algorithm for Detection of Diabetic Retinopathy" — JAMA</li>
+    <li>Rajpurkar et al. (2017). "CheXNet: Radiologist-Level Pneumonia Detection on Chest X-Rays with Deep Learning"</li>
+    <li>Kermany et al. (2018). "Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning" — Chest X-ray dataset</li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

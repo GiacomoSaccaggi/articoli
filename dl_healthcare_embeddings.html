@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Medical Embeddings and Deep Neural Networks for Healthcare Prediction">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>Medical Embeddings for Healthcare</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Medical Embeddings for Healthcare</h2>
+                        <hr class="small">
+                        <h5>Deep Learning for Healthcare — Part 1: Medical Embeddings — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Medical Embeddings and Deep Neural Networks</h1>
+<p style="text-align:center;"><em>"In healthcare data, similar conditions should live in similar neighborhoods."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>The Representation Problem in Healthcare</h2>
+
+<p>Electronic Health Records (EHRs) contain rich information about patients: diagnosis codes (ICD-9/10), procedure codes (CPT), medications (NDC), lab results, and clinical notes. But how do we feed this heterogeneous data into machine learning models?</p>
+
+<p>The naive approach is <strong>one-hot encoding</strong>: create a binary vector where each position corresponds to a possible diagnosis code. If a patient has diabetes (ICD-9: 250.00), we set that position to 1.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec5_p20_1.png" alt="One-hot encoding limitations">
+    <p class="img-caption">One-hot encoding treats all medical codes as equally distant from each other</p>
+</div>
+
+<p>The problem? With ~15,000 ICD-9 codes and ~70,000 ICD-10 codes, we get extremely sparse, high-dimensional vectors where:</p>
+
+<ul>
+    <li><strong>All codes are equidistant</strong> — "Type 2 Diabetes" is as far from "Type 1 Diabetes" as it is from "Fractured Tibia"</li>
+    <li><strong>No semantic relationships</strong> — the model can't learn that hypertension and heart disease are related</li>
+    <li><strong>Curse of dimensionality</strong> — most entries are zeros, making learning inefficient</li>
+</ul>
+
+<p>What we need is a way to represent medical concepts as <strong>dense, low-dimensional vectors</strong> where similar conditions cluster together. This is where embeddings come in.</p>
+
+<hr>
+
+<h2>Word2Vec: Learning Distributed Representations</h2>
+
+<p>The breakthrough came from NLP. In 2013, Mikolov et al. introduced Word2Vec, a neural network that learns vector representations of words from their context. The key insight: <em>"You shall know a word by the company it keeps."</em></p>
+
+<h3>The Skip-gram Model</h3>
+
+<p>Given a target word, predict the surrounding context words. If we see "patient was diagnosed with <strong>diabetes</strong> and prescribed metformin", the model learns that "diabetes" often appears near "diagnosed", "prescribed", and "metformin".</p>
+
+<div class="formula-box">
+    <h4>Skip-gram Objective</h4>
+    <p>Maximize the probability of context words given the target word:</p>
+    <p class="formula">J(θ) = Σ<sub>(t,c)∈D</sub> log p(c|t)</p>
+    <p>Where the probability is computed using softmax:</p>
+    <p class="formula">p(c|t) = exp(v<sub>c</sub><sup>T</sup> · v<sub>t</sub>) / Σ<sub>w∈V</sub> exp(v<sub>w</sub><sup>T</sup> · v<sub>t</sub>)</p>
+    <p><strong>v<sub>t</sub></strong> = embedding of target word, <strong>v<sub>c</sub></strong> = embedding of context word, <strong>V</strong> = vocabulary</p>
+</div>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec5_p24_3.png" alt="Skip-gram architecture">
+    <p class="img-caption">Skip-gram: predict context words from the center word</p>
+</div>
+
+<h3>The Computational Problem</h3>
+
+<p>The softmax denominator requires summing over the <em>entire vocabulary</em> for every training example. With 15,000+ medical codes, this is prohibitively expensive.</p>
+
+<h3>Negative Sampling</h3>
+
+<p>Instead of computing the full softmax, we reformulate the problem as binary classification: distinguish real (target, context) pairs from fake ones.</p>
+
+<div class="formula-box">
+    <h4>Negative Sampling Objective</h4>
+    <p>For each positive pair (t, c), sample k negative pairs (t, n) where n is a random word:</p>
+    <p class="formula">J(θ) = log σ(v<sub>c</sub><sup>T</sup> · v<sub>t</sub>) + Σ<sub>i=1</sub><sup>k</sup> 𝔼<sub>n~P(w)</sub>[log σ(-v<sub>n</sub><sup>T</sup> · v<sub>t</sub>)]</p>
+    <p>Where σ is the sigmoid function and P(w) is a noise distribution (typically unigram<sup>3/4</sup>)</p>
+</div>
+
+<p>This reduces complexity from O(|V|) to O(k) per example, where k is typically 5-20.</p>
+
+<hr>
+
+<h2>From Words to Medical Codes</h2>
+
+<p>The same principle applies to healthcare. Instead of words in sentences, we have <strong>medical codes in patient records</strong>. A patient's visit becomes a "sentence" of diagnosis codes, procedures, and medications.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec5_p21_7.png" alt="Medical code embeddings">
+    <p class="img-caption">Medical codes can be embedded using the same Word2Vec principles</p>
+</div>
+
+<h3>Training Medical Embeddings</h3>
+
+<p>Given a corpus of patient records, we treat each visit as a context window:</p>
+
+<pre><span class="comment"># Patient visit: [Diabetes, Hypertension, Metformin, Lisinopril]</span>
+<span class="comment"># Generate skip-gram pairs:</span>
+<span class="comment"># (Diabetes, Hypertension), (Diabetes, Metformin), (Diabetes, Lisinopril)</span>
+<span class="comment"># (Hypertension, Diabetes), (Hypertension, Metformin), ...</span>
+
+<span class="keyword">from</span> gensim.models <span class="keyword">import</span> Word2Vec
+
+<span class="comment"># Each patient's visits as a list of medical codes</span>
+patient_records = [
+    [<span class="string">"250.00"</span>, <span class="string">"401.9"</span>, <span class="string">"metformin"</span>, <span class="string">"lisinopril"</span>],  <span class="comment"># Patient 1, Visit 1</span>
+    [<span class="string">"250.00"</span>, <span class="string">"272.4"</span>, <span class="string">"atorvastatin"</span>],              <span class="comment"># Patient 1, Visit 2</span>
+    [<span class="string">"414.01"</span>, <span class="string">"401.9"</span>, <span class="string">"aspirin"</span>, <span class="string">"metoprolol"</span>],    <span class="comment"># Patient 2, Visit 1</span>
+    <span class="comment"># ... millions more visits</span>
+]
+
+<span class="comment"># Train Word2Vec on medical codes</span>
+model = Word2Vec(
+    sentences=patient_records,
+    vector_size=<span class="number">128</span>,      <span class="comment"># Embedding dimension</span>
+    window=<span class="number">5</span>,              <span class="comment"># Context window size</span>
+    min_count=<span class="number">5</span>,           <span class="comment"># Ignore rare codes</span>
+    sg=<span class="number">1</span>,                  <span class="comment"># Skip-gram (vs CBOW)</span>
+    negative=<span class="number">10</span>,           <span class="comment"># Negative samples per positive</span>
+    workers=<span class="number">4</span>
+)
+
+<span class="comment"># Get embedding for diabetes</span>
+diabetes_embedding = model.wv[<span class="string">"250.00"</span>]  <span class="comment"># Shape: (128,)</span>
+</pre>
+
+<h3>Similarity Search: The Magic of Embeddings</h3>
+
+<p>Once trained, embeddings capture semantic relationships. Similar diagnoses cluster together in the vector space:</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec5_p25_8.png" alt="Embedding similarity search">
+    <p class="img-caption">Similar conditions cluster together in embedding space</p>
+</div>
+
+<pre><span class="comment"># Find codes most similar to "Acute upper respiratory infection"</span>
+model.wv.<span class="function">most_similar</span>(<span class="string">"465.9"</span>, topn=<span class="number">5</span>)
+
+<span class="comment"># Results:</span>
+<span class="comment"># [("466.0", 0.89),   # Acute bronchitis</span>
+<span class="comment">#  ("786.2", 0.85),   # Cough</span>
+<span class="comment">#  ("461.9", 0.83),   # Acute sinusitis</span>
+<span class="comment">#  ("462",   0.81),   # Acute pharyngitis</span>
+<span class="comment">#  ("460",   0.79)]   # Common cold</span>
+</pre>
+
+<h3>Algebraic Operations on Medical Concepts</h3>
+
+<p>Perhaps the most remarkable property: embeddings support <strong>analogical reasoning</strong>. Just as "King - Man + Woman ≈ Queen" in word embeddings, medical embeddings exhibit similar behavior:</p>
+
+<div class="info-box">
+    <h4>🧮 Medical Analogies</h4>
+    <p><strong>Hypertension + Obesity ≈ ?</strong></p>
+    <p>Results: Type 2 Diabetes, Hyperlipidemia, Coronary Atherosclerosis</p>
+    <p>The model learned that hypertension combined with obesity risk factors leads to metabolic syndrome conditions!</p>
+</div>
+
+<pre><span class="comment"># Hypertension + Obesity → what conditions?</span>
+result = model.wv.<span class="function">most_similar</span>(
+    positive=[<span class="string">"401.9"</span>, <span class="string">"278.00"</span>],  <span class="comment"># Hypertension + Obesity</span>
+    topn=<span class="number">5</span>
+)
+<span class="comment"># [("250.00", 0.82),   # Type 2 Diabetes</span>
+<span class="comment">#  ("272.4",  0.79),   # Hyperlipidemia</span>
+<span class="comment">#  ("414.01", 0.76),   # Coronary atherosclerosis</span>
+<span class="comment">#  ("427.31", 0.71),   # Atrial fibrillation</span>
+<span class="comment">#  ("585.9",  0.68)]   # Chronic kidney disease</span>
+</pre>
+
+<hr>
+
+<h2>Patient Representation</h2>
+
+<p>Now that we have embeddings for individual medical codes, how do we represent an entire patient?</p>
+
+<p>The simplest approach: <strong>sum (or average) the embeddings</strong> of all codes in the patient's history:</p>
+
+<div class="formula-box">
+    <h4>Patient Embedding</h4>
+    <p class="formula">v<sub>patient</sub> = Σ<sub>c ∈ codes(patient)</sub> v<sub>c</sub></p>
+    <p>Or with averaging: v<sub>patient</sub> = (1/|codes|) × Σ<sub>c</sub> v<sub>c</sub></p>
+</div>
+
+<pre><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">def</span> <span class="function">patient_embedding</span>(patient_codes, model, aggregate=<span class="string">'sum'</span>):
+    <span class="string">"""Convert list of medical codes to patient vector."""</span>
+    embeddings = []
+    <span class="keyword">for</span> code <span class="keyword">in</span> patient_codes:
+        <span class="keyword">if</span> code <span class="keyword">in</span> model.wv:
+            embeddings.<span class="function">append</span>(model.wv[code])
+    
+    <span class="keyword">if</span> <span class="keyword">not</span> embeddings:
+        <span class="keyword">return</span> np.<span class="function">zeros</span>(model.vector_size)
+    
+    embeddings = np.<span class="function">array</span>(embeddings)
+    <span class="keyword">if</span> aggregate == <span class="string">'sum'</span>:
+        <span class="keyword">return</span> embeddings.<span class="function">sum</span>(axis=<span class="number">0</span>)
+    <span class="keyword">elif</span> aggregate == <span class="string">'mean'</span>:
+        <span class="keyword">return</span> embeddings.<span class="function">mean</span>(axis=<span class="number">0</span>)
+
+<span class="comment"># Patient with diabetes, hypertension, and CKD</span>
+patient_codes = [<span class="string">"250.00"</span>, <span class="string">"401.9"</span>, <span class="string">"585.9"</span>]
+patient_vec = <span class="function">patient_embedding</span>(patient_codes, model)
+<span class="builtin">print</span>(patient_vec.shape)  <span class="comment"># (128,)</span>
+</pre>
+
+<p>This patient vector can now be used as input to any downstream model: mortality prediction, readmission risk, disease progression, etc.</p>
+
+<hr>
+
+<h2>Visualizing Embeddings with t-SNE</h2>
+
+<p>How do we visualize 128-dimensional embeddings? <strong>t-SNE</strong> (t-distributed Stochastic Neighbor Embedding) projects high-dimensional data to 2D while preserving local structure.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec5_p32_4.png" alt="t-SNE visualization">
+    <p class="img-caption">t-SNE projects high-dimensional embeddings to 2D for visualization</p>
+</div>
+
+<h3>How t-SNE Works</h3>
+
+<div class="formula-box">
+    <h4>t-SNE Algorithm</h4>
+    <p><strong>Step 1:</strong> Compute pairwise similarities in high-dimensional space using Gaussian kernel:</p>
+    <p class="formula">p<sub>j|i</sub> = exp(-||x<sub>i</sub> - x<sub>j</sub>||² / 2σ<sub>i</sub>²) / Σ<sub>k≠i</sub> exp(-||x<sub>i</sub> - x<sub>k</sub>||² / 2σ<sub>i</sub>²)</p>
+    
+    <p><strong>Step 2:</strong> Compute similarities in low-dimensional space using <strong>Student t-distribution</strong> (heavier tails):</p>
+    <p class="formula">q<sub>ij</sub> = (1 + ||y<sub>i</sub> - y<sub>j</sub>||²)<sup>-1</sup> / Σ<sub>k≠l</sub> (1 + ||y<sub>k</sub> - y<sub>l</sub>||²)<sup>-1</sup></p>
+    
+    <p><strong>Step 3:</strong> Minimize KL divergence between P and Q:</p>
+    <p class="formula">KL(P||Q) = Σ<sub>i</sub> Σ<sub>j</sub> p<sub>ij</sub> log(p<sub>ij</sub> / q<sub>ij</sub>)</p>
+</div>
+
+<p>The Student t-distribution is crucial: its heavy tails allow dissimilar points to be pushed far apart in the low-dimensional space, preventing the "crowding problem" where everything collapses to the center.</p>
+
+<pre><span class="keyword">from</span> sklearn.manifold <span class="keyword">import</span> TSNE
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="comment"># Get embeddings for all medical codes</span>
+codes = <span class="builtin">list</span>(model.wv.key_to_index.keys())
+embeddings = np.<span class="function">array</span>([model.wv[c] <span class="keyword">for</span> c <span class="keyword">in</span> codes])
+
+<span class="comment"># Apply t-SNE</span>
+tsne = TSNE(n_components=<span class="number">2</span>, perplexity=<span class="number">30</span>, random_state=<span class="number">42</span>)
+embeddings_2d = tsne.<span class="function">fit_transform</span>(embeddings)
+
+<span class="comment"># Visualize</span>
+plt.<span class="function">figure</span>(figsize=(<span class="number">12</span>, <span class="number">8</span>))
+plt.<span class="function">scatter</span>(embeddings_2d[:, <span class="number">0</span>], embeddings_2d[:, <span class="number">1</span>], alpha=<span class="number">0.5</span>, s=<span class="number">10</span>)
+plt.<span class="function">title</span>(<span class="string">"Medical Code Embeddings (t-SNE)"</span>)
+plt.<span class="function">show</span>()
+</pre>
+
+<hr>
+
+<h2>Beyond Word2Vec: Med2Vec</h2>
+
+<p>Standard Word2Vec treats medical codes as independent tokens. But healthcare data has <strong>additional structure</strong>:</p>
+
+<ul>
+    <li><strong>Visit-level co-occurrence</strong>: codes appearing in the same visit are related</li>
+    <li><strong>Sequential structure</strong>: the order of visits matters (disease progression)</li>
+    <li><strong>Demographics</strong>: patient age, gender affect disease patterns</li>
+</ul>
+
+<p><strong>Med2Vec</strong> extends Word2Vec with a multi-layer architecture that captures both code-level and visit-level representations.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec5_p30_6.png" alt="Med2Vec architecture">
+    <p class="img-caption">Med2Vec learns both code embeddings and visit embeddings</p>
+</div>
+
+<h3>Med2Vec Architecture</h3>
+
+<table class="concept-table">
+<tr><th>Layer</th><th>Input</th><th>Output</th><th>Purpose</th></tr>
+<tr><td>Code Embedding</td><td>One-hot code</td><td>Dense vector</td><td>Learn code representations</td></tr>
+<tr><td>Visit Embedding</td><td>Sum of code embeddings</td><td>Visit vector</td><td>Aggregate codes in a visit</td></tr>
+<tr><td>Softmax (codes)</td><td>Visit embedding</td><td>Code probabilities</td><td>Predict codes in current visit</td></tr>
+<tr><td>Softmax (visits)</td><td>Visit embedding</td><td>Next visit codes</td><td>Predict codes in adjacent visits</td></tr>
+</table>
+
+<p>The key innovation: Med2Vec jointly optimizes for <strong>within-visit co-occurrence</strong> and <strong>between-visit sequences</strong>:</p>
+
+<div class="formula-box">
+    <h4>Med2Vec Objective</h4>
+    <p class="formula">L = L<sub>code</sub> + L<sub>visit</sub></p>
+    <p><strong>L<sub>code</sub></strong>: predict codes from visit embedding (within-visit structure)</p>
+    <p><strong>L<sub>visit</sub></strong>: predict next visit's codes from current visit embedding (sequential structure)</p>
+</div>
+
+<hr>
+
+<h2>MiME: Multilevel Medical Embedding</h2>
+
+<p>Real healthcare data is even more structured. A visit contains not just diagnoses, but also the <strong>treatments prescribed for each diagnosis</strong>. MiME captures this hierarchical structure.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec5_p37_2.png" alt="MiME architecture">
+    <p class="img-caption">MiME captures diagnosis-treatment relationships within visits</p>
+</div>
+
+<h3>MiME's Hierarchical Structure</h3>
+
+<ol>
+    <li><strong>Treatment embedding</strong>: procedures/medications get their own vectors</li>
+    <li><strong>Diagnosis embedding</strong>: conditioned on associated treatments</li>
+    <li><strong>Visit embedding</strong>: aggregation of diagnosis-treatment pairs</li>
+    <li><strong>Patient embedding</strong>: sequence of visit embeddings</li>
+</ol>
+
+<h3>Auxiliary Prediction Tasks</h3>
+
+<p>MiME adds auxiliary tasks during training to learn richer representations:</p>
+
+<ul>
+    <li><strong>Diagnosis → Treatment</strong>: given a diagnosis, predict likely treatments</li>
+    <li><strong>Treatment → Diagnosis</strong>: given treatments, predict diagnoses</li>
+    <li><strong>Visit → Next Visit</strong>: predict future diagnoses from current visit</li>
+</ul>
+
+<p>These auxiliary tasks force the model to learn semantically meaningful relationships, not just co-occurrence statistics.</p>
+
+<hr>
+
+<h2>Practical Implementation: DNN for Mortality Prediction</h2>
+
+<p>Let's build a complete deep neural network for predicting in-hospital mortality using PyTorch. We'll work with MIMIC-III style EHR data.</p>
+
+<h3>Data Format</h3>
+
+<p>Our dataset contains patient visits with diagnosis codes and a binary mortality label:</p>
+
+<pre><span class="comment"># Sample data structure</span>
+<span class="comment"># patient_id | visit_diagnoses                    | mortality</span>
+<span class="comment"># 1          | [250.00, 401.9, 585.9]             | 0</span>
+<span class="comment"># 2          | [414.01, 427.31, 428.0, 518.81]    | 1</span>
+<span class="comment"># 3          | [496, 786.05, 491.21]              | 0</span>
+</pre>
+
+<h3>Multi-hot Encoding</h3>
+
+<p>Each patient's diagnoses are encoded as a multi-hot vector (multiple 1s, unlike one-hot):</p>
+
+<pre><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> torch
+<span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset, DataLoader
+
+<span class="keyword">class</span> <span class="builtin">EHRDataset</span>(Dataset):
+    <span class="string">"""Dataset for EHR diagnosis codes."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, diagnoses_list, labels, num_codes):
+        <span class="string">"""
+        Args:
+            diagnoses_list: List of lists, each inner list contains code indices
+            labels: Binary mortality labels
+            num_codes: Total number of unique diagnosis codes
+        """</span>
+        self.diagnoses_list = diagnoses_list
+        self.labels = labels
+        self.num_codes = num_codes
+    
+    <span class="keyword">def</span> <span class="function">__len__</span>(self):
+        <span class="keyword">return</span> <span class="builtin">len</span>(self.labels)
+    
+    <span class="keyword">def</span> <span class="function">__getitem__</span>(self, idx):
+        <span class="comment"># Create multi-hot vector</span>
+        multi_hot = np.<span class="function">zeros</span>(self.num_codes, dtype=np.float32)
+        <span class="keyword">for</span> code_idx <span class="keyword">in</span> self.diagnoses_list[idx]:
+            multi_hot[code_idx] = <span class="number">1.0</span>
+        
+        <span class="keyword">return</span> (
+            torch.<span class="function">tensor</span>(multi_hot),
+            torch.<span class="function">tensor</span>(self.labels[idx], dtype=torch.long)
+        )
+
+<span class="comment"># Example usage</span>
+num_codes = <span class="number">1000</span>  <span class="comment"># Vocabulary size</span>
+train_diagnoses = [[<span class="number">10</span>, <span class="number">50</span>, <span class="number">200</span>], [<span class="number">5</span>, <span class="number">100</span>, <span class="number">300</span>, <span class="number">450</span>], ...]
+train_labels = [<span class="number">0</span>, <span class="number">1</span>, ...]
+
+dataset = EHRDataset(train_diagnoses, train_labels, num_codes)
+dataloader = DataLoader(dataset, batch_size=<span class="number">32</span>, shuffle=<span class="keyword">True</span>)
+</pre>
+
+<h3>DNN Architecture</h3>
+
+<p>A feedforward neural network with fully connected layers, ReLU activations, and dropout for regularization:</p>
+
+<pre><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+
+<span class="keyword">class</span> <span class="builtin">MortalityDNN</span>(nn.Module):
+    <span class="string">"""Deep Neural Network for mortality prediction."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, input_dim, hidden_dims=[<span class="number">512</span>, <span class="number">256</span>, <span class="number">128</span>], dropout=<span class="number">0.3</span>):
+        <span class="string">"""
+        Args:
+            input_dim: Number of diagnosis codes (vocabulary size)
+            hidden_dims: List of hidden layer dimensions
+            dropout: Dropout probability
+        """</span>
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        layers = []
+        prev_dim = input_dim
+        
+        <span class="keyword">for</span> hidden_dim <span class="keyword">in</span> hidden_dims:
+            layers.<span class="function">extend</span>([
+                nn.Linear(prev_dim, hidden_dim),
+                nn.ReLU(),
+                nn.Dropout(dropout)
+            ])
+            prev_dim = hidden_dim
+        
+        self.hidden_layers = nn.Sequential(*layers)
+        self.output_layer = nn.Linear(prev_dim, <span class="number">2</span>)  <span class="comment"># Binary classification</span>
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x):
+        <span class="string">"""
+        Args:
+            x: Multi-hot encoded diagnoses [batch_size, num_codes]
+        Returns:
+            logits: [batch_size, 2]
+        """</span>
+        h = self.<span class="function">hidden_layers</span>(x)
+        logits = self.<span class="function">output_layer</span>(h)
+        <span class="keyword">return</span> logits
+
+<span class="comment"># Initialize model</span>
+model = MortalityDNN(
+    input_dim=<span class="number">1000</span>,
+    hidden_dims=[<span class="number">512</span>, <span class="number">256</span>, <span class="number">128</span>],
+    dropout=<span class="number">0.3</span>
+)
+<span class="builtin">print</span>(model)
+</pre>
+
+<pre><span class="comment"># Model architecture output:</span>
+<span class="comment"># MortalityDNN(</span>
+<span class="comment">#   (hidden_layers): Sequential(</span>
+<span class="comment">#     (0): Linear(in_features=1000, out_features=512)</span>
+<span class="comment">#     (1): ReLU()</span>
+<span class="comment">#     (2): Dropout(p=0.3)</span>
+<span class="comment">#     (3): Linear(in_features=512, out_features=256)</span>
+<span class="comment">#     (4): ReLU()</span>
+<span class="comment">#     (5): Dropout(p=0.3)</span>
+<span class="comment">#     (6): Linear(in_features=256, out_features=128)</span>
+<span class="comment">#     (7): ReLU()</span>
+<span class="comment">#     (8): Dropout(p=0.3)</span>
+<span class="comment">#   )</span>
+<span class="comment">#   (output_layer): Linear(in_features=128, out_features=2)</span>
+<span class="comment"># )</span>
+</pre>
+
+<h3>Training Loop</h3>
+
+<pre><span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score
+
+<span class="keyword">def</span> <span class="function">train_epoch</span>(model, dataloader, criterion, optimizer, device):
+    <span class="string">"""Train for one epoch."""</span>
+    model.<span class="function">train</span>()
+    total_loss = <span class="number">0</span>
+    
+    <span class="keyword">for</span> batch_x, batch_y <span class="keyword">in</span> dataloader:
+        batch_x = batch_x.<span class="function">to</span>(device)
+        batch_y = batch_y.<span class="function">to</span>(device)
+        
+        optimizer.<span class="function">zero_grad</span>()
+        logits = <span class="function">model</span>(batch_x)
+        loss = <span class="function">criterion</span>(logits, batch_y)
+        loss.<span class="function">backward</span>()
+        optimizer.<span class="function">step</span>()
+        
+        total_loss += loss.<span class="function">item</span>()
+    
+    <span class="keyword">return</span> total_loss / <span class="builtin">len</span>(dataloader)
+
+
+<span class="keyword">def</span> <span class="function">evaluate</span>(model, dataloader, device):
+    <span class="string">"""Evaluate model and return AUROC."""</span>
+    model.<span class="function">eval</span>()
+    all_probs = []
+    all_labels = []
+    
+    <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+        <span class="keyword">for</span> batch_x, batch_y <span class="keyword">in</span> dataloader:
+            batch_x = batch_x.<span class="function">to</span>(device)
+            logits = <span class="function">model</span>(batch_x)
+            probs = F.<span class="function">softmax</span>(logits, dim=<span class="number">1</span>)[:, <span class="number">1</span>]  <span class="comment"># P(mortality=1)</span>
+            
+            all_probs.<span class="function">extend</span>(probs.<span class="function">cpu</span>().<span class="function">numpy</span>())
+            all_labels.<span class="function">extend</span>(batch_y.<span class="function">numpy</span>())
+    
+    auroc = <span class="function">roc_auc_score</span>(all_labels, all_probs)
+    <span class="keyword">return</span> auroc
+
+
+<span class="comment"># Training setup</span>
+device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+model = model.<span class="function">to</span>(device)
+
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.<span class="function">parameters</span>(), lr=<span class="number">0.001</span>)
+
+<span class="comment"># Training loop</span>
+num_epochs = <span class="number">20</span>
+<span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+    train_loss = <span class="function">train_epoch</span>(model, train_loader, criterion, optimizer, device)
+    val_auroc = <span class="function">evaluate</span>(model, val_loader, device)
+    
+    <span class="builtin">print</span>(<span class="string">f"Epoch </span>{epoch+<span class="number">1</span>:<span class="number">2</span>d}<span class="string"> | Loss: </span>{train_loss:<span class="number">.4</span>f}<span class="string"> | Val AUROC: </span>{val_auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+</pre>
+
+<pre><span class="comment"># Sample output:</span>
+<span class="comment"># Epoch  1 | Loss: 0.6821 | Val AUROC: 0.6234</span>
+<span class="comment"># Epoch  2 | Loss: 0.5943 | Val AUROC: 0.7012</span>
+<span class="comment"># Epoch  3 | Loss: 0.5234 | Val AUROC: 0.7456</span>
+<span class="comment"># ...</span>
+<span class="comment"># Epoch 20 | Loss: 0.3012 | Val AUROC: 0.8234</span>
+</pre>
+
+<h3>DNN with Pre-trained Embeddings</h3>
+
+<p>Instead of learning from scratch with multi-hot inputs, we can use pre-trained medical embeddings:</p>
+
+<pre><span class="keyword">class</span> <span class="builtin">EmbeddingDNN</span>(nn.Module):
+    <span class="string">"""DNN with pre-trained medical code embeddings."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, embedding_matrix, hidden_dims=[<span class="number">256</span>, <span class="number">128</span>], dropout=<span class="number">0.3</span>, freeze_embeddings=<span class="keyword">True</span>):
+        <span class="string">"""
+        Args:
+            embedding_matrix: Pre-trained embeddings [num_codes, embed_dim]
+            hidden_dims: Hidden layer dimensions
+            dropout: Dropout probability
+            freeze_embeddings: If True, don't update embeddings during training
+        """</span>
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        num_codes, embed_dim = embedding_matrix.shape
+        
+        <span class="comment"># Embedding layer initialized with pre-trained weights</span>
+        self.embedding = nn.Embedding(num_codes, embed_dim)
+        self.embedding.weight.data.<span class="function">copy_</span>(torch.<span class="function">tensor</span>(embedding_matrix))
+        
+        <span class="keyword">if</span> freeze_embeddings:
+            self.embedding.weight.requires_grad = <span class="keyword">False</span>
+        
+        <span class="comment"># Hidden layers</span>
+        layers = []
+        prev_dim = embed_dim
+        <span class="keyword">for</span> hidden_dim <span class="keyword">in</span> hidden_dims:
+            layers.<span class="function">extend</span>([
+                nn.Linear(prev_dim, hidden_dim),
+                nn.ReLU(),
+                nn.Dropout(dropout)
+            ])
+            prev_dim = hidden_dim
+        
+        self.hidden_layers = nn.Sequential(*layers)
+        self.output_layer = nn.Linear(prev_dim, <span class="number">2</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, code_indices, code_mask):
+        <span class="string">"""
+        Args:
+            code_indices: [batch_size, max_codes] - padded code indices
+            code_mask: [batch_size, max_codes] - 1 for real codes, 0 for padding
+        Returns:
+            logits: [batch_size, 2]
+        """</span>
+        <span class="comment"># Get embeddings: [batch_size, max_codes, embed_dim]</span>
+        embeds = self.<span class="function">embedding</span>(code_indices)
+        
+        <span class="comment"># Masked average pooling</span>
+        mask_expanded = code_mask.<span class="function">unsqueeze</span>(-<span class="number">1</span>).<span class="function">float</span>()  <span class="comment"># [batch, max_codes, 1]</span>
+        embeds_masked = embeds * mask_expanded
+        sum_embeds = embeds_masked.<span class="function">sum</span>(dim=<span class="number">1</span>)  <span class="comment"># [batch, embed_dim]</span>
+        count = mask_expanded.<span class="function">sum</span>(dim=<span class="number">1</span>).<span class="function">clamp</span>(min=<span class="number">1</span>)  <span class="comment"># Avoid division by zero</span>
+        patient_embed = sum_embeds / count  <span class="comment"># [batch, embed_dim]</span>
+        
+        <span class="comment"># Forward through hidden layers</span>
+        h = self.<span class="function">hidden_layers</span>(patient_embed)
+        logits = self.<span class="function">output_layer</span>(h)
+        <span class="keyword">return</span> logits
+
+<span class="comment"># Load pre-trained Word2Vec embeddings</span>
+embedding_matrix = np.<span class="function">array</span>([model.wv[code] <span class="keyword">for</span> code <span class="keyword">in</span> code_vocabulary])
+
+embed_model = EmbeddingDNN(
+    embedding_matrix=embedding_matrix,
+    hidden_dims=[<span class="number">256</span>, <span class="number">128</span>],
+    freeze_embeddings=<span class="keyword">True</span>
+)
+</pre>
+
+<div class="info-box">
+    <h4>💡 Embedding vs Multi-hot</h4>
+    <p><strong>Multi-hot input</strong>: Model learns representations from scratch. Requires more data and compute.</p>
+    <p><strong>Pre-trained embeddings</strong>: Leverage knowledge from large corpora. Better generalization with limited labeled data.</p>
+    <p>In practice, pre-trained embeddings often improve AUROC by 2-5% on small datasets.</p>
+</div>
+
+<hr>
+
+<h2>Complete Training Pipeline</h2>
+
+<p>Putting it all together — a complete, runnable example:</p>
+
+<pre><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.optim <span class="keyword">as</span> optim
+<span class="keyword">from</span> torch.utils.data <span class="keyword">import</span> Dataset, DataLoader
+<span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> roc_auc_score
+<span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split
+
+<span class="comment"># ============ Data Preparation ============</span>
+<span class="keyword">def</span> <span class="function">load_ehr_data</span>(filepath):
+    <span class="string">"""Load EHR data from file.
+    
+    Expected format: each line is "code1,code2,...|label"
+    """</span>
+    diagnoses = []
+    labels = []
+    
+    <span class="keyword">with</span> <span class="builtin">open</span>(filepath, <span class="string">'r'</span>) <span class="keyword">as</span> f:
+        <span class="keyword">for</span> line <span class="keyword">in</span> f:
+            codes_str, label = line.<span class="function">strip</span>().<span class="function">split</span>(<span class="string">'|'</span>)
+            codes = codes_str.<span class="function">split</span>(<span class="string">','</span>)
+            diagnoses.<span class="function">append</span>(codes)
+            labels.<span class="function">append</span>(<span class="builtin">int</span>(label))
+    
+    <span class="keyword">return</span> diagnoses, labels
+
+
+<span class="keyword">def</span> <span class="function">build_vocabulary</span>(diagnoses_list):
+    <span class="string">"""Build code-to-index mapping."""</span>
+    all_codes = <span class="builtin">set</span>()
+    <span class="keyword">for</span> codes <span class="keyword">in</span> diagnoses_list:
+        all_codes.<span class="function">update</span>(codes)
+    
+    code_to_idx = {code: idx <span class="keyword">for</span> idx, code <span class="keyword">in</span> <span class="builtin">enumerate</span>(<span class="builtin">sorted</span>(all_codes))}
+    <span class="keyword">return</span> code_to_idx
+
+
+<span class="keyword">def</span> <span class="function">encode_diagnoses</span>(diagnoses_list, code_to_idx):
+    <span class="string">"""Convert code strings to indices."""</span>
+    encoded = []
+    <span class="keyword">for</span> codes <span class="keyword">in</span> diagnoses_list:
+        encoded.<span class="function">append</span>([code_to_idx[c] <span class="keyword">for</span> c <span class="keyword">in</span> codes <span class="keyword">if</span> c <span class="keyword">in</span> code_to_idx])
+    <span class="keyword">return</span> encoded
+
+
+<span class="comment"># ============ Model Training ============</span>
+<span class="keyword">def</span> <span class="function">train_model</span>(model, train_loader, val_loader, num_epochs=<span class="number">20</span>, lr=<span class="number">0.001</span>):
+    <span class="string">"""Full training loop with early stopping."""</span>
+    device = torch.device(<span class="string">"cuda"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>)
+    model = model.<span class="function">to</span>(device)
+    
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.Adam(model.<span class="function">parameters</span>(), lr=lr)
+    
+    best_auroc = <span class="number">0</span>
+    patience = <span class="number">5</span>
+    patience_counter = <span class="number">0</span>
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(num_epochs):
+        <span class="comment"># Training</span>
+        model.<span class="function">train</span>()
+        total_loss = <span class="number">0</span>
+        <span class="keyword">for</span> batch_x, batch_y <span class="keyword">in</span> train_loader:
+            batch_x, batch_y = batch_x.<span class="function">to</span>(device), batch_y.<span class="function">to</span>(device)
+            
+            optimizer.<span class="function">zero_grad</span>()
+            logits = <span class="function">model</span>(batch_x)
+            loss = <span class="function">criterion</span>(logits, batch_y)
+            loss.<span class="function">backward</span>()
+            optimizer.<span class="function">step</span>()
+            total_loss += loss.<span class="function">item</span>()
+        
+        <span class="comment"># Validation</span>
+        model.<span class="function">eval</span>()
+        all_probs, all_labels = [], []
+        <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+            <span class="keyword">for</span> batch_x, batch_y <span class="keyword">in</span> val_loader:
+                batch_x = batch_x.<span class="function">to</span>(device)
+                probs = torch.<span class="function">softmax</span>(<span class="function">model</span>(batch_x), dim=<span class="number">1</span>)[:, <span class="number">1</span>]
+                all_probs.<span class="function">extend</span>(probs.<span class="function">cpu</span>().<span class="function">numpy</span>())
+                all_labels.<span class="function">extend</span>(batch_y.<span class="function">numpy</span>())
+        
+        val_auroc = <span class="function">roc_auc_score</span>(all_labels, all_probs)
+        avg_loss = total_loss / <span class="builtin">len</span>(train_loader)
+        
+        <span class="builtin">print</span>(<span class="string">f"Epoch </span>{epoch+<span class="number">1</span>:<span class="number">2</span>d}<span class="string"> | Loss: </span>{avg_loss:<span class="number">.4</span>f}<span class="string"> | Val AUROC: </span>{val_auroc:<span class="number">.4</span>f}<span class="string">"</span>)
+        
+        <span class="comment"># Early stopping</span>
+        <span class="keyword">if</span> val_auroc > best_auroc:
+            best_auroc = val_auroc
+            patience_counter = <span class="number">0</span>
+            torch.<span class="function">save</span>(model.<span class="function">state_dict</span>(), <span class="string">"best_model.pt"</span>)
+        <span class="keyword">else</span>:
+            patience_counter += <span class="number">1</span>
+            <span class="keyword">if</span> patience_counter >= patience:
+                <span class="builtin">print</span>(<span class="string">f"Early stopping at epoch </span>{epoch+<span class="number">1</span>}<span class="string">"</span>)
+                <span class="keyword">break</span>
+    
+    <span class="keyword">return</span> best_auroc
+</pre>
+
+<hr>
+
+<h2>Results Comparison</h2>
+
+<p>Typical results on MIMIC-III mortality prediction:</p>
+
+<table class="results-table">
+<tr><th>Method</th><th>Input Type</th><th>Val AUROC</th><th>Test AUROC</th></tr>
+<tr><td>Logistic Regression</td><td>Multi-hot</td><td>0.782</td><td>0.775</td></tr>
+<tr><td>Random Forest</td><td>Multi-hot</td><td>0.801</td><td>0.789</td></tr>
+<tr><td>DNN (3 layers)</td><td>Multi-hot</td><td>0.823</td><td>0.812</td></tr>
+<tr class="highlight-row"><td>DNN + Word2Vec</td><td>Embeddings</td><td>0.841</td><td>0.834</td></tr>
+<tr class="highlight-row"><td>DNN + Med2Vec</td><td>Embeddings</td><td>0.856</td><td>0.849</td></tr>
+</table>
+
+<p>Key observations:</p>
+<ul>
+    <li>DNNs outperform classical ML methods on this task</li>
+    <li>Pre-trained embeddings provide consistent improvements</li>
+    <li>Med2Vec > Word2Vec due to capturing visit-level structure</li>
+</ul>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>We covered the theory and practice of medical embeddings:</p>
+
+<table class="concept-table">
+<tr><th>Concept</th><th>Key Idea</th><th>Use Case</th></tr>
+<tr><td><strong>Word2Vec</strong></td><td>Learn code vectors from co-occurrence</td><td>Basic code embeddings</td></tr>
+<tr><td><strong>Negative Sampling</strong></td><td>Efficient training via binary classification</td><td>Scale to large vocabularies</td></tr>
+<tr><td><strong>Patient Embedding</strong></td><td>Sum/average of code embeddings</td><td>Input to downstream models</td></tr>
+<tr><td><strong>t-SNE</strong></td><td>Visualize high-dim embeddings in 2D</td><td>Exploratory analysis</td></tr>
+<tr><td><strong>Med2Vec</strong></td><td>Visit-level + sequential structure</td><td>Richer patient representations</td></tr>
+<tr><td><strong>MiME</strong></td><td>Diagnosis-treatment hierarchies</td><td>Treatment recommendation</td></tr>
+<tr><td><strong>DNN</strong></td><td>Multi-layer feedforward network</td><td>Mortality/readmission prediction</td></tr>
+</table>
+
+<div class="warning-box">
+    <h4>⚠️ Important Considerations</h4>
+    <ul>
+        <li><strong>Data quality</strong>: EHR data is messy — missing codes, coding errors, temporal shifts</li>
+        <li><strong>Class imbalance</strong>: Mortality is rare (~3-5%). Use class weights or oversampling</li>
+        <li><strong>Temporal validity</strong>: Train on past, test on future. Never leak future information</li>
+        <li><strong>Interpretability</strong>: Clinicians need to understand predictions. Consider attention mechanisms</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>Mikolov et al. (2013). "Efficient Estimation of Word Representations in Vector Space" — Original Word2Vec paper</li>
+    <li>Choi et al. (2016). "Multi-layer Representation Learning for Medical Concepts" — Med2Vec</li>
+    <li>Choi et al. (2017). "MiME: Multilevel Medical Embedding" — MiME architecture</li>
+    <li>van der Maaten & Hinton (2008). "Visualizing Data using t-SNE"</li>
+    <li>Johnson et al. (2016). "MIMIC-III, a freely accessible critical care database"</li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

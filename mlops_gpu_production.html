@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="MLOps with GPU: From CI/CD to Model Serving - A Complete Pipeline for Production Machine Learning">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>MLOps with GPU: From CI/CD to Model Serving</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>MLOps with GPU: From CI/CD to Model Serving</h2>
+                        <hr class="small">
+                        <h5>A Complete Pipeline for Production Machine Learning — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">MLOps with GPU: From CI/CD to Model Serving</h1>
+<p style="text-align:center;"><em>"Infrastructure as code, models as artifacts, experiments as science."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>The MLOps Loop</h2>
+
+<p>Machine learning in production is fundamentally different from machine learning in notebooks. A model that achieves 95% accuracy in development means nothing if it can't be reliably deployed, monitored, and updated. This is where MLOps comes in — the discipline of applying DevOps principles to machine learning systems.</p>
+
+<p>The MLOps lifecycle forms a continuous loop:</p>
+
+<div class="formula-box">
+    <h4>The MLOps Cycle</h4>
+    <p class="formula">Development → Testing → Deployment → Monitoring → Development</p>
+    <p>Each stage feeds back into the next, creating an iterative improvement process.</p>
+</div>
+
+<h3>Why Automation Matters for ML</h3>
+
+<p>Traditional software is deterministic — given the same inputs, it produces the same outputs. Machine learning is different. Models are statistical artifacts that can degrade over time, even without code changes:</p>
+
+<ul>
+    <li><strong>Reproducibility</strong>: Without version control for data, code, and hyperparameters, you can't recreate past results</li>
+    <li><strong>Model decay</strong>: The world changes. A model trained on 2024 data may perform poorly on 2026 data</li>
+    <li><strong>Data drift</strong>: Input distributions shift. What was normal yesterday may be an outlier today</li>
+    <li><strong>Concept drift</strong>: The relationship between inputs and outputs changes over time</li>
+</ul>
+
+<div class="info-box">
+    <h4>🔄 The Hidden Technical Debt in ML Systems</h4>
+    <p>Google's landmark paper "Hidden Technical Debt in Machine Learning Systems" (2015) revealed that <strong>ML code is only a small fraction of a real ML system</strong>. The vast majority consists of configuration, data collection, feature extraction, serving infrastructure, and monitoring.</p>
+</div>
+
+<h3>Key Principles of MLOps</h3>
+
+<table class="concept-table">
+<tr><th>Principle</th><th>Description</th><th>Implementation</th></tr>
+<tr><td><strong>Version Control</strong></td><td>Track code, data, models, and experiments</td><td>Git, DVC, MLflow</td></tr>
+<tr><td><strong>Automated Testing</strong></td><td>Validate code quality and model behavior</td><td>pytest, unit tests, integration tests</td></tr>
+<tr><td><strong>CI/CD</strong></td><td>Continuous integration and deployment</td><td>GitHub Actions, Jenkins, GitLab CI</td></tr>
+<tr><td><strong>Containerization</strong></td><td>Reproducible environments</td><td>Docker, Kubernetes</td></tr>
+<tr><td><strong>Monitoring</strong></td><td>Track model performance in production</td><td>Prometheus, Grafana, custom dashboards</td></tr>
+</table>
+
+<hr>
+
+<h2>Project Structure and the Makefile Approach</h2>
+
+<p>A well-organized ML project separates concerns: data processing, model training, serving, and infrastructure. But how do you coordinate these components? The answer is surprisingly old-school: <code>make</code>.</p>
+
+<p>Makefiles provide a declarative way to define tasks and their dependencies. They're language-agnostic, well-understood, and integrate seamlessly with CI/CD systems.</p>
+
+<h3>The Makefile</h3>
+
+<p>Here's a production-ready Makefile for an ML project with GPU support:</p>
+
+<pre><span class="comment"># Makefile for ML project with GPU support</span>
+
+<span class="function">install</span>:
+	pip install --upgrade pip && pip install -r requirements.txt
+	pip install --upgrade --no-deps --force-reinstall git+https://github.com/openai/whisper.git
+
+<span class="function">test</span>:
+	python -m pytest -vv --cov=main --cov=mylib test_*.py
+
+<span class="function">format</span>:
+	black *.py hugging-face/zero_shot_classification.py hugging-face/hf_whisper.py
+
+<span class="function">lint</span>:
+	pylint --disable=R,C --ignore-patterns=test_.*?py *.py mylib/*.py
+
+<span class="function">container-lint</span>:
+	docker run --rm -i hadolint/hadolint < Dockerfile
+
+<span class="function">checkgpu</span>:
+	echo "Checking GPU for PyTorch"
+	python utils/verify_pytorch.py
+	echo "Checking GPU for Tensorflow"
+	python utils/verify_tf.py
+
+<span class="function">refactor</span>: format lint
+
+<span class="function">deploy</span>:
+	<span class="comment">#deploy goes here</span>
+
+<span class="function">all</span>: install lint test format deploy
+</pre>
+
+<h3>Understanding Each Target</h3>
+
+<table class="concept-table">
+<tr><th>Target</th><th>Purpose</th><th>When to Use</th></tr>
+<tr><td><code>install</code></td><td>Install all dependencies including Whisper from source</td><td>Initial setup, dependency updates</td></tr>
+<tr><td><code>test</code></td><td>Run pytest with coverage reporting</td><td>Before commits, in CI</td></tr>
+<tr><td><code>format</code></td><td>Auto-format code with Black</td><td>Before commits</td></tr>
+<tr><td><code>lint</code></td><td>Static analysis with pylint (refactoring and convention warnings disabled)</td><td>Before commits, in CI</td></tr>
+<tr><td><code>container-lint</code></td><td>Validate Dockerfile best practices with Hadolint</td><td>When modifying Dockerfiles</td></tr>
+<tr><td><code>checkgpu</code></td><td>Verify GPU availability for both PyTorch and TensorFlow</td><td>On GPU machines, debugging</td></tr>
+<tr><td><code>refactor</code></td><td>Combined format + lint</td><td>Quick cleanup</td></tr>
+<tr><td><code>deploy</code></td><td>Deployment placeholder</td><td>Production releases</td></tr>
+<tr><td><code>all</code></td><td>Full pipeline: install → lint → test → format → deploy</td><td>CI/CD, full validation</td></tr>
+</table>
+
+<div class="info-box">
+    <h4>💡 The Philosophy of <code>make all</code></h4>
+    <p>The <code>all</code> target embodies a key principle: <strong>a single command should validate your entire project</strong>. New team members can run <code>make all</code> and know immediately if their environment is correctly configured. CI systems can run the same command, ensuring consistency between local development and automated pipelines.</p>
+</div>
+
+<h3>Why Disable pylint R and C?</h3>
+
+<p>The flags <code>--disable=R,C</code> turn off Refactor and Convention warnings. This is intentional:</p>
+
+<ul>
+    <li><strong>R (Refactor)</strong>: Suggestions like "too many arguments" or "too many local variables" — often false positives in data science code</li>
+    <li><strong>C (Convention)</strong>: Style issues like "missing docstring" — handled by Black and team conventions instead</li>
+</ul>
+
+<p>This keeps pylint focused on actual errors (E) and warnings (W) that indicate bugs or problematic patterns.</p>
+
+<hr>
+
+<h2>CI/CD with GitHub Actions</h2>
+
+<p>Continuous Integration ensures that every code change is automatically validated. GitHub Actions provides a powerful, free CI/CD platform that integrates directly with your repository.</p>
+
+<h3>The Workflow File</h3>
+
+<p>Create <code>.github/workflows/ci.yml</code>:</p>
+
+<pre><span class="keyword">name</span>: CI
+<span class="keyword">on</span>:
+  <span class="function">push</span>:
+    <span class="keyword">branches</span>: [ <span class="string">"GPU"</span> ]
+  <span class="function">pull_request</span>:
+    <span class="keyword">branches</span>: [ <span class="string">"GPU"</span> ]
+  <span class="function">workflow_dispatch</span>:
+
+<span class="keyword">jobs</span>:
+  <span class="function">build</span>:
+    <span class="keyword">runs-on</span>: ubuntu-latest
+    <span class="keyword">steps</span>:
+      - <span class="keyword">uses</span>: actions/checkout@v3
+      - <span class="keyword">name</span>: install packages
+        <span class="keyword">run</span>: make install
+      - <span class="keyword">name</span>: lint
+        <span class="keyword">run</span>: make lint
+      - <span class="keyword">name</span>: test
+        <span class="keyword">run</span>: make test
+      - <span class="keyword">name</span>: format
+        <span class="keyword">run</span>: make format
+      - <span class="keyword">name</span>: deploy
+        <span class="keyword">run</span>: make deploy
+</pre>
+
+<h3>Understanding the Workflow</h3>
+
+<h4>Triggers (<code>on:</code>)</h4>
+
+<ul>
+    <li><code>push: branches: ["GPU"]</code> — Run on every push to the GPU branch</li>
+    <li><code>pull_request: branches: ["GPU"]</code> — Run on PRs targeting the GPU branch</li>
+    <li><code>workflow_dispatch:</code> — Allow manual triggering from the GitHub UI</li>
+</ul>
+
+<h4>The Mirror Principle</h4>
+
+<p>Notice how the CI steps mirror the Makefile targets exactly. This is intentional:</p>
+
+<div class="formula-box">
+    <h4>CI/CD Mirror Principle</h4>
+    <p class="formula">Local Command = CI Command</p>
+    <p>If <code>make lint</code> passes locally, it should pass in CI. If it fails in CI, you can reproduce the failure locally with the same command. No surprises.</p>
+</div>
+
+<h3>Why This Ensures Code Quality</h3>
+
+<ol>
+    <li><strong>Linting catches bugs early</strong>: Undefined variables, unused imports, and type mismatches are caught before they reach production</li>
+    <li><strong>Tests validate behavior</strong>: Automated tests ensure that code changes don't break existing functionality</li>
+    <li><strong>Formatting ensures consistency</strong>: Black enforces a consistent code style across the team</li>
+    <li><strong>Blocking merges on failure</strong>: Configure branch protection rules to require passing CI before merging</li>
+</ol>
+
+<div class="warning-box">
+    <h4>⚠️ GPU Testing in CI</h4>
+    <p>Standard GitHub Actions runners don't have GPUs. For GPU-specific tests, you'll need self-hosted runners with GPU access, or use services like AWS CodeBuild with GPU instances. The <code>checkgpu</code> target is primarily for local development and GPU-enabled CI environments.</p>
+</div>
+
+<hr>
+
+<h2>GPU Verification and Multi-Framework Support</h2>
+
+<p>Modern ML workloads demand GPU acceleration. Training a transformer model on CPU might take days; on a GPU, it takes hours. But GPU environments are notoriously finicky — driver versions, CUDA versions, and framework versions must all align.</p>
+
+<h3>PyTorch GPU Verification</h3>
+
+<p>Create <code>utils/verify_pytorch.py</code>:</p>
+
+<pre><span class="keyword">import</span> torch
+
+<span class="keyword">def</span> <span class="function">verify_pytorch_gpu</span>():
+    <span class="string">"""Verify PyTorch can access the GPU."""</span>
+    <span class="builtin">print</span>(<span class="string">f"PyTorch version: {torch.__version__}"</span>)
+    <span class="builtin">print</span>(<span class="string">f"CUDA available: {torch.cuda.is_available()}"</span>)
+    
+    <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>():
+        <span class="builtin">print</span>(<span class="string">f"CUDA version: {torch.version.cuda}"</span>)
+        <span class="builtin">print</span>(<span class="string">f"cuDNN version: {torch.backends.cudnn.version()}"</span>)
+        <span class="builtin">print</span>(<span class="string">f"GPU count: {torch.cuda.device_count()}"</span>)
+        
+        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="builtin">range</span>(torch.cuda.<span class="function">device_count</span>()):
+            <span class="builtin">print</span>(<span class="string">f"  GPU {i}: {torch.cuda.get_device_name(i)}"</span>)
+            props = torch.cuda.<span class="function">get_device_properties</span>(i)
+            <span class="builtin">print</span>(<span class="string">f"    Memory: {props.total_memory / 1e9:.1f} GB"</span>)
+            <span class="builtin">print</span>(<span class="string">f"    Compute capability: {props.major}.{props.minor}"</span>)
+        
+        <span class="comment"># Quick tensor operation test</span>
+        x = torch.<span class="function">randn</span>(<span class="number">1000</span>, <span class="number">1000</span>, device=<span class="string">"cuda"</span>)
+        y = torch.<span class="function">matmul</span>(x, x)
+        <span class="builtin">print</span>(<span class="string">"✓ GPU tensor operation successful"</span>)
+    <span class="keyword">else</span>:
+        <span class="builtin">print</span>(<span class="string">"✗ No GPU available for PyTorch"</span>)
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="function">verify_pytorch_gpu</span>()
+</pre>
+
+<p>Example output on a GPU machine:</p>
+
+<pre><span class="comment"># PyTorch version: 2.1.0+cu121
+# CUDA available: True
+# CUDA version: 12.1
+# cuDNN version: 8902
+# GPU count: 1
+#   GPU 0: NVIDIA GeForce RTX 4090
+#     Memory: 24.0 GB
+#     Compute capability: 8.9
+# ✓ GPU tensor operation successful</span>
+</pre>
+
+<h3>TensorFlow GPU Verification</h3>
+
+<p>Create <code>utils/verify_tf.py</code>:</p>
+
+<pre><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf
+
+<span class="keyword">def</span> <span class="function">verify_tensorflow_gpu</span>():
+    <span class="string">"""Verify TensorFlow can access the GPU."""</span>
+    <span class="builtin">print</span>(<span class="string">f"TensorFlow version: {tf.__version__}"</span>)
+    
+    gpus = tf.config.<span class="function">list_physical_devices</span>(<span class="string">'GPU'</span>)
+    <span class="builtin">print</span>(<span class="string">f"GPUs available: {len(gpus)}"</span>)
+    
+    <span class="keyword">if</span> gpus:
+        <span class="keyword">for</span> gpu <span class="keyword">in</span> gpus:
+            <span class="builtin">print</span>(<span class="string">f"  {gpu.name}"</span>)
+        
+        <span class="comment"># Quick tensor operation test</span>
+        <span class="keyword">with</span> tf.device(<span class="string">'/GPU:0'</span>):
+            x = tf.random.<span class="function">normal</span>([<span class="number">1000</span>, <span class="number">1000</span>])
+            y = tf.<span class="function">matmul</span>(x, x)
+        <span class="builtin">print</span>(<span class="string">"✓ GPU tensor operation successful"</span>)
+    <span class="keyword">else</span>:
+        <span class="builtin">print</span>(<span class="string">"✗ No GPU available for TensorFlow"</span>)
+    
+    <span class="comment"># Show build info</span>
+    <span class="builtin">print</span>(<span class="string">f"Built with CUDA: {tf.test.is_built_with_cuda()}"</span>)
+
+<span class="keyword">if</span> __name__ == <span class="string">"__main__"</span>:
+    <span class="function">verify_tensorflow_gpu</span>()
+</pre>
+
+<h3>Running GPU Workloads in Containers</h3>
+
+<p>Docker containers can access host GPUs using the NVIDIA Container Toolkit:</p>
+
+<pre><span class="comment"># Install NVIDIA Container Toolkit (on host)</span>
+distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | \
+    sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
+sudo systemctl restart docker
+
+<span class="comment"># Run container with GPU access</span>
+docker run --gpus all nvidia/cuda:12.1-base nvidia-smi
+
+<span class="comment"># Run with specific GPUs</span>
+docker run --gpus '"device=0,1"' my-ml-image python train.py
+
+<span class="comment"># Run with GPU memory limits</span>
+docker run --gpus all --memory=16g my-ml-image python train.py
+</pre>
+
+<h3>Monitoring with nvidia-smi</h3>
+
+<p>The <code>nvidia-smi</code> command is essential for monitoring GPU utilization:</p>
+
+<pre><span class="comment"># One-time snapshot</span>
+nvidia-smi
+
+<span class="comment"># Continuous monitoring (every 1 second)</span>
+nvidia-smi -l 1
+
+<span class="comment"># Query specific metrics</span>
+nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv
+
+<span class="comment"># Watch GPU memory during training</span>
+watch -n 1 nvidia-smi
+</pre>
+
+<p>Example output:</p>
+
+<pre><span class="comment">+-----------------------------------------------------------------------------+
+| NVIDIA-SMI 535.104.05   Driver Version: 535.104.05   CUDA Version: 12.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|===============================+======================+======================|
+|   0  NVIDIA GeForce ...  Off  | 00000000:01:00.0 Off |                  N/A |
+| 30%   45C    P2    85W / 350W |   8192MiB / 24576MiB |     78%      Default |
++-------------------------------+----------------------+----------------------+</span>
+</pre>
+
+<h3>Why GPU Acceleration Matters</h3>
+
+<table class="results-table">
+<tr><th>Task</th><th>CPU Time</th><th>GPU Time</th><th>Speedup</th></tr>
+<tr><td>BERT Fine-tuning (1 epoch)</td><td>~4 hours</td><td>~15 minutes</td><td>16x</td></tr>
+<tr><td>ResNet-50 Training (ImageNet)</td><td>~2 weeks</td><td>~8 hours</td><td>42x</td></tr>
+<tr><td>Whisper Transcription (1hr audio)</td><td>~45 minutes</td><td>~3 minutes</td><td>15x</td></tr>
+<tr class="highlight-row"><td>LLM Inference (GPT-2)</td><td>~200ms/token</td><td>~5ms/token</td><td>40x</td></tr>
+</table>
+
+<hr>
+
+<h2>Containerization with Docker</h2>
+
+<p>Containers solve the "it works on my machine" problem. By packaging your application with its dependencies, you ensure consistent behavior across development, testing, and production environments.</p>
+
+<h3>Basic Dockerfile</h3>
+
+<p>A minimal Dockerfile for a utility script:</p>
+
+<pre><span class="keyword">FROM</span> alpine:latest
+<span class="keyword">RUN</span> apk update && apk add bash
+<span class="keyword">WORKDIR</span> /app
+<span class="keyword">COPY</span> repeat.sh /app
+</pre>
+
+<p>This Dockerfile:</p>
+<ul>
+    <li>Uses Alpine Linux as base (minimal ~5MB image)</li>
+    <li>Installs bash (Alpine uses ash by default)</li>
+    <li>Sets the working directory</li>
+    <li>Copies a script into the container</li>
+</ul>
+
+<h3>ML-Optimized Dockerfile</h3>
+
+<p>For ML workloads, you need Python, CUDA, and your dependencies:</p>
+
+<pre><span class="comment"># Multi-stage build for smaller final image</span>
+<span class="keyword">FROM</span> nvidia/cuda:12.1-cudnn8-devel-ubuntu22.04 AS builder
+
+<span class="comment"># Install Python and build dependencies</span>
+<span class="keyword">RUN</span> apt-get update && apt-get install -y \
+    python3.10 \
+    python3-pip \
+    python3.10-venv \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+<span class="keyword">WORKDIR</span> /app
+
+<span class="comment"># Create virtual environment and install dependencies</span>
+<span class="keyword">COPY</span> requirements.txt .
+<span class="keyword">RUN</span> python3 -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip && \
+    /opt/venv/bin/pip install -r requirements.txt
+
+<span class="comment"># Runtime stage - smaller base image</span>
+<span class="keyword">FROM</span> nvidia/cuda:12.1-cudnn8-runtime-ubuntu22.04
+
+<span class="keyword">RUN</span> apt-get update && apt-get install -y \
+    python3.10 \
+    && rm -rf /var/lib/apt/lists/*
+
+<span class="comment"># Copy virtual environment from builder</span>
+<span class="keyword">COPY</span> --from=builder /opt/venv /opt/venv
+
+<span class="keyword">WORKDIR</span> /app
+<span class="keyword">COPY</span> . .
+
+<span class="keyword">ENV</span> PATH="/opt/venv/bin:$PATH"
+<span class="keyword">ENV</span> PYTHONUNBUFFERED=1
+
+<span class="keyword">CMD</span> ["python3", "main.py"]
+</pre>
+
+<h3>Development Containers with VS Code</h3>
+
+<p>For local development, VS Code's Dev Containers feature provides a consistent environment. Create <code>.devcontainer/devcontainer.json</code>:</p>
+
+<pre>{
+    <span class="string">"name"</span>: <span class="string">"MLOps GPU Development"</span>,
+    <span class="string">"image"</span>: <span class="string">"mcr.microsoft.com/devcontainers/python:3.10"</span>,
+    <span class="string">"features"</span>: {
+        <span class="string">"ghcr.io/devcontainers/features/docker-in-docker:2"</span>: {},
+        <span class="string">"ghcr.io/devcontainers/features/github-cli:1"</span>: {}
+    },
+    <span class="string">"customizations"</span>: {
+        <span class="string">"vscode"</span>: {
+            <span class="string">"extensions"</span>: [
+                <span class="string">"ms-python.python"</span>,
+                <span class="string">"ms-python.vscode-pylance"</span>,
+                <span class="string">"ms-azuretools.vscode-docker"</span>,
+                <span class="string">"GitHub.copilot"</span>
+            ],
+            <span class="string">"settings"</span>: {
+                <span class="string">"python.defaultInterpreterPath"</span>: <span class="string">"/usr/local/bin/python"</span>,
+                <span class="string">"python.linting.pylintEnabled"</span>: <span class="keyword">true</span>,
+                <span class="string">"python.formatting.provider"</span>: <span class="string">"black"</span>
+            }
+        }
+    },
+    <span class="string">"postCreateCommand"</span>: <span class="string">"pip install -r requirements.txt"</span>,
+    <span class="string">"forwardPorts"</span>: [<span class="number">8000</span>, <span class="number">8888</span>],
+    <span class="string">"runArgs"</span>: [<span class="string">"--gpus"</span>, <span class="string">"all"</span>]
+}
+</pre>
+
+<p>This configuration:</p>
+<ul>
+    <li>Uses Microsoft's official Python dev container</li>
+    <li>Adds Docker-in-Docker for building containers inside the dev container</li>
+    <li>Installs useful VS Code extensions</li>
+    <li>Configures Python tooling</li>
+    <li>Forwards ports for web servers and Jupyter</li>
+    <li>Enables GPU access</li>
+</ul>
+
+<h3>Multi-Stage Build Benefits</h3>
+
+<table class="concept-table">
+<tr><th>Stage</th><th>Purpose</th><th>Contents</th></tr>
+<tr><td>Builder</td><td>Compile code, install dependencies</td><td>Build tools, compilers, dev headers</td></tr>
+<tr><td>Runtime</td><td>Run the application</td><td>Only runtime libraries and your code</td></tr>
+</table>
+
+<div class="info-box">
+    <h4>📦 Image Size Comparison</h4>
+    <p><strong>Single-stage (devel image)</strong>: ~8.5 GB</p>
+    <p><strong>Multi-stage (runtime image)</strong>: ~4.2 GB</p>
+    <p>Smaller images mean faster pulls, less storage cost, and reduced attack surface.</p>
+</div>
+
+<hr>
+
+<h2>Model Serving with BentoML</h2>
+
+<p>Training a model is only half the battle. Serving it in production requires handling HTTP requests, batching predictions, managing model versions, and scaling under load. BentoML provides an elegant solution.</p>
+
+<h3>Saving a Model</h3>
+
+<p>First, train and save your model:</p>
+
+<pre><span class="keyword">import</span> bentoml
+<span class="keyword">from</span> sklearn <span class="keyword">import</span> svm, datasets
+
+<span class="comment"># Load the famous Iris dataset</span>
+iris = datasets.<span class="function">load_iris</span>()
+X, y = iris.data, iris.target
+
+<span class="comment"># Train a Support Vector Classifier</span>
+clf = svm.<span class="function">SVC</span>(gamma=<span class="string">'scale'</span>)
+clf.<span class="function">fit</span>(X, y)
+
+<span class="comment"># Save to BentoML model store</span>
+saved_model = bentoml.sklearn.<span class="function">save_model</span>(<span class="string">"iris_clf"</span>, clf)
+<span class="builtin">print</span>(<span class="string">f"Model saved: {saved_model}"</span>)
+
+<span class="comment"># Output: Model saved: Model(tag="iris_clf:xyzabc123")</span>
+</pre>
+
+<p>BentoML stores models in a local repository with automatic versioning. Each save creates a unique tag.</p>
+
+<h3>Defining a Service</h3>
+
+<p>Create <code>service.py</code> to define your API:</p>
+
+<pre><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> bentoml
+<span class="keyword">from</span> bentoml.io <span class="keyword">import</span> NumpyNdarray
+
+<span class="comment"># Load the saved model</span>
+iris_clf_runner = bentoml.sklearn.<span class="function">get</span>(<span class="string">"iris_clf:latest"</span>).<span class="function">to_runner</span>()
+
+<span class="comment"># Create the service</span>
+svc = bentoml.<span class="function">Service</span>(<span class="string">"iris_classifier"</span>, runners=[iris_clf_runner])
+
+<span class="comment"># Define the API endpoint</span>
+@svc.<span class="function">api</span>(input=<span class="function">NumpyNdarray</span>(), output=<span class="function">NumpyNdarray</span>())
+<span class="keyword">async def</span> <span class="function">classify</span>(input_array: np.ndarray) -> np.ndarray:
+    <span class="string">"""Classify iris samples.
+    
+    Args:
+        input_array: Shape (n_samples, 4) with sepal/petal measurements
+    
+    Returns:
+        Array of predicted class labels (0=setosa, 1=versicolor, 2=virginica)
+    """</span>
+    <span class="keyword">return</span> <span class="keyword">await</span> iris_clf_runner.predict.<span class="function">async_run</span>(input_array)
+</pre>
+
+<h3>Running the Service</h3>
+
+<pre><span class="comment"># Start the development server</span>
+bentoml serve service:svc --reload
+
+<span class="comment"># Server running at http://localhost:3000</span>
+<span class="comment"># Swagger UI at http://localhost:3000/docs</span>
+</pre>
+
+<h3>Making Predictions</h3>
+
+<pre><span class="comment"># Using curl</span>
+curl -X POST http://localhost:3000/classify \
+    -H "Content-Type: application/json" \
+    -d '[[5.1, 3.5, 1.4, 0.2], [6.7, 3.0, 5.2, 2.3]]'
+
+<span class="comment"># Response: [0, 2]  (setosa, virginica)</span>
+
+<span class="comment"># Using Python requests</span>
+<span class="keyword">import</span> requests
+
+response = requests.<span class="function">post</span>(
+    <span class="string">"http://localhost:3000/classify"</span>,
+    json=[[<span class="number">5.1</span>, <span class="number">3.5</span>, <span class="number">1.4</span>, <span class="number">0.2</span>]]
+)
+<span class="builtin">print</span>(response.<span class="function">json</span>())  <span class="comment"># [0]</span>
+</pre>
+
+<h3>Building and Deploying a Bento</h3>
+
+<p>Create <code>bentofile.yaml</code>:</p>
+
+<pre><span class="keyword">service</span>: <span class="string">"service:svc"</span>
+<span class="keyword">labels</span>:
+  <span class="keyword">owner</span>: ml-team
+  <span class="keyword">project</span>: iris-classifier
+<span class="keyword">include</span>:
+  - <span class="string">"*.py"</span>
+<span class="keyword">python</span>:
+  <span class="keyword">packages</span>:
+    - scikit-learn
+    - numpy
+</pre>
+
+<pre><span class="comment"># Build the Bento (containerizable artifact)</span>
+bentoml build
+
+<span class="comment"># Containerize it</span>
+bentoml containerize iris_classifier:latest
+
+<span class="comment"># Run the container</span>
+docker run -p 3000:3000 iris_classifier:latest
+</pre>
+
+<div class="formula-box">
+    <h4>BentoML Workflow</h4>
+    <p class="formula">Save Model → Define Service → Build Bento → Containerize → Deploy</p>
+    <p>Each Bento is a self-contained, versioned artifact that includes the model, service code, and dependencies.</p>
+</div>
+
+
+<hr>
+
+<h2>Zero-Shot Classification with HuggingFace</h2>
+
+<p>Traditional classification requires labeled training data for each category. What if you need to classify text into categories you've never seen during training? Zero-shot classification makes this possible.</p>
+
+<h3>The Implementation</h3>
+
+<pre><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline
+
+<span class="keyword">def</span> <span class="function">classify</span>(text, labels, model=<span class="string">"MoritzLaurer/mDeBERTa-v3-base-mnli-xnli"</span>):
+    <span class="string">"""Classify text into any set of labels without training.
+    
+    Args:
+        text: The text to classify
+        labels: List of candidate labels
+        model: HuggingFace model for zero-shot classification
+    
+    Returns:
+        Classification results with scores for each label
+    """</span>
+    classifier = <span class="function">pipeline</span>(<span class="string">"zero-shot-classification"</span>, model=model)
+    results = <span class="function">classifier</span>(text, labels, multi_label=<span class="keyword">False</span>)
+    <span class="keyword">return</span> results
+
+<span class="comment"># Example usage</span>
+text = <span class="string">"The new iPhone features a faster processor and improved camera system."</span>
+labels = [<span class="string">"technology"</span>, <span class="string">"sports"</span>, <span class="string">"politics"</span>, <span class="string">"entertainment"</span>]
+
+result = <span class="function">classify</span>(text, labels)
+<span class="builtin">print</span>(result)
+</pre>
+
+<p>Output:</p>
+
+<pre><span class="comment"># {
+#     'sequence': 'The new iPhone features a faster processor and improved camera system.',
+#     'labels': ['technology', 'entertainment', 'sports', 'politics'],
+#     'scores': [0.92, 0.04, 0.02, 0.02]
+# }</span>
+</pre>
+
+<h3>How Zero-Shot Classification Works</h3>
+
+<p>Zero-shot classification leverages <strong>Natural Language Inference (NLI)</strong> — a task where the model determines if a hypothesis follows from a premise.</p>
+
+<div class="formula-box">
+    <h4>NLI-Based Classification</h4>
+    <p>For each candidate label, the model evaluates:</p>
+    <p class="formula">P(entailment | "This text is about {label}")</p>
+    <p><strong>Premise:</strong> "The new iPhone features a faster processor..."</p>
+    <p><strong>Hypothesis:</strong> "This text is about technology."</p>
+    <p>If the hypothesis is entailed by the premise, that label gets a high score.</p>
+</div>
+
+<h3>When to Use Zero-Shot Classification</h3>
+
+<table class="concept-table">
+<tr><th>Use Case</th><th>Zero-Shot?</th><th>Why</th></tr>
+<tr><td>Categories change frequently</td><td>✓ Yes</td><td>No retraining needed when labels change</td></tr>
+<tr><td>Limited labeled data</td><td>✓ Yes</td><td>No training data required</td></tr>
+<tr><td>Prototyping and exploration</td><td>✓ Yes</td><td>Quick experiments without data collection</td></tr>
+<tr><td>High accuracy required</td><td>✗ Maybe</td><td>Fine-tuned models typically outperform</td></tr>
+<tr><td>Fixed, well-defined categories</td><td>✗ Maybe</td><td>Consider fine-tuning for best performance</td></tr>
+</table>
+
+<h3>Multi-Label Classification</h3>
+
+<p>For texts that belong to multiple categories, set <code>multi_label=True</code>:</p>
+
+<pre>text = <span class="string">"The documentary explores both the political implications and the environmental impact of climate change."</span>
+labels = [<span class="string">"politics"</span>, <span class="string">"environment"</span>, <span class="string">"science"</span>, <span class="string">"entertainment"</span>]
+
+result = <span class="function">classifier</span>(text, labels, multi_label=<span class="keyword">True</span>)
+
+<span class="comment"># Scores are independent (can all be high):</span>
+<span class="comment"># {'labels': ['environment', 'politics', 'science', 'entertainment'],</span>
+<span class="comment">#  'scores': [0.94, 0.87, 0.72, 0.23]}</span>
+</pre>
+
+<hr>
+
+<h2>Speech-to-Text with Whisper</h2>
+
+<p>OpenAI's Whisper is a state-of-the-art speech recognition model trained on 680,000 hours of multilingual audio. It handles accents, background noise, and technical terminology remarkably well.</p>
+
+<h3>Basic Transcription</h3>
+
+<pre><span class="keyword">from</span> transformers <span class="keyword">import</span> pipeline
+
+<span class="keyword">def</span> <span class="function">transcribe</span>(filename, model=<span class="string">"openai/whisper-tiny.en"</span>):
+    <span class="string">"""Transcribe audio file to text.
+    
+    Args:
+        filename: Path to audio file (mp3, wav, flac, etc.)
+        model: Whisper model variant
+    
+    Returns:
+        Transcription results with text
+    """</span>
+    pipe = <span class="function">pipeline</span>(<span class="string">"automatic-speech-recognition"</span>, model=model)
+    results = <span class="function">pipe</span>(filename)
+    <span class="keyword">return</span> results
+
+<span class="comment"># Example usage</span>
+result = <span class="function">transcribe</span>(<span class="string">"meeting_recording.mp3"</span>)
+<span class="builtin">print</span>(result[<span class="string">"text"</span>])
+</pre>
+
+<h3>Whisper Model Variants</h3>
+
+<table class="results-table">
+<tr><th>Model</th><th>Parameters</th><th>VRAM</th><th>Speed (RTF)</th><th>Best For</th></tr>
+<tr><td>whisper-tiny</td><td>39M</td><td>~1GB</td><td>~32x</td><td>Quick prototypes, edge devices</td></tr>
+<tr><td>whisper-base</td><td>74M</td><td>~1GB</td><td>~16x</td><td>Basic transcription</td></tr>
+<tr><td>whisper-small</td><td>244M</td><td>~2GB</td><td>~6x</td><td>Good accuracy/speed balance</td></tr>
+<tr><td>whisper-medium</td><td>769M</td><td>~5GB</td><td>~2x</td><td>High accuracy</td></tr>
+<tr class="highlight-row"><td>whisper-large-v3</td><td>1550M</td><td>~10GB</td><td>~1x</td><td>Best accuracy, multilingual</td></tr>
+</table>
+
+<p><em>RTF = Real-Time Factor. RTF of 10x means 1 hour of audio transcribed in 6 minutes.</em></p>
+
+<h3>Advanced Whisper Usage</h3>
+
+<pre><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+<span class="keyword">import</span> torch
+
+<span class="keyword">def</span> <span class="function">transcribe_advanced</span>(filename, model_id=<span class="string">"openai/whisper-large-v3"</span>):
+    <span class="string">"""Advanced transcription with GPU acceleration and timestamps."""</span>
+    
+    device = <span class="string">"cuda:0"</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">"cpu"</span>
+    torch_dtype = torch.float16 <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> torch.float32
+    
+    <span class="comment"># Load model with optimizations</span>
+    model = AutoModelForSpeechSeq2Seq.<span class="function">from_pretrained</span>(
+        model_id,
+        torch_dtype=torch_dtype,
+        low_cpu_mem_usage=<span class="keyword">True</span>,
+        use_safetensors=<span class="keyword">True</span>
+    )
+    model.<span class="function">to</span>(device)
+    
+    processor = AutoProcessor.<span class="function">from_pretrained</span>(model_id)
+    
+    pipe = <span class="function">pipeline</span>(
+        <span class="string">"automatic-speech-recognition"</span>,
+        model=model,
+        tokenizer=processor.tokenizer,
+        feature_extractor=processor.feature_extractor,
+        max_new_tokens=<span class="number">128</span>,
+        chunk_length_s=<span class="number">30</span>,           <span class="comment"># Process 30s chunks</span>
+        batch_size=<span class="number">16</span>,               <span class="comment"># Batch processing for speed</span>
+        return_timestamps=<span class="keyword">True</span>,     <span class="comment"># Include word timestamps</span>
+        torch_dtype=torch_dtype,
+        device=device,
+    )
+    
+    result = <span class="function">pipe</span>(filename)
+    <span class="keyword">return</span> result
+
+<span class="comment"># Example with timestamps</span>
+result = <span class="function">transcribe_advanced</span>(<span class="string">"interview.mp3"</span>)
+<span class="keyword">for</span> chunk <span class="keyword">in</span> result[<span class="string">"chunks"</span>]:
+    start, end = chunk[<span class="string">"timestamp"</span>]
+    <span class="builtin">print</span>(<span class="string">f"[{start:.2f}s - {end:.2f}s]: {chunk['text']}"</span>)
+</pre>
+
+<div class="info-box">
+    <h4>🚀 GPU Acceleration for Whisper</h4>
+    <p><strong>CPU (whisper-large):</strong> ~4x real-time (1 hour audio → 15 minutes)</p>
+    <p><strong>GPU (whisper-large):</strong> ~30x real-time (1 hour audio → 2 minutes)</p>
+    <p>For production workloads, GPU acceleration is essential. Consider using <code>torch.compile()</code> for additional 20-30% speedup on PyTorch 2.0+.</p>
+</div>
+
+<hr>
+
+<h2>Fine-Tuning with HuggingFace Trainer</h2>
+
+<p>While pre-trained models are powerful, fine-tuning on domain-specific data often yields significant improvements. HuggingFace's Trainer API abstracts away the training loop complexity.</p>
+
+<h3>Complete Fine-Tuning Example</h3>
+
+<pre><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoTokenizer, AutoModelForSequenceClassification
+<span class="keyword">from</span> transformers <span class="keyword">import</span> TrainingArguments, Trainer
+<span class="keyword">from</span> datasets <span class="keyword">import</span> load_dataset
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Load the Yelp reviews dataset</span>
+dataset = <span class="function">load_dataset</span>(<span class="string">"yelp_review_full"</span>)
+
+<span class="comment"># Load pre-trained tokenizer</span>
+tokenizer = AutoTokenizer.<span class="function">from_pretrained</span>(<span class="string">"bert-base-cased"</span>)
+
+<span class="keyword">def</span> <span class="function">tokenize_function</span>(examples):
+    <span class="string">"""Tokenize text with padding and truncation."""</span>
+    <span class="keyword">return</span> <span class="function">tokenizer</span>(examples[<span class="string">"text"</span>], padding=<span class="string">"max_length"</span>, truncation=<span class="keyword">True</span>)
+
+<span class="comment"># Tokenize the entire dataset (batched for efficiency)</span>
+tokenized_datasets = dataset.<span class="function">map</span>(tokenize_function, batched=<span class="keyword">True</span>)
+
+<span class="comment"># Load pre-trained model with classification head</span>
+model = AutoModelForSequenceClassification.<span class="function">from_pretrained</span>(
+    <span class="string">"bert-base-cased"</span>, 
+    num_labels=<span class="number">5</span>  <span class="comment"># 5 star ratings</span>
+)
+
+<span class="comment"># Create small subsets for demonstration</span>
+small_train = tokenized_datasets[<span class="string">"train"</span>].<span class="function">shuffle</span>(seed=<span class="number">42</span>).<span class="function">select</span>(<span class="builtin">range</span>(<span class="number">1000</span>))
+small_eval = tokenized_datasets[<span class="string">"test"</span>].<span class="function">shuffle</span>(seed=<span class="number">42</span>).<span class="function">select</span>(<span class="builtin">range</span>(<span class="number">1000</span>))
+
+<span class="comment"># Define training arguments</span>
+training_args = TrainingArguments(
+    output_dir=<span class="string">"test_trainer"</span>,
+    evaluation_strategy=<span class="string">"epoch"</span>
+)
+
+<span class="comment"># Initialize Trainer</span>
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=small_train,
+    eval_dataset=small_eval,
+)
+
+<span class="comment"># Fine-tune the model</span>
+trainer.<span class="function">train</span>()
+</pre>
+
+<h3>Understanding the Components</h3>
+
+<table class="concept-table">
+<tr><th>Component</th><th>Purpose</th><th>Key Options</th></tr>
+<tr><td><code>AutoTokenizer</code></td><td>Convert text to token IDs</td><td><code>padding</code>, <code>truncation</code>, <code>max_length</code></td></tr>
+<tr><td><code>AutoModelForSequenceClassification</code></td><td>Pre-trained model + classification head</td><td><code>num_labels</code>, <code>problem_type</code></td></tr>
+<tr><td><code>TrainingArguments</code></td><td>Training hyperparameters</td><td><code>learning_rate</code>, <code>batch_size</code>, <code>epochs</code></td></tr>
+<tr><td><code>Trainer</code></td><td>Training loop abstraction</td><td><code>compute_metrics</code>, <code>callbacks</code></td></tr>
+</table>
+
+<h3>Evaluation Strategies</h3>
+
+<p>The <code>evaluation_strategy</code> parameter controls when validation runs:</p>
+
+<ul>
+    <li><code>"no"</code>: No evaluation during training</li>
+    <li><code>"epoch"</code>: Evaluate at the end of each epoch</li>
+    <li><code>"steps"</code>: Evaluate every <code>eval_steps</code> steps</li>
+</ul>
+
+<h3>Custom Metrics</h3>
+
+<pre><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score, f1_score
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="keyword">def</span> <span class="function">compute_metrics</span>(eval_pred):
+    <span class="string">"""Compute accuracy and F1 score."""</span>
+    logits, labels = eval_pred
+    predictions = np.<span class="function">argmax</span>(logits, axis=-<span class="number">1</span>)
+    
+    <span class="keyword">return</span> {
+        <span class="string">"accuracy"</span>: <span class="function">accuracy_score</span>(labels, predictions),
+        <span class="string">"f1_macro"</span>: <span class="function">f1_score</span>(labels, predictions, average=<span class="string">"macro"</span>),
+        <span class="string">"f1_weighted"</span>: <span class="function">f1_score</span>(labels, predictions, average=<span class="string">"weighted"</span>),
+    }
+
+<span class="comment"># Pass to Trainer</span>
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=small_train,
+    eval_dataset=small_eval,
+    compute_metrics=compute_metrics,
+)
+</pre>
+
+<h3>Production Training Arguments</h3>
+
+<pre>training_args = TrainingArguments(
+    output_dir=<span class="string">"./results"</span>,
+    
+    <span class="comment"># Training settings</span>
+    num_train_epochs=<span class="number">3</span>,
+    per_device_train_batch_size=<span class="number">16</span>,
+    per_device_eval_batch_size=<span class="number">64</span>,
+    
+    <span class="comment"># Optimizer settings</span>
+    learning_rate=<span class="number">2e-5</span>,
+    weight_decay=<span class="number">0.01</span>,
+    warmup_ratio=<span class="number">0.1</span>,
+    
+    <span class="comment"># Evaluation and saving</span>
+    evaluation_strategy=<span class="string">"steps"</span>,
+    eval_steps=<span class="number">500</span>,
+    save_strategy=<span class="string">"steps"</span>,
+    save_steps=<span class="number">500</span>,
+    save_total_limit=<span class="number">3</span>,               <span class="comment"># Keep only last 3 checkpoints</span>
+    load_best_model_at_end=<span class="keyword">True</span>,
+    metric_for_best_model=<span class="string">"f1_macro"</span>,
+    
+    <span class="comment"># GPU optimization</span>
+    fp16=<span class="keyword">True</span>,                        <span class="comment"># Mixed precision training</span>
+    dataloader_num_workers=<span class="number">4</span>,
+    
+    <span class="comment"># Logging</span>
+    logging_dir=<span class="string">"./logs"</span>,
+    logging_steps=<span class="number">100</span>,
+    report_to=<span class="string">"tensorboard"</span>,
+)
+</pre>
+
+<div class="warning-box">
+    <h4>⚠️ Resource Management</h4>
+    <p><strong>Memory considerations:</strong></p>
+    <ul>
+        <li>BERT-base with batch_size=16 requires ~8GB VRAM</li>
+        <li>Reduce batch_size if you encounter OOM errors</li>
+        <li>Use <code>gradient_accumulation_steps</code> to simulate larger batches</li>
+        <li>Enable <code>fp16=True</code> for ~2x memory reduction</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>Testing in MLOps</h2>
+
+<p>Testing ML systems is challenging. Unlike traditional software where functions have deterministic outputs, ML models produce probabilistic results that can vary with random seeds, data order, and floating-point precision.</p>
+
+<h3>Unit Testing for ML Code</h3>
+
+<p>Create <code>test_main.py</code>:</p>
+
+<pre><span class="keyword">from</span> mylib.calculator <span class="keyword">import</span> add
+
+<span class="keyword">def</span> <span class="function">test_add</span>():
+    <span class="string">"""Test basic addition function."""</span>
+    <span class="keyword">assert</span> <span class="function">add</span>(<span class="number">1</span>, <span class="number">2</span>) == <span class="number">3</span>
+
+<span class="keyword">def</span> <span class="function">test_add_negative</span>():
+    <span class="string">"""Test addition with negative numbers."""</span>
+    <span class="keyword">assert</span> <span class="function">add</span>(-<span class="number">1</span>, <span class="number">1</span>) == <span class="number">0</span>
+
+<span class="keyword">def</span> <span class="function">test_add_floats</span>():
+    <span class="string">"""Test addition with floating point numbers."""</span>
+    result = <span class="function">add</span>(<span class="number">0.1</span>, <span class="number">0.2</span>)
+    <span class="keyword">assert</span> <span class="builtin">abs</span>(result - <span class="number">0.3</span>) < <span class="number">1e-9</span>  <span class="comment"># Float comparison with tolerance</span>
+</pre>
+
+<p>The corresponding module <code>mylib/calculator.py</code>:</p>
+
+<pre><span class="keyword">def</span> <span class="function">add</span>(a, b):
+    <span class="string">"""Add two numbers.
+    
+    Args:
+        a: First number
+        b: Second number
+    
+    Returns:
+        Sum of a and b
+    """</span>
+    <span class="keyword">return</span> a + b
+</pre>
+
+<h3>Running Tests with Coverage</h3>
+
+<pre><span class="comment"># Run all tests with verbose output and coverage</span>
+python -m pytest -vv --cov=main --cov=mylib test_*.py
+
+<span class="comment"># Sample output:</span>
+<span class="comment"># test_main.py::test_add PASSED                    [ 33%]</span>
+<span class="comment"># test_main.py::test_add_negative PASSED           [ 66%]</span>
+<span class="comment"># test_main.py::test_add_floats PASSED             [100%]</span>
+<span class="comment"># </span>
+<span class="comment"># ---------- coverage: platform linux, python 3.10 ----------</span>
+<span class="comment"># Name                  Stmts   Miss  Cover</span>
+<span class="comment"># -----------------------------------------</span>
+<span class="comment"># mylib/calculator.py       3      0   100%</span>
+<span class="comment"># -----------------------------------------</span>
+<span class="comment"># TOTAL                     3      0   100%</span>
+</pre>
+
+<h3>Testing ML-Specific Code</h3>
+
+<p>ML testing requires different strategies:</p>
+
+<pre><span class="keyword">import</span> pytest
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> unittest.mock <span class="keyword">import</span> Mock, patch
+
+<span class="keyword">class</span> <span class="builtin">TestDataPipeline</span>:
+    <span class="string">"""Tests for data preprocessing pipeline."""</span>
+    
+    <span class="keyword">def</span> <span class="function">test_normalize_output_range</span>(self):
+        <span class="string">"""Normalized data should be in [0, 1] range."""</span>
+        <span class="keyword">from</span> mylib.preprocessing <span class="keyword">import</span> normalize
+        
+        data = np.<span class="function">array</span>([<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>])
+        result = <span class="function">normalize</span>(data)
+        
+        <span class="keyword">assert</span> result.<span class="function">min</span>() >= <span class="number">0</span>
+        <span class="keyword">assert</span> result.<span class="function">max</span>() <= <span class="number">1</span>
+    
+    <span class="keyword">def</span> <span class="function">test_normalize_preserves_shape</span>(self):
+        <span class="string">"""Normalization should not change array shape."""</span>
+        <span class="keyword">from</span> mylib.preprocessing <span class="keyword">import</span> normalize
+        
+        data = np.<span class="function">random</span>.<span class="function">randn</span>(<span class="number">100</span>, <span class="number">10</span>)
+        result = <span class="function">normalize</span>(data)
+        
+        <span class="keyword">assert</span> result.shape == data.shape
+    
+    <span class="keyword">def</span> <span class="function">test_handles_empty_input</span>(self):
+        <span class="string">"""Should handle empty arrays gracefully."""</span>
+        <span class="keyword">from</span> mylib.preprocessing <span class="keyword">import</span> normalize
+        
+        data = np.<span class="function">array</span>([])
+        <span class="keyword">with</span> pytest.<span class="function">raises</span>(<span class="builtin">ValueError</span>):
+            <span class="function">normalize</span>(data)
+
+
+<span class="keyword">class</span> <span class="builtin">TestModelInference</span>:
+    <span class="string">"""Tests for model inference (mocking the actual model)."""</span>
+    
+    <span class="keyword">def</span> <span class="function">test_predict_returns_correct_shape</span>(self):
+        <span class="string">"""Predictions should have shape (n_samples, n_classes)."""</span>
+        <span class="keyword">from</span> mylib.inference <span class="keyword">import</span> predict
+        
+        <span class="comment"># Mock the model to avoid loading actual weights</span>
+        mock_model = Mock()
+        mock_model.predict.return_value = np.<span class="function">random</span>.<span class="function">rand</span>(<span class="number">10</span>, <span class="number">3</span>)
+        
+        <span class="keyword">with</span> <span class="function">patch</span>(<span class="string">'mylib.inference.load_model'</span>, return_value=mock_model):
+            inputs = np.<span class="function">random</span>.<span class="function">rand</span>(<span class="number">10</span>, <span class="number">128</span>)
+            result = <span class="function">predict</span>(inputs)
+            
+            <span class="keyword">assert</span> result.shape == (<span class="number">10</span>, <span class="number">3</span>)
+    
+    <span class="keyword">def</span> <span class="function">test_predict_probabilities_sum_to_one</span>(self):
+        <span class="string">"""Predicted probabilities should sum to 1 for each sample."""</span>
+        <span class="keyword">from</span> mylib.inference <span class="keyword">import</span> predict
+        
+        mock_probs = np.<span class="function">array</span>([[<span class="number">0.7</span>, <span class="number">0.2</span>, <span class="number">0.1</span>], [<span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.4</span>]])
+        mock_model = Mock()
+        mock_model.predict.return_value = mock_probs
+        
+        <span class="keyword">with</span> <span class="function">patch</span>(<span class="string">'mylib.inference.load_model'</span>, return_value=mock_model):
+            inputs = np.<span class="function">random</span>.<span class="function">rand</span>(<span class="number">2</span>, <span class="number">128</span>)
+            result = <span class="function">predict</span>(inputs)
+            
+            np.testing.<span class="function">assert_array_almost_equal</span>(result.<span class="function">sum</span>(axis=<span class="number">1</span>), [<span class="number">1.0</span>, <span class="number">1.0</span>])
+</pre>
+
+<h3>Testing Data Pipelines vs Model Behavior</h3>
+
+<table class="concept-table">
+<tr><th>Test Type</th><th>What to Test</th><th>Example</th></tr>
+<tr><td><strong>Data Pipeline Tests</strong></td><td>Input/output shapes, value ranges, handling edge cases</td><td>Normalization preserves shape, encoding handles unknown categories</td></tr>
+<tr><td><strong>Model Tests (Mocked)</strong></td><td>Interface contracts, output format, error handling</td><td>Predictions have correct shape, API returns valid JSON</td></tr>
+<tr><td><strong>Integration Tests</strong></td><td>End-to-end flow with real (but small) models</td><td>Load model, run inference, verify output format</td></tr>
+<tr><td><strong>Regression Tests</strong></td><td>Model performance doesn't degrade</td><td>Accuracy on test set ≥ baseline threshold</td></tr>
+</table>
+
+<div class="info-box">
+    <h4>🧪 The Testing Pyramid for ML</h4>
+    <p><strong>Many unit tests:</strong> Fast, isolated tests for data transformations and utility functions</p>
+    <p><strong>Fewer integration tests:</strong> Test component interactions with mocked models</p>
+    <p><strong>Few end-to-end tests:</strong> Full pipeline tests with real models (expensive, slow)</p>
+</div>
+
+
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>We've covered the complete MLOps pipeline for GPU-accelerated machine learning:</p>
+
+<table class="concept-table">
+<tr><th>Component</th><th>Tools</th><th>Purpose</th></tr>
+<tr><td><strong>Project Structure</strong></td><td>Makefile</td><td>Reproducible commands for install, test, lint, deploy</td></tr>
+<tr><td><strong>CI/CD</strong></td><td>GitHub Actions</td><td>Automated testing and deployment on every commit</td></tr>
+<tr><td><strong>GPU Support</strong></td><td>PyTorch, TensorFlow, nvidia-smi</td><td>Hardware acceleration for training and inference</td></tr>
+<tr><td><strong>Containerization</strong></td><td>Docker, Dev Containers</td><td>Reproducible environments across dev/test/prod</td></tr>
+<tr><td><strong>Model Serving</strong></td><td>BentoML</td><td>Production-ready REST APIs for ML models</td></tr>
+<tr><td><strong>NLP Tasks</strong></td><td>HuggingFace Transformers</td><td>Zero-shot classification, speech-to-text, fine-tuning</td></tr>
+<tr><td><strong>Testing</strong></td><td>pytest</td><td>Unit tests, mocking, coverage reporting</td></tr>
+</table>
+
+<h3>Key Takeaways</h3>
+
+<div class="formula-box">
+    <h4>The MLOps Mindset</h4>
+    <ul>
+        <li><strong>Automate everything</strong>: If you do it twice, script it. If you do it often, make it a CI/CD step.</li>
+        <li><strong>Version everything</strong>: Code, data, models, hyperparameters, and environments.</li>
+        <li><strong>Test at multiple levels</strong>: Unit tests for functions, integration tests for pipelines, regression tests for models.</li>
+        <li><strong>Monitor in production</strong>: Models decay. Data drifts. Build observability from day one.</li>
+    </ul>
+</div>
+
+<h3>The Complete Workflow</h3>
+
+<pre><span class="comment"># 1. Development</span>
+git checkout -b feature/new-model
+<span class="comment"># Write code, train model...</span>
+
+<span class="comment"># 2. Local validation</span>
+make lint          <span class="comment"># Check code quality</span>
+make test          <span class="comment"># Run tests</span>
+make checkgpu      <span class="comment"># Verify GPU access</span>
+
+<span class="comment"># 3. Commit and push</span>
+git add .
+git commit -m "Add improved model architecture"
+git push origin feature/new-model
+
+<span class="comment"># 4. CI/CD runs automatically</span>
+<span class="comment"># GitHub Actions: install → lint → test → format → deploy</span>
+
+<span class="comment"># 5. Model serving</span>
+bentoml serve service:svc                    <span class="comment"># Local testing</span>
+bentoml build && bentoml containerize        <span class="comment"># Production packaging</span>
+docker run --gpus all -p 3000:3000 my-model  <span class="comment"># Deploy</span>
+</pre>
+
+<div class="warning-box">
+    <h4>⚠️ Common Pitfalls to Avoid</h4>
+    <ul>
+        <li><strong>Training/serving skew</strong>: Preprocessing must be identical in training and inference</li>
+        <li><strong>Missing GPU in CI</strong>: Standard CI runners lack GPUs — use conditional tests or GPU-enabled runners</li>
+        <li><strong>Dependency conflicts</strong>: Pin versions in requirements.txt, especially for CUDA-dependent packages</li>
+        <li><strong>Large model files in git</strong>: Use Git LFS or model registries (MLflow, BentoML, HuggingFace Hub)</li>
+        <li><strong>No monitoring</strong>: Production models fail silently — add metrics, logging, and alerts</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>Sculley et al. (2015). "Hidden Technical Debt in Machine Learning Systems" — Google's seminal paper on ML infrastructure</li>
+    <li>OpenAI Whisper — <a href="https://github.com/openai/whisper" style="color:#4a90d9;">github.com/openai/whisper</a></li>
+    <li>HuggingFace Transformers — <a href="https://huggingface.co/docs/transformers" style="color:#4a90d9;">huggingface.co/docs/transformers</a></li>
+    <li>BentoML Documentation — <a href="https://docs.bentoml.org" style="color:#4a90d9;">docs.bentoml.org</a></li>
+    <li>GitHub Actions Documentation — <a href="https://docs.github.com/en/actions" style="color:#4a90d9;">docs.github.com/en/actions</a></li>
+    <li>NVIDIA Container Toolkit — <a href="https://docs.nvidia.com/datacenter/cloud-native/container-toolkit" style="color:#4a90d9;">docs.nvidia.com/datacenter/cloud-native/container-toolkit</a></li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

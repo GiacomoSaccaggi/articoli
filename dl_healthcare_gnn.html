@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Graph Neural Networks and Message Passing Neural Networks for Drug Discovery">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>Graph Neural Networks for Drug Discovery</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .formula-box { background: #f8f9fa; border-left: 4px solid #4a90d9; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; font-family: 'Georgia', serif; }
+        .formula-box .formula { font-size: 1.1em; margin: 10px 0; }
+        .concept-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .concept-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .concept-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .concept-table tr:hover { background: #f9f9f9; }
+        .results-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .results-table th { background: #4a90d9; color: white; padding: 10px; }
+        .results-table td { padding: 10px; border-bottom: 1px solid #eee; text-align: center; }
+        .results-table td:first-child { text-align: left; font-weight: bold; }
+        .highlight-row { background: #d4edda; }
+        .info-box { background: #e7f3ff; border-left: 4px solid #2196F3; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .warning-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .img-container { text-align: center; margin: 20px 0; }
+        .img-container img { max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .img-caption { font-size: 0.9em; color: #666; margin-top: 8px; font-style: italic; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Graph Neural Networks for Drug Discovery</h2>
+                        <hr class="small">
+                        <h5>Deep Learning for Healthcare — Part 5: Message Passing on Molecular Graphs — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Graph Neural Networks and Message Passing</h1>
+<p style="text-align:center;"><em>"Molecules are not sequences or grids — they are graphs. To understand chemistry, we must learn on graphs."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi</p>
+<hr>
+
+<h2>Why Graphs in Healthcare?</h2>
+
+<p>Much of healthcare data has an inherent <strong>graph structure</strong> that traditional neural networks — designed for sequences (RNNs) or grids (CNNs) — cannot naturally capture. Consider:</p>
+
+<ul>
+    <li><strong>Molecules</strong>: Atoms are nodes, chemical bonds are edges. A drug's efficacy depends on its molecular structure.</li>
+    <li><strong>Drug-drug interactions</strong>: Drugs form a network where edges represent known interactions (synergistic or adverse).</li>
+    <li><strong>Protein interaction networks</strong>: Proteins interact in complex webs; understanding these interactions is crucial for drug target identification.</li>
+    <li><strong>Knowledge graphs</strong>: Medical concepts (diseases, symptoms, treatments) connected by semantic relationships.</li>
+    <li><strong>Patient similarity networks</strong>: Patients as nodes, connected if they share similar conditions or treatment histories.</li>
+</ul>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec10_p4_3.png" alt="Graphs in healthcare">
+    <p class="img-caption">Healthcare data naturally forms graphs: molecules, drug interactions, protein networks, and knowledge graphs</p>
+</div>
+
+<h3>Graph Learning Tasks</h3>
+
+<p>What can we do with graph-structured data? The tasks fall into several categories:</p>
+
+<table class="concept-table">
+<tr><th>Task Type</th><th>Description</th><th>Healthcare Example</th></tr>
+<tr><td><strong>Node Classification</strong></td><td>Assign labels to individual nodes</td><td>Is this protein a valid drug target? Is this patient high-risk?</td></tr>
+<tr><td><strong>Graph Classification</strong></td><td>Assign a label to the entire graph</td><td>Is this molecule toxic? Will this drug be effective?</td></tr>
+<tr><td><strong>Link Prediction</strong></td><td>Predict missing or future edges</td><td>Will these two drugs interact adversely?</td></tr>
+<tr><td><strong>Graph Generation</strong></td><td>Generate new graphs with desired properties</td><td>Design novel drug molecules with specific binding affinity</td></tr>
+<tr><td><strong>Node Clustering</strong></td><td>Group similar nodes together</td><td>Identify patient subgroups with similar disease profiles</td></tr>
+</table>
+
+<p>In drug discovery, the most common task is <strong>graph-level property prediction</strong>: given a molecular graph, predict whether it will be toxic, soluble, or bind to a specific target protein.</p>
+
+<hr>
+
+<h2>The Node Embedding Problem</h2>
+
+<p>The fundamental goal of graph neural networks is to learn <strong>node embeddings</strong> — low-dimensional vector representations of nodes that capture both their features and their structural position in the graph.</p>
+
+<div class="formula-box">
+    <h4>Node Embedding Goal</h4>
+    <p>Map each node v to a d-dimensional vector z<sub>v</sub> ∈ ℝ<sup>d</sup> such that:</p>
+    <p class="formula">similarity(u, v) in network ≈ similarity(z<sub>u</sub>, z<sub>v</sub>) in embedding space</p>
+    <p>Nodes that are "similar" in the graph should have similar embeddings.</p>
+</div>
+
+<p>But what defines "similarity" in a graph? This is where the design choices come in:</p>
+
+<ul>
+    <li><strong>Connected nodes</strong>: Neighbors should be similar</li>
+    <li><strong>Structurally equivalent nodes</strong>: Nodes with similar local neighborhoods (even if distant)</li>
+    <li><strong>Nodes on same community</strong>: Belonging to the same cluster</li>
+</ul>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec10_p9_15.png" alt="Node embedding concept">
+    <p class="img-caption">Node embeddings map graph nodes to a vector space where similar nodes are close together</p>
+</div>
+
+<h3>Why Not Just Use Adjacency Matrix?</h3>
+
+<p>A naive approach would be to use the adjacency matrix row as a node's feature vector. But this has critical problems:</p>
+
+<ul>
+    <li><strong>High dimensionality</strong>: For a graph with N nodes, each embedding has dimension N</li>
+    <li><strong>Sparsity</strong>: Most entries are zeros (no edge)</li>
+    <li><strong>No generalization</strong>: Can't handle new nodes not seen during training</li>
+    <li><strong>No parameter sharing</strong>: Each node has completely independent representation</li>
+</ul>
+
+<p>We need a <em>function</em> that generates embeddings based on local graph structure — this is exactly what GNNs provide.</p>
+
+<hr>
+
+<h2>Challenges of Learning on Graphs</h2>
+
+<p>Graphs are fundamentally different from the data structures deep learning was originally designed for. Here's why they're challenging:</p>
+
+<table class="concept-table">
+<tr><th>Challenge</th><th>Sequences/Images</th><th>Graphs</th></tr>
+<tr><td><strong>Size</strong></td><td>Fixed (e.g., 224×224 image)</td><td>Arbitrary number of nodes and edges</td></tr>
+<tr><td><strong>Ordering</strong></td><td>Natural order (left→right, top→bottom)</td><td>No canonical ordering of nodes</td></tr>
+<tr><td><strong>Locality</strong></td><td>Local receptive fields (convolution)</td><td>No grid structure for local operations</td></tr>
+<tr><td><strong>Dynamics</strong></td><td>Static once captured</td><td>Can grow/shrink over time</td></tr>
+<tr><td><strong>Features</strong></td><td>Homogeneous (pixels)</td><td>Heterogeneous node and edge types</td></tr>
+</table>
+
+<div class="warning-box">
+    <h4>⚠️ The Permutation Invariance Problem</h4>
+    <p>If we relabel all nodes in a graph (swap node 1 with node 3, etc.), the graph is unchanged but the adjacency matrix looks completely different. Any valid graph neural network must be <strong>permutation invariant</strong> — produce the same output regardless of how nodes are numbered.</p>
+</div>
+
+<p>These challenges rule out directly applying CNNs or RNNs. We need architectures specifically designed for graph-structured data.</p>
+
+</content>
+</invoke>
+
+<hr>
+
+<h2>Key Ideas of Graph Neural Networks</h2>
+
+<p>The breakthrough insight of GNNs is elegantly simple: <strong>a node's representation should be determined by its neighborhood</strong>. Instead of learning independent embeddings, we learn how to aggregate information from neighbors.</p>
+
+<h3>Idea 1: Neighborhood Aggregation</h3>
+
+<p>Every node collects ("aggregates") information from its neighbors. If I know what my friends know, I become more informed. This is the <strong>message passing</strong> paradigm.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/hw5_gnn_graph-2.png" alt="Neighborhood aggregation">
+    <p class="img-caption">Each node aggregates information from its neighbors to update its representation</p>
+</div>
+
+<div class="formula-box">
+    <h4>Aggregation Principle</h4>
+    <p>For node v with neighbors N(v), the new representation is:</p>
+    <p class="formula">h<sub>v</sub><sup>(new)</sup> = f(h<sub>v</sub>, AGGREGATE({h<sub>u</sub> : u ∈ N(v)}))</p>
+    <p>Where AGGREGATE is a permutation-invariant function (sum, mean, max, etc.)</p>
+</div>
+
+<p>The aggregation function must be <strong>permutation-invariant</strong> — the order in which we process neighbors shouldn't matter. Common choices:</p>
+
+<ul>
+    <li><strong>Sum</strong>: h<sub>N(v)</sub> = Σ<sub>u∈N(v)</sub> h<sub>u</sub></li>
+    <li><strong>Mean</strong>: h<sub>N(v)</sub> = (1/|N(v)|) × Σ<sub>u∈N(v)</sub> h<sub>u</sub></li>
+    <li><strong>Max</strong>: h<sub>N(v)</sub> = max<sub>u∈N(v)</sub> h<sub>u</sub> (element-wise)</li>
+</ul>
+
+<h3>Idea 2: Multiple Layers = Larger Receptive Fields</h3>
+
+<p>A single aggregation step only captures immediate neighbors (1-hop). By stacking multiple layers, each node's representation incorporates information from progressively larger neighborhoods.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec10_p41_2.png" alt="Multi-layer GNN">
+    <p class="img-caption">Stacking GNN layers: Layer 1 captures 1-hop neighbors, Layer 2 captures 2-hop, etc.</p>
+</div>
+
+<div class="formula-box">
+    <h4>Layer-wise Propagation</h4>
+    <p><strong>Layer 0:</strong> h<sub>v</sub><sup>(0)</sup> = x<sub>v</sub> (initial node features)</p>
+    <p><strong>Layer k:</strong> h<sub>v</sub><sup>(k)</sup> = σ(W<sup>(k)</sup> · AGGREGATE({h<sub>u</sub><sup>(k-1)</sup> : u ∈ N(v) ∪ {v}}))</p>
+    <p>After K layers, h<sub>v</sub><sup>(K)</sup> captures the K-hop neighborhood of node v.</p>
+</div>
+
+<p>This is powerful: with just 3-4 layers, most nodes in a molecular graph "see" the entire molecule. But beware of <strong>over-smoothing</strong> — with too many layers, all node embeddings converge to the same value!</p>
+
+<div class="info-box">
+    <h4>💡 Receptive Field Growth</h4>
+    <p>In a molecule with average degree ~3:</p>
+    <ul>
+        <li><strong>1 layer</strong>: Each atom sees ~3 neighbors</li>
+        <li><strong>2 layers</strong>: Each atom sees ~9 atoms (3²)</li>
+        <li><strong>3 layers</strong>: Each atom sees ~27 atoms (entire small molecule)</li>
+    </ul>
+    <p>For drug-like molecules (20-50 atoms), 3-4 layers typically suffice.</p>
+</div>
+
+<hr>
+
+<h2>Graph Convolutional Networks (GCN)</h2>
+
+<p>The Graph Convolutional Network (Kipf & Welling, 2017) is the foundational GNN architecture. It uses a simple aggregation rule inspired by spectral graph theory.</p>
+
+<h3>GCN Layer Definition</h3>
+
+<div class="formula-box">
+    <h4>GCN Update Rule</h4>
+    <p>For node v at layer l:</p>
+    <p class="formula">h<sub>v</sub><sup>(l)</sup> = σ(W<sup>(l)</sup> · Σ<sub>u∈N(v)∪{v}</sub> (1/√(d̃<sub>u</sub>·d̃<sub>v</sub>)) · h<sub>u</sub><sup>(l-1)</sup>)</p>
+    <p>Where:</p>
+    <ul>
+        <li>d̃<sub>v</sub> = degree(v) + 1 (with self-loop)</li>
+        <li>W<sup>(l)</sup> is the learnable weight matrix for layer l</li>
+        <li>σ is an activation function (typically ReLU)</li>
+    </ul>
+</div>
+
+<p>The normalization by √(d̃<sub>u</sub>·d̃<sub>v</sub>) prevents nodes with many neighbors from having exploding activations.</p>
+
+<h3>Matrix Formulation</h3>
+
+<p>The beauty of GCN is that it can be expressed as efficient matrix operations:</p>
+
+<div class="formula-box">
+    <h4>GCN in Matrix Form</h4>
+    <p class="formula">H<sup>(l)</sup> = σ(Â · H<sup>(l-1)</sup> · W<sup>(l)</sup>)</p>
+    <p>Where:</p>
+    <ul>
+        <li>H<sup>(l)</sup> ∈ ℝ<sup>N×d</sup> is the matrix of all node embeddings at layer l</li>
+        <li>Â = D̃<sup>-½</sup> · Ã · D̃<sup>-½</sup> is the normalized adjacency matrix</li>
+        <li>Ã = A + I (adjacency with self-loops)</li>
+        <li>D̃ is the degree matrix of Ã</li>
+    </ul>
+</div>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+<span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F
+
+<span class="keyword">class</span> <span class="builtin">GCNLayer</span>(nn.Module):
+    <span class="string">"""Single Graph Convolutional Layer."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_features, out_features):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.linear = nn.Linear(in_features, out_features, bias=<span class="keyword">False</span>)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, adj_normalized):
+        <span class="string">"""
+        Args:
+            x: Node features [N, in_features]
+            adj_normalized: Normalized adjacency matrix Â [N, N]
+        Returns:
+            Updated node features [N, out_features]
+        """</span>
+        <span class="comment"># Aggregate neighbor features: Â · X</span>
+        support = torch.<span class="function">mm</span>(adj_normalized, x)
+        <span class="comment"># Transform: (Â · X) · W</span>
+        output = self.<span class="function">linear</span>(support)
+        <span class="keyword">return</span> output
+
+
+<span class="keyword">class</span> <span class="builtin">GCN</span>(nn.Module):
+    <span class="string">"""Two-layer GCN for node classification."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, n_features, n_hidden, n_classes, dropout=<span class="number">0.5</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.gcn1 = GCNLayer(n_features, n_hidden)
+        self.gcn2 = GCNLayer(n_hidden, n_classes)
+        self.dropout = dropout
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, x, adj_normalized):
+        <span class="comment"># Layer 1: features → hidden</span>
+        h = self.<span class="function">gcn1</span>(x, adj_normalized)
+        h = F.<span class="function">relu</span>(h)
+        h = F.<span class="function">dropout</span>(h, self.dropout, training=self.training)
+        
+        <span class="comment"># Layer 2: hidden → output</span>
+        h = self.<span class="function">gcn2</span>(h, adj_normalized)
+        <span class="keyword">return</span> h  <span class="comment"># Logits for each node</span>
+</pre>
+
+<h3>GCN Limitations</h3>
+
+<p>GCN is elegant but limited:</p>
+
+<ul>
+    <li><strong>No edge features</strong>: GCN only uses adjacency (edge exists or not). In molecules, bond type (single, double, triple, aromatic) is crucial!</li>
+    <li><strong>Fixed aggregation</strong>: All neighbors contribute equally (after normalization). Some neighbors may be more important.</li>
+    <li><strong>Scalability</strong>: Full-batch training requires the entire graph in memory.</li>
+</ul>
+
+<h3>Scalable GCN: Sampling Approaches</h3>
+
+<p>For large graphs, full-batch GCN is infeasible. Two popular solutions:</p>
+
+<table class="concept-table">
+<tr><th>Method</th><th>Idea</th><th>Trade-off</th></tr>
+<tr><td><strong>GraphSAGE</strong></td><td>Sample a fixed number of neighbors per node at each layer</td><td>Variance from sampling, but constant memory per batch</td></tr>
+<tr><td><strong>FastGCN</strong></td><td>Sample nodes at each layer independently using importance sampling</td><td>More efficient but can miss important connections</td></tr>
+</table>
+
+<pre><span class="comment"># GraphSAGE-style sampling: sample k neighbors per node</span>
+<span class="keyword">def</span> <span class="function">sample_neighbors</span>(node_ids, adj_list, num_samples):
+    <span class="string">"""Sample fixed number of neighbors for each node."""</span>
+    sampled = []
+    <span class="keyword">for</span> node <span class="keyword">in</span> node_ids:
+        neighbors = adj_list[node]
+        <span class="keyword">if</span> <span class="builtin">len</span>(neighbors) >= num_samples:
+            sampled_neighbors = np.random.<span class="function">choice</span>(neighbors, num_samples, replace=<span class="keyword">False</span>)
+        <span class="keyword">else</span>:
+            <span class="comment"># Sample with replacement if not enough neighbors</span>
+            sampled_neighbors = np.random.<span class="function">choice</span>(neighbors, num_samples, replace=<span class="keyword">True</span>)
+        sampled.<span class="function">append</span>(sampled_neighbors)
+    <span class="keyword">return</span> np.<span class="function">array</span>(sampled)
+</pre>
+
+
+<hr>
+
+<h2>Message Passing Neural Networks (MPNN)</h2>
+
+<p>The <strong>Message Passing Neural Network</strong> (Gilmer et al., ICML 2017) is a general framework that unifies and extends previous GNN architectures. Crucially for drug discovery, MPNN handles <strong>both node features and edge features</strong>.</p>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/hw5_gnn_graph-1.png" alt="Molecule as graph">
+    <p class="img-caption">A molecule represented as a graph: atoms are nodes with features (element type, charge, hybridization), bonds are edges with features (single/double/triple, conjugated, in ring)</p>
+</div>
+
+<h3>The MPNN Framework</h3>
+
+<p>MPNN operates in two phases:</p>
+
+<ol>
+    <li><strong>Message Passing Phase</strong>: Nodes exchange information with neighbors for T time steps</li>
+    <li><strong>Readout Phase</strong>: Aggregate all node embeddings into a single graph-level embedding</li>
+</ol>
+
+<div class="formula-box">
+    <h4>Message Passing Phase</h4>
+    <p>At each time step t:</p>
+    <p><strong>1. Compute messages:</strong></p>
+    <p class="formula">m<sub>v</sub><sup>t+1</sup> = Σ<sub>w∈N(v)</sub> M<sub>t</sub>(h<sub>v</sub><sup>t</sup>, h<sub>w</sub><sup>t</sup>, e<sub>vw</sub>)</p>
+    <p><strong>2. Update node states:</strong></p>
+    <p class="formula">h<sub>v</sub><sup>t+1</sup> = U<sub>t</sub>(h<sub>v</sub><sup>t</sup>, m<sub>v</sub><sup>t+1</sup>)</p>
+    <p>Where:</p>
+    <ul>
+        <li>M<sub>t</sub> is the <strong>message function</strong> (learnable)</li>
+        <li>U<sub>t</sub> is the <strong>update function</strong> (typically GRU or LSTM)</li>
+        <li>e<sub>vw</sub> is the <strong>edge feature</strong> between v and w</li>
+    </ul>
+</div>
+
+<p>The key innovation is the message function M<sub>t</sub> that incorporates edge features. In molecules, this lets the model learn that information flows differently across single vs. double bonds.</p>
+
+<div class="formula-box">
+    <h4>Readout Phase</h4>
+    <p>After T message passing steps, aggregate node embeddings into a graph embedding:</p>
+    <p class="formula">ĥ<sub>G</sub> = R({h<sub>v</sub><sup>T</sup> | v ∈ G})</p>
+    <p>The readout function R must be permutation-invariant. Options:</p>
+    <ul>
+        <li><strong>Sum pooling</strong>: ĥ<sub>G</sub> = Σ<sub>v</sub> h<sub>v</sub><sup>T</sup></li>
+        <li><strong>Mean pooling</strong>: ĥ<sub>G</sub> = (1/|V|) × Σ<sub>v</sub> h<sub>v</sub><sup>T</sup></li>
+        <li><strong>Max pooling</strong>: ĥ<sub>G</sub> = max<sub>v</sub> h<sub>v</sub><sup>T</sup></li>
+        <li><strong>Set2Set</strong>: Attention-based aggregation (more expressive)</li>
+    </ul>
+</div>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/hw5_gnn_graph-3.png" alt="MPNN readout">
+    <p class="img-caption">Readout phase: all node embeddings are aggregated into a single graph-level representation</p>
+</div>
+
+<h3>Edge-Conditioned Message Function</h3>
+
+<p>A common choice for M<sub>t</sub> is the <strong>edge-conditioned convolution</strong>:</p>
+
+<div class="formula-box">
+    <h4>Edge Network Message Function</h4>
+    <p class="formula">M<sub>t</sub>(h<sub>v</sub>, h<sub>w</sub>, e<sub>vw</sub>) = A(e<sub>vw</sub>) · h<sub>w</sub></p>
+    <p>Where A(e<sub>vw</sub>) is a neural network that outputs a d×d matrix based on edge features.</p>
+    <p>This means: the edge features determine <em>how</em> the neighbor's information is transformed before being sent.</p>
+</div>
+
+<p>For efficiency, A is typically implemented as:</p>
+
+<pre><span class="keyword">class</span> <span class="builtin">EdgeNetwork</span>(nn.Module):
+    <span class="string">"""Network that produces transformation matrix from edge features."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, edge_dim, hidden_dim):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        <span class="comment"># Edge features → transformation matrix (flattened)</span>
+        self.net = nn.Sequential(
+            nn.Linear(edge_dim, hidden_dim * <span class="number">2</span>),
+            nn.ReLU(),
+            nn.Linear(hidden_dim * <span class="number">2</span>, hidden_dim * hidden_dim)
+        )
+        self.hidden_dim = hidden_dim
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, edge_features):
+        <span class="string">"""
+        Args:
+            edge_features: [num_edges, edge_dim]
+        Returns:
+            Transformation matrices: [num_edges, hidden_dim, hidden_dim]
+        """</span>
+        flat = self.<span class="function">net</span>(edge_features)  <span class="comment"># [num_edges, hidden_dim²]</span>
+        <span class="keyword">return</span> flat.<span class="function">view</span>(-<span class="number">1</span>, self.hidden_dim, self.hidden_dim)
+</pre>
+
+<h3>GRU Update Function</h3>
+
+<p>The update function combines the node's current state with incoming messages. Using a GRU allows the model to selectively retain or forget information:</p>
+
+<pre><span class="keyword">class</span> <span class="builtin">MPNNUpdate</span>(nn.Module):
+    <span class="string">"""GRU-based update function for MPNN."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, hidden_dim):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.gru = nn.GRUCell(hidden_dim, hidden_dim)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, h, m):
+        <span class="string">"""
+        Args:
+            h: Current node states [num_nodes, hidden_dim]
+            m: Aggregated messages [num_nodes, hidden_dim]
+        Returns:
+            Updated node states [num_nodes, hidden_dim]
+        """</span>
+        <span class="keyword">return</span> self.<span class="function">gru</span>(m, h)
+</pre>
+
+<hr>
+
+<h2>Complete MPNN Implementation</h2>
+
+<p>Let's build a complete MPNN for molecular property prediction in PyTorch.</p>
+
+<h3>Molecular Graph Representation</h3>
+
+<p>First, we need to represent molecules as graphs with appropriate features:</p>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> rdkit <span class="keyword">import</span> Chem
+
+<span class="keyword">def</span> <span class="function">atom_features</span>(atom):
+    <span class="string">"""Extract features for a single atom."""</span>
+    <span class="keyword">return</span> np.<span class="function">array</span>([
+        <span class="comment"># Atom type (one-hot): C, N, O, S, F, Cl, Br, I, P, other</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">6</span>,   <span class="comment"># Carbon</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">7</span>,   <span class="comment"># Nitrogen</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">8</span>,   <span class="comment"># Oxygen</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">16</span>,  <span class="comment"># Sulfur</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">9</span>,   <span class="comment"># Fluorine</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">17</span>,  <span class="comment"># Chlorine</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">35</span>,  <span class="comment"># Bromine</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">53</span>,  <span class="comment"># Iodine</span>
+        atom.<span class="function">GetAtomicNum</span>() == <span class="number">15</span>,  <span class="comment"># Phosphorus</span>
+        <span class="comment"># Degree (one-hot): 0, 1, 2, 3, 4, 5+</span>
+        atom.<span class="function">GetDegree</span>() == <span class="number">0</span>,
+        atom.<span class="function">GetDegree</span>() == <span class="number">1</span>,
+        atom.<span class="function">GetDegree</span>() == <span class="number">2</span>,
+        atom.<span class="function">GetDegree</span>() == <span class="number">3</span>,
+        atom.<span class="function">GetDegree</span>() == <span class="number">4</span>,
+        atom.<span class="function">GetDegree</span>() >= <span class="number">5</span>,
+        <span class="comment"># Formal charge</span>
+        atom.<span class="function">GetFormalCharge</span>(),
+        <span class="comment"># Num hydrogens</span>
+        atom.<span class="function">GetTotalNumHs</span>(),
+        <span class="comment"># Aromaticity</span>
+        atom.<span class="function">GetIsAromatic</span>(),
+        <span class="comment"># In ring</span>
+        atom.<span class="function">IsInRing</span>(),
+    ], dtype=np.float32)
+
+
+<span class="keyword">def</span> <span class="function">bond_features</span>(bond):
+    <span class="string">"""Extract features for a single bond."""</span>
+    bt = bond.<span class="function">GetBondType</span>()
+    <span class="keyword">return</span> np.<span class="function">array</span>([
+        <span class="comment"># Bond type (one-hot)</span>
+        bt == Chem.rdchem.BondType.SINGLE,
+        bt == Chem.rdchem.BondType.DOUBLE,
+        bt == Chem.rdchem.BondType.TRIPLE,
+        bt == Chem.rdchem.BondType.AROMATIC,
+        <span class="comment"># Conjugation</span>
+        bond.<span class="function">GetIsConjugated</span>(),
+        <span class="comment"># In ring</span>
+        bond.<span class="function">IsInRing</span>(),
+    ], dtype=np.float32)
+
+
+<span class="keyword">def</span> <span class="function">mol_to_graph</span>(smiles):
+    <span class="string">"""Convert SMILES string to graph representation."""</span>
+    mol = Chem.<span class="function">MolFromSmiles</span>(smiles)
+    <span class="keyword">if</span> mol <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="keyword">return</span> <span class="keyword">None</span>
+    
+    <span class="comment"># Node features</span>
+    atom_feats = np.<span class="function">array</span>([<span class="function">atom_features</span>(atom) <span class="keyword">for</span> atom <span class="keyword">in</span> mol.<span class="function">GetAtoms</span>()])
+    
+    <span class="comment"># Edge indices and features</span>
+    edge_indices = []
+    edge_feats = []
+    <span class="keyword">for</span> bond <span class="keyword">in</span> mol.<span class="function">GetBonds</span>():
+        i, j = bond.<span class="function">GetBeginAtomIdx</span>(), bond.<span class="function">GetEndAtomIdx</span>()
+        bf = <span class="function">bond_features</span>(bond)
+        <span class="comment"># Add both directions (undirected graph)</span>
+        edge_indices.<span class="function">append</span>([i, j])
+        edge_indices.<span class="function">append</span>([j, i])
+        edge_feats.<span class="function">append</span>(bf)
+        edge_feats.<span class="function">append</span>(bf)
+    
+    edge_index = np.<span class="function">array</span>(edge_indices).T  <span class="comment"># [2, num_edges]</span>
+    edge_attr = np.<span class="function">array</span>(edge_feats)        <span class="comment"># [num_edges, edge_dim]</span>
+    
+    <span class="keyword">return</span> {
+        <span class="string">'node_features'</span>: atom_feats,
+        <span class="string">'edge_index'</span>: edge_index,
+        <span class="string">'edge_features'</span>: edge_attr,
+        <span class="string">'num_nodes'</span>: <span class="builtin">len</span>(atom_feats)
+    }
+</pre>
+
+<h3>The MPNN Model</h3>
+
+<pre><span class="keyword">import</span> torch
+<span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn
+
+<span class="keyword">class</span> <span class="builtin">MPNN</span>(nn.Module):
+    <span class="string">"""Message Passing Neural Network for molecular property prediction."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, node_dim, edge_dim, hidden_dim, output_dim, 
+                 num_message_passing=<span class="number">3</span>, dropout=<span class="number">0.1</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.hidden_dim = hidden_dim
+        self.num_message_passing = num_message_passing
+        
+        <span class="comment"># Initial node embedding</span>
+        self.node_encoder = nn.Linear(node_dim, hidden_dim)
+        
+        <span class="comment"># Edge network: edge features → transformation matrix</span>
+        self.edge_network = nn.Sequential(
+            nn.Linear(edge_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim * hidden_dim)
+        )
+        
+        <span class="comment"># GRU for node state updates</span>
+        self.gru = nn.GRUCell(hidden_dim, hidden_dim)
+        
+        <span class="comment"># Readout network</span>
+        self.readout = nn.Sequential(
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(hidden_dim, output_dim)
+        )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, node_features, edge_index, edge_features, batch):
+        <span class="string">"""
+        Args:
+            node_features: [total_nodes, node_dim] - all nodes in batch
+            edge_index: [2, total_edges] - edge connectivity
+            edge_features: [total_edges, edge_dim] - edge attributes
+            batch: [total_nodes] - graph membership for each node
+        Returns:
+            Graph-level predictions: [batch_size, output_dim]
+        """</span>
+        <span class="comment"># Initial node embeddings</span>
+        h = self.<span class="function">node_encoder</span>(node_features)  <span class="comment"># [N, hidden_dim]</span>
+        
+        <span class="comment"># Compute edge transformations once</span>
+        edge_transform = self.<span class="function">edge_network</span>(edge_features)  <span class="comment"># [E, hidden_dim²]</span>
+        edge_transform = edge_transform.<span class="function">view</span>(-<span class="number">1</span>, self.hidden_dim, self.hidden_dim)
+        
+        <span class="comment"># Message passing iterations</span>
+        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="builtin">range</span>(self.num_message_passing):
+            h = self.<span class="function">message_passing_step</span>(h, edge_index, edge_transform)
+        
+        <span class="comment"># Readout: aggregate node embeddings per graph</span>
+        graph_embed = self.<span class="function">global_mean_pool</span>(h, batch)  <span class="comment"># [batch_size, hidden_dim]</span>
+        
+        <span class="comment"># Final prediction</span>
+        out = self.<span class="function">readout</span>(graph_embed)
+        <span class="keyword">return</span> out
+    
+    <span class="keyword">def</span> <span class="function">message_passing_step</span>(self, h, edge_index, edge_transform):
+        <span class="string">"""Single message passing step."""</span>
+        source, target = edge_index  <span class="comment"># [E], [E]</span>
+        
+        <span class="comment"># Get source node embeddings</span>
+        h_source = h[source]  <span class="comment"># [E, hidden_dim]</span>
+        
+        <span class="comment"># Apply edge-conditioned transformation: A(e) @ h_source</span>
+        <span class="comment"># edge_transform: [E, hidden_dim, hidden_dim]</span>
+        <span class="comment"># h_source: [E, hidden_dim] → [E, hidden_dim, 1]</span>
+        messages = torch.<span class="function">bmm</span>(edge_transform, h_source.<span class="function">unsqueeze</span>(-<span class="number">1</span>)).<span class="function">squeeze</span>(-<span class="number">1</span>)
+        
+        <span class="comment"># Aggregate messages per target node</span>
+        num_nodes = h.<span class="function">size</span>(<span class="number">0</span>)
+        aggregated = torch.<span class="function">zeros</span>(num_nodes, self.hidden_dim, device=h.device)
+        aggregated.<span class="function">scatter_add_</span>(<span class="number">0</span>, target.<span class="function">unsqueeze</span>(-<span class="number">1</span>).<span class="function">expand_as</span>(messages), messages)
+        
+        <span class="comment"># Update node states with GRU</span>
+        h_new = self.<span class="function">gru</span>(aggregated, h)
+        <span class="keyword">return</span> h_new
+    
+    <span class="keyword">def</span> <span class="function">global_mean_pool</span>(self, h, batch):
+        <span class="string">"""Average pooling over nodes in each graph."""</span>
+        batch_size = batch.<span class="function">max</span>().<span class="function">item</span>() + <span class="number">1</span>
+        
+        <span class="comment"># Sum node embeddings per graph</span>
+        graph_sum = torch.<span class="function">zeros</span>(batch_size, h.<span class="function">size</span>(<span class="number">1</span>), device=h.device)
+        graph_sum.<span class="function">scatter_add_</span>(<span class="number">0</span>, batch.<span class="function">unsqueeze</span>(-<span class="number">1</span>).<span class="function">expand_as</span>(h), h)
+        
+        <span class="comment"># Count nodes per graph</span>
+        ones = torch.<span class="function">ones</span>(h.<span class="function">size</span>(<span class="number">0</span>), device=h.device)
+        count = torch.<span class="function">zeros</span>(batch_size, device=h.device)
+        count.<span class="function">scatter_add_</span>(<span class="number">0</span>, batch, ones)
+        
+        <span class="comment"># Mean</span>
+        graph_embed = graph_sum / count.<span class="function">unsqueeze</span>(-<span class="number">1</span>).<span class="function">clamp</span>(min=<span class="number">1</span>)
+        <span class="keyword">return</span> graph_embed
+</pre>
+
+<h3>Training Loop</h3>
+
+<pre><span class="keyword">def</span> <span class="function">train_mpnn</span>(model, train_loader, val_loader, epochs=<span class="number">100</span>, lr=<span class="number">0.001</span>):
+    <span class="string">"""Train MPNN for molecular property prediction."""</span>
+    device = torch.device(<span class="string">'cuda'</span> <span class="keyword">if</span> torch.cuda.<span class="function">is_available</span>() <span class="keyword">else</span> <span class="string">'cpu'</span>)
+    model = model.<span class="function">to</span>(device)
+    
+    optimizer = torch.optim.Adam(model.<span class="function">parameters</span>(), lr=lr)
+    criterion = nn.MSELoss()  <span class="comment"># For regression; use BCEWithLogitsLoss for classification</span>
+    
+    best_val_loss = <span class="builtin">float</span>(<span class="string">'inf'</span>)
+    
+    <span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="builtin">range</span>(epochs):
+        <span class="comment"># Training</span>
+        model.<span class="function">train</span>()
+        train_loss = <span class="number">0</span>
+        <span class="keyword">for</span> batch <span class="keyword">in</span> train_loader:
+            batch = batch.<span class="function">to</span>(device)
+            
+            optimizer.<span class="function">zero_grad</span>()
+            pred = <span class="function">model</span>(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
+            loss = <span class="function">criterion</span>(pred.<span class="function">squeeze</span>(), batch.y)
+            loss.<span class="function">backward</span>()
+            optimizer.<span class="function">step</span>()
+            
+            train_loss += loss.<span class="function">item</span>() * batch.<span class="function">num_graphs</span>
+        
+        train_loss /= <span class="builtin">len</span>(train_loader.dataset)
+        
+        <span class="comment"># Validation</span>
+        model.<span class="function">eval</span>()
+        val_loss = <span class="number">0</span>
+        <span class="keyword">with</span> torch.<span class="function">no_grad</span>():
+            <span class="keyword">for</span> batch <span class="keyword">in</span> val_loader:
+                batch = batch.<span class="function">to</span>(device)
+                pred = <span class="function">model</span>(batch.x, batch.edge_index, batch.edge_attr, batch.batch)
+                loss = <span class="function">criterion</span>(pred.<span class="function">squeeze</span>(), batch.y)
+                val_loss += loss.<span class="function">item</span>() * batch.<span class="function">num_graphs</span>
+        
+        val_loss /= <span class="builtin">len</span>(val_loader.dataset)
+        
+        <span class="keyword">if</span> val_loss < best_val_loss:
+            best_val_loss = val_loss
+            torch.<span class="function">save</span>(model.<span class="function">state_dict</span>(), <span class="string">'best_mpnn.pt'</span>)
+        
+        <span class="keyword">if</span> (epoch + <span class="number">1</span>) % <span class="number">10</span> == <span class="number">0</span>:
+            <span class="builtin">print</span>(<span class="string">f'Epoch </span>{epoch+<span class="number">1</span>:<span class="number">3</span>d}<span class="string"> | Train Loss: </span>{train_loss:<span class="number">.4</span>f}<span class="string"> | Val Loss: </span>{val_loss:<span class="number">.4</span>f}<span class="string">'</span>)
+    
+    <span class="keyword">return</span> best_val_loss
+</pre>
+
+<div class="info-box">
+    <h4>💡 MPNN vs GCN: When to Use What</h4>
+    <p><strong>Use GCN when:</strong></p>
+    <ul>
+        <li>Edge features are not important (social networks, citation graphs)</li>
+        <li>You need fast training on large graphs</li>
+        <li>Task is node classification or link prediction</li>
+    </ul>
+    <p><strong>Use MPNN when:</strong></p>
+    <ul>
+        <li>Edge features are crucial (molecules: bond types matter!)</li>
+        <li>Task is graph-level property prediction</li>
+        <li>Graphs are relatively small (< 100 nodes typical for molecules)</li>
+    </ul>
+</div>
+
+
+<hr>
+
+<h2>Graph Attention Networks (GAT)</h2>
+
+<p>Standard GCN treats all neighbors equally (after degree normalization). But in many applications, some neighbors are more important than others. <strong>Graph Attention Networks</strong> (Veličković et al., ICLR 2018) learn to weight neighbors differently using attention.</p>
+
+<h3>Attention Mechanism</h3>
+
+<p>For each edge (i, j), compute an attention coefficient:</p>
+
+<div class="formula-box">
+    <h4>GAT Attention</h4>
+    <p><strong>Step 1:</strong> Compute raw attention scores:</p>
+    <p class="formula">e<sub>ij</sub> = LeakyReLU(a<sup>T</sup> · [W·h<sub>i</sub> || W·h<sub>j</sub>])</p>
+    <p><strong>Step 2:</strong> Normalize using softmax over neighbors:</p>
+    <p class="formula">α<sub>ij</sub> = softmax<sub>j</sub>(e<sub>ij</sub>) = exp(e<sub>ij</sub>) / Σ<sub>k∈N(i)</sub> exp(e<sub>ik</sub>)</p>
+    <p><strong>Step 3:</strong> Weighted aggregation:</p>
+    <p class="formula">h<sub>i</sub><sup>'</sup> = σ(Σ<sub>j∈N(i)</sub> α<sub>ij</sub> · W · h<sub>j</sub>)</p>
+    <p>Where:</p>
+    <ul>
+        <li>W is a learnable weight matrix</li>
+        <li>a is a learnable attention vector</li>
+        <li>|| denotes concatenation</li>
+    </ul>
+</div>
+
+<div class="img-container">
+    <img src="img/dl_healthcare/lec10_p51_1.png" alt="Graph attention">
+    <p class="img-caption">GAT computes attention weights for each neighbor, allowing the model to focus on the most relevant connections</p>
+</div>
+
+<h3>Multi-head Attention</h3>
+
+<p>Like Transformers, GAT benefits from multiple attention heads that learn different aspects of neighbor importance:</p>
+
+<pre><span class="keyword">class</span> <span class="builtin">GATLayer</span>(nn.Module):
+    <span class="string">"""Graph Attention Layer with multi-head attention."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, in_dim, out_dim, num_heads=<span class="number">4</span>, dropout=<span class="number">0.1</span>, concat=<span class="keyword">True</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        self.num_heads = num_heads
+        self.out_dim = out_dim
+        self.concat = concat
+        
+        <span class="comment"># Separate weight matrices per head</span>
+        self.W = nn.Linear(in_dim, out_dim * num_heads, bias=<span class="keyword">False</span>)
+        
+        <span class="comment"># Attention mechanism per head</span>
+        self.attention = nn.Parameter(torch.<span class="function">zeros</span>(num_heads, <span class="number">2</span> * out_dim))
+        nn.init.<span class="function">xavier_uniform_</span>(self.attention)
+        
+        self.leaky_relu = nn.LeakyReLU(<span class="number">0.2</span>)
+        self.dropout = nn.Dropout(dropout)
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, h, edge_index):
+        <span class="string">"""
+        Args:
+            h: Node features [N, in_dim]
+            edge_index: [2, E]
+        Returns:
+            Updated features [N, out_dim * num_heads] if concat else [N, out_dim]
+        """</span>
+        N = h.<span class="function">size</span>(<span class="number">0</span>)
+        
+        <span class="comment"># Linear transformation: [N, out_dim * num_heads]</span>
+        Wh = self.<span class="function">W</span>(h).<span class="function">view</span>(N, self.num_heads, self.out_dim)  <span class="comment"># [N, H, D]</span>
+        
+        source, target = edge_index
+        
+        <span class="comment"># Get source and target node embeddings for each edge</span>
+        Wh_source = Wh[source]  <span class="comment"># [E, H, D]</span>
+        Wh_target = Wh[target]  <span class="comment"># [E, H, D]</span>
+        
+        <span class="comment"># Concatenate and compute attention scores</span>
+        edge_features = torch.<span class="function">cat</span>([Wh_source, Wh_target], dim=-<span class="number">1</span>)  <span class="comment"># [E, H, 2D]</span>
+        e = (edge_features * self.attention).<span class="function">sum</span>(dim=-<span class="number">1</span>)  <span class="comment"># [E, H]</span>
+        e = self.<span class="function">leaky_relu</span>(e)
+        
+        <span class="comment"># Softmax over incoming edges per node</span>
+        alpha = self.<span class="function">edge_softmax</span>(e, target, N)  <span class="comment"># [E, H]</span>
+        alpha = self.<span class="function">dropout</span>(alpha)
+        
+        <span class="comment"># Weighted aggregation</span>
+        weighted = Wh_source * alpha.<span class="function">unsqueeze</span>(-<span class="number">1</span>)  <span class="comment"># [E, H, D]</span>
+        
+        out = torch.<span class="function">zeros</span>(N, self.num_heads, self.out_dim, device=h.device)
+        out.<span class="function">scatter_add_</span>(<span class="number">0</span>, target.<span class="function">view</span>(-<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>).<span class="function">expand_as</span>(weighted), weighted)
+        
+        <span class="keyword">if</span> self.concat:
+            <span class="keyword">return</span> out.<span class="function">view</span>(N, -<span class="number">1</span>)  <span class="comment"># [N, H*D]</span>
+        <span class="keyword">else</span>:
+            <span class="keyword">return</span> out.<span class="function">mean</span>(dim=<span class="number">1</span>)   <span class="comment"># [N, D] - average over heads</span>
+    
+    <span class="keyword">def</span> <span class="function">edge_softmax</span>(self, e, target, num_nodes):
+        <span class="string">"""Compute softmax over incoming edges for each node."""</span>
+        <span class="comment"># Subtract max for numerical stability</span>
+        e_max = torch.<span class="function">zeros</span>(num_nodes, e.<span class="function">size</span>(<span class="number">1</span>), device=e.device)
+        e_max.<span class="function">scatter_reduce_</span>(<span class="number">0</span>, target.<span class="function">unsqueeze</span>(-<span class="number">1</span>).<span class="function">expand_as</span>(e), e, <span class="string">'amax'</span>)
+        e = e - e_max[target]
+        
+        <span class="comment"># Exp and sum</span>
+        exp_e = e.<span class="function">exp</span>()
+        sum_exp = torch.<span class="function">zeros</span>(num_nodes, e.<span class="function">size</span>(<span class="number">1</span>), device=e.device)
+        sum_exp.<span class="function">scatter_add_</span>(<span class="number">0</span>, target.<span class="function">unsqueeze</span>(-<span class="number">1</span>).<span class="function">expand_as</span>(exp_e), exp_e)
+        
+        <span class="keyword">return</span> exp_e / (sum_exp[target] + <span class="number">1e-10</span>)
+</pre>
+
+<h3>When to Use GAT</h3>
+
+<table class="concept-table">
+<tr><th>Scenario</th><th>GCN</th><th>GAT</th></tr>
+<tr><td>All neighbors equally important</td><td>✓</td><td>Works but overkill</td></tr>
+<tr><td>Some neighbors more relevant</td><td>Can't learn this</td><td>✓ Learns attention weights</td></tr>
+<tr><td>Need interpretability</td><td>Limited</td><td>✓ Attention weights reveal importance</td></tr>
+<tr><td>Computational budget</td><td>Faster</td><td>More parameters, slower</td></tr>
+</table>
+
+<hr>
+
+<h2>MPNN for Quantum Chemistry</h2>
+
+<p>The original MPNN paper demonstrated state-of-the-art results on the QM9 dataset — predicting quantum mechanical properties of molecules.</p>
+
+<h3>QM9 Dataset</h3>
+
+<p>QM9 contains ~134,000 small organic molecules with up to 9 heavy atoms (C, N, O, F). For each molecule, 13 quantum chemical properties were computed using density functional theory (DFT):</p>
+
+<table class="results-table">
+<tr><th>Property</th><th>Symbol</th><th>Unit</th><th>Description</th></tr>
+<tr><td>Dipole moment</td><td>μ</td><td>Debye</td><td>Measure of charge separation</td></tr>
+<tr><td>Polarizability</td><td>α</td><td>Bohr³</td><td>Response to electric field</td></tr>
+<tr><td>HOMO energy</td><td>ε<sub>HOMO</sub></td><td>eV</td><td>Highest occupied molecular orbital</td></tr>
+<tr><td>LUMO energy</td><td>ε<sub>LUMO</sub></td><td>eV</td><td>Lowest unoccupied molecular orbital</td></tr>
+<tr><td>Gap</td><td>Δε</td><td>eV</td><td>LUMO - HOMO energy</td></tr>
+<tr><td>Zero-point energy</td><td>ZPVE</td><td>eV</td><td>Vibrational ground state energy</td></tr>
+<tr><td>Heat capacity</td><td>C<sub>v</sub></td><td>cal/mol·K</td><td>At 298K</td></tr>
+<tr><td>Atomization energy</td><td>U<sub>0</sub></td><td>eV</td><td>At 0K</td></tr>
+</table>
+
+<h3>Results</h3>
+
+<p>MPNN achieved significant improvements over previous methods:</p>
+
+<table class="results-table">
+<tr><th>Property</th><th>Previous Best</th><th>MPNN</th><th>Improvement</th></tr>
+<tr><td>μ (Dipole)</td><td>0.028</td><td>0.016</td><td>43%</td></tr>
+<tr><td>α (Polar.)</td><td>0.25</td><td>0.092</td><td>63%</td></tr>
+<tr class="highlight-row"><td>ε<sub>HOMO</sub></td><td>0.0036</td><td>0.0022</td><td>39%</td></tr>
+<tr class="highlight-row"><td>Gap</td><td>0.0047</td><td>0.0032</td><td>32%</td></tr>
+<tr><td>ZPVE</td><td>0.0006</td><td>0.00017</td><td>72%</td></tr>
+<tr><td>U<sub>0</sub></td><td>0.45</td><td>0.19</td><td>58%</td></tr>
+</table>
+
+<p>The HOMO-LUMO gap is particularly important in drug discovery — it correlates with molecular stability and reactivity.</p>
+
+<hr>
+
+<h2>Practical Considerations</h2>
+
+<h3>Batching Graphs</h3>
+
+<p>Unlike images where batching is straightforward (stack along a new dimension), graphs have variable sizes. The solution: create one large disconnected graph containing all molecules in the batch.</p>
+
+<pre><span class="keyword">def</span> <span class="function">collate_graphs</span>(graphs):
+    <span class="string">"""Combine multiple graphs into a batch."""</span>
+    batch_node_features = []
+    batch_edge_index = []
+    batch_edge_features = []
+    batch_labels = []
+    batch_membership = []  <span class="comment"># Which graph each node belongs to</span>
+    
+    node_offset = <span class="number">0</span>
+    <span class="keyword">for</span> i, g <span class="keyword">in</span> <span class="builtin">enumerate</span>(graphs):
+        num_nodes = g[<span class="string">'node_features'</span>].shape[<span class="number">0</span>]
+        
+        batch_node_features.<span class="function">append</span>(g[<span class="string">'node_features'</span>])
+        batch_edge_features.<span class="function">append</span>(g[<span class="string">'edge_features'</span>])
+        
+        <span class="comment"># Offset edge indices</span>
+        edge_index = g[<span class="string">'edge_index'</span>] + node_offset
+        batch_edge_index.<span class="function">append</span>(edge_index)
+        
+        <span class="comment"># Track which graph each node belongs to</span>
+        batch_membership.<span class="function">extend</span>([i] * num_nodes)
+        
+        batch_labels.<span class="function">append</span>(g[<span class="string">'label'</span>])
+        node_offset += num_nodes
+    
+    <span class="keyword">return</span> {
+        <span class="string">'node_features'</span>: torch.<span class="function">cat</span>([torch.<span class="function">tensor</span>(x) <span class="keyword">for</span> x <span class="keyword">in</span> batch_node_features]),
+        <span class="string">'edge_index'</span>: torch.<span class="function">cat</span>([torch.<span class="function">tensor</span>(x) <span class="keyword">for</span> x <span class="keyword">in</span> batch_edge_index], dim=<span class="number">1</span>),
+        <span class="string">'edge_features'</span>: torch.<span class="function">cat</span>([torch.<span class="function">tensor</span>(x) <span class="keyword">for</span> x <span class="keyword">in</span> batch_edge_features]),
+        <span class="string">'batch'</span>: torch.<span class="function">tensor</span>(batch_membership),
+        <span class="string">'labels'</span>: torch.<span class="function">tensor</span>(batch_labels)
+    }
+</pre>
+
+<h3>PyTorch Geometric</h3>
+
+<p>In practice, use <strong>PyTorch Geometric</strong> (PyG), which provides optimized implementations of common GNN operations:</p>
+
+<pre><span class="keyword">from</span> torch_geometric.nn <span class="keyword">import</span> GCNConv, GATConv, NNConv, Set2Set
+<span class="keyword">from</span> torch_geometric.data <span class="keyword">import</span> Data, DataLoader
+
+<span class="keyword">class</span> <span class="builtin">MPNN_PyG</span>(nn.Module):
+    <span class="string">"""MPNN using PyTorch Geometric's NNConv (edge network convolution)."""</span>
+    
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, node_dim, edge_dim, hidden_dim, output_dim, num_layers=<span class="number">3</span>):
+        <span class="builtin">super</span>().<span class="function">__init__</span>()
+        
+        self.node_encoder = nn.Linear(node_dim, hidden_dim)
+        
+        <span class="comment"># Edge network for NNConv</span>
+        edge_nn = nn.Sequential(
+            nn.Linear(edge_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim * hidden_dim)
+        )
+        
+        <span class="comment"># Message passing layers</span>
+        self.convs = nn.ModuleList()
+        self.grus = nn.ModuleList()
+        <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="builtin">range</span>(num_layers):
+            self.convs.<span class="function">append</span>(NNConv(hidden_dim, hidden_dim, edge_nn, aggr=<span class="string">'add'</span>))
+            self.grus.<span class="function">append</span>(nn.GRUCell(hidden_dim, hidden_dim))
+        
+        <span class="comment"># Set2Set readout for better aggregation</span>
+        self.readout = Set2Set(hidden_dim, processing_steps=<span class="number">3</span>)
+        
+        <span class="comment"># Final MLP</span>
+        self.mlp = nn.Sequential(
+            nn.Linear(<span class="number">2</span> * hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, output_dim)
+        )
+    
+    <span class="keyword">def</span> <span class="function">forward</span>(self, data):
+        x = self.<span class="function">node_encoder</span>(data.x)
+        
+        <span class="keyword">for</span> conv, gru <span class="keyword">in</span> <span class="builtin">zip</span>(self.convs, self.grus):
+            m = <span class="function">conv</span>(x, data.edge_index, data.edge_attr)
+            x = <span class="function">gru</span>(m, x)
+        
+        <span class="comment"># Graph-level readout</span>
+        graph_embed = self.<span class="function">readout</span>(x, data.batch)
+        
+        <span class="keyword">return</span> self.<span class="function">mlp</span>(graph_embed)
+</pre>
+
+<h3>Computational Complexity</h3>
+
+<div class="warning-box">
+    <h4>⚠️ MPNN Limitations</h4>
+    <ul>
+        <li><strong>Memory</strong>: O(N × d + E × d²) where N = nodes, E = edges, d = hidden dimension</li>
+        <li><strong>Best for small graphs</strong>: Works great for molecules (10-50 atoms) but struggles with graphs of 10,000+ nodes</li>
+        <li><strong>Edge network bottleneck</strong>: Computing d×d matrices per edge is expensive</li>
+    </ul>
+    <p>For large-scale graphs (social networks, citation graphs), use GCN with sampling or more efficient architectures like GraphSAINT or ClusterGCN.</p>
+</div>
+
+<hr>
+
+<h2>Summary</h2>
+
+<p>We've covered the theory and implementation of Graph Neural Networks for drug discovery:</p>
+
+<table class="concept-table">
+<tr><th>Architecture</th><th>Key Feature</th><th>Best For</th></tr>
+<tr><td><strong>GCN</strong></td><td>Simple neighborhood aggregation</td><td>Large graphs, node classification</td></tr>
+<tr><td><strong>GraphSAGE</strong></td><td>Sampling for scalability</td><td>Very large graphs, inductive learning</td></tr>
+<tr><td><strong>MPNN</strong></td><td>Edge features via message functions</td><td>Molecules, small graphs with rich edge info</td></tr>
+<tr><td><strong>GAT</strong></td><td>Learned attention weights</td><td>When neighbor importance varies</td></tr>
+</table>
+
+<h3>Key Takeaways</h3>
+
+<ol>
+    <li><strong>Graphs are everywhere in healthcare</strong>: molecules, drug interactions, protein networks, knowledge graphs</li>
+    <li><strong>GNNs learn node embeddings</strong> by aggregating information from neighbors</li>
+    <li><strong>Multiple layers capture larger neighborhoods</strong>: k layers = k-hop receptive field</li>
+    <li><strong>Edge features matter for molecules</strong>: MPNN explicitly models bond types</li>
+    <li><strong>Readout functions aggregate nodes into graph-level representations</strong> for property prediction</li>
+</ol>
+
+<div class="info-box">
+    <h4>📚 Key Papers</h4>
+    <ul>
+        <li>Kipf & Welling (2017). "Semi-Supervised Classification with Graph Convolutional Networks" — GCN</li>
+        <li>Hamilton et al. (2017). "Inductive Representation Learning on Large Graphs" — GraphSAGE</li>
+        <li>Gilmer et al. (2017). "Neural Message Passing for Quantum Chemistry" — MPNN</li>
+        <li>Veličković et al. (2018). "Graph Attention Networks" — GAT</li>
+    </ul>
+</div>
+
+<hr>
+
+<h2>References</h2>
+
+<ul>
+    <li>Gilmer, J., Schoenholz, S.S., Riley, P.F., Vinyals, O., & Dahl, G.E. (2017). "Neural Message Passing for Quantum Chemistry". ICML 2017.</li>
+    <li>Kipf, T.N. & Welling, M. (2017). "Semi-Supervised Classification with Graph Convolutional Networks". ICLR 2017.</li>
+    <li>Veličković, P., Cucurull, G., Casanova, A., Romero, A., Liò, P., & Bengio, Y. (2018). "Graph Attention Networks". ICLR 2018.</li>
+    <li>Hamilton, W.L., Ying, R., & Leskovec, J. (2017). "Inductive Representation Learning on Large Graphs". NeurIPS 2017.</li>
+    <li>Duvenaud, D., et al. (2015). "Convolutional Networks on Graphs for Learning Molecular Fingerprints". NeurIPS 2015.</li>
+    <li>Ramakrishnan, R., et al. (2014). "Quantum chemistry structures and properties of 134 kilo molecules". Scientific Data.</li>
+</ul>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+       <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
