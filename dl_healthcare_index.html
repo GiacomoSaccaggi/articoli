@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Deep Learning for Healthcare — A 7-part series on embeddings, CNNs, RNNs, attention, memory networks, GNNs and generative models for clinical data.">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>Deep Learning for Healthcare</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+
+        .article-list { list-style-type: none; padding: 0; margin: 0; }
+        .article-list li {
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .article-list li:last-child { border-bottom: none; }
+        .article-list li:hover { background-color: #f8f8f8; }
+        .article-list li a {
+            display: block;
+            padding: 20px 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        .article-list li a:hover { text-decoration: none; }
+        .article-num {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            text-align: center;
+            border-radius: 50%;
+            background: #333;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+        .article-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            vertical-align: middle;
+        }
+        .article-desc {
+            margin-top: 6px;
+            margin-left: 44px;
+            font-size: 14px;
+            color: #777;
+            line-height: 1.5;
+        }
+        .article-tags {
+            margin-top: 8px;
+            margin-left: 44px;
+        }
+        .article-tags span {
+            display: inline-block;
+            font-size: 11px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 2px 8px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            color: #555;
+            font-family: monospace;
+        }
+        .series-intro {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+        .series-intro strong { color: #333; }
+
+        @media (max-width: 600px) {
+            .article-title { font-size: 15px; }
+            .article-desc { font-size: 13px; margin-left: 0; margin-top: 10px; }
+            .article-tags { margin-left: 0; }
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a>
+                    </li>
+                    <li>
+                        <a href="https://giacomosaccaggi.github.io/contact.html">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('img/healthcare.jpg')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Deep Learning for Healthcare</h2>
+                        <hr class="small">
+                        <h5>A 7-part series exploring how deep learning architectures are transforming clinical prediction, drug discovery, and patient care.</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+
+                <br>
+                <div class="series-intro">
+                    <p>
+                        From medical embeddings to generative models for synthetic Electronic Health Records — this series covers the main deep learning families applied to healthcare data. Each article focuses on a different architecture, its clinical motivations, and practical implementations.
+                    </p>
+                    <p>
+                        <strong>Topics covered:</strong> representation learning for clinical codes, convolutional networks for medical imaging, recurrent models for patient trajectories, attention mechanisms for interpretability, memory-augmented networks for clinical reasoning, graph neural networks for molecular property prediction, and generative models for privacy-preserving synthetic data.
+                    </p>
+                </div>
+
+                <hr>
+                <h3>Articles</h3>
+                <br>
+
+                <ul class="article-list">
+                    <li>
+                        <a href="dl_healthcare_embeddings.html">
+                            <span class="article-num">1</span>
+                            <span class="article-title">Medical Embeddings for Healthcare</span>
+                            <div class="article-desc">Deep neural networks and medical embeddings for healthcare prediction. Learning dense representations of diagnoses, procedures, and medications from clinical data.</div>
+                            <div class="article-tags">
+                                <span>word2vec</span>
+                                <span>Med2Vec</span>
+                                <span>EHR</span>
+                                <span>representation learning</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dl_healthcare_cnn.html">
+                            <span class="article-num">2</span>
+                            <span class="article-title">CNNs for Medical Imaging</span>
+                            <div class="article-desc">Convolutional neural networks applied to medical imaging — from X-rays and CT scans to histopathology. Architectures, transfer learning, and clinical deployment.</div>
+                            <div class="article-tags">
+                                <span>CNN</span>
+                                <span>medical imaging</span>
+                                <span>transfer learning</span>
+                                <span>radiology</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dl_healthcare_rnn.html">
+                            <span class="article-num">3</span>
+                            <span class="article-title">RNNs for Patient Trajectories</span>
+                            <div class="article-desc">Recurrent neural networks for modelling patient trajectories over time. LSTMs, GRUs, and temporal patterns in clinical sequences for diagnosis prediction.</div>
+                            <div class="article-tags">
+                                <span>LSTM</span>
+                                <span>GRU</span>
+                                <span>temporal sequences</span>
+                                <span>clinical events</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dl_healthcare_attention.html">
+                            <span class="article-num">4</span>
+                            <span class="article-title">Attention Mechanisms for Interpretable Healthcare AI</span>
+                            <div class="article-desc">Attention mechanisms and the RETAIN model — making deep learning interpretable for clinicians. Reverse time attention for explainable clinical predictions.</div>
+                            <div class="article-tags">
+                                <span>attention</span>
+                                <span>RETAIN</span>
+                                <span>interpretability</span>
+                                <span>explainable AI</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dl_healthcare_memory_networks.html">
+                            <span class="article-num">5</span>
+                            <span class="article-title">Memory Networks and Transformers for Healthcare</span>
+                            <div class="article-desc">Memory-augmented networks and transformer architectures for clinical reasoning. External memory, multi-hop attention, and medical question answering.</div>
+                            <div class="article-tags">
+                                <span>transformers</span>
+                                <span>memory networks</span>
+                                <span>clinical reasoning</span>
+                                <span>BERT</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dl_healthcare_gnn.html">
+                            <span class="article-num">6</span>
+                            <span class="article-title">Graph Neural Networks for Drug Discovery</span>
+                            <div class="article-desc">Graph neural networks and message passing for molecular property prediction. Modelling molecules as graphs for drug discovery and toxicity prediction.</div>
+                            <div class="article-tags">
+                                <span>GNN</span>
+                                <span>MPNN</span>
+                                <span>molecular graphs</span>
+                                <span>drug discovery</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="dl_healthcare_generative.html">
+                            <span class="article-num">7</span>
+                            <span class="article-title">Generative Models for Healthcare</span>
+                            <div class="article-desc">Variational autoencoders and GANs for synthetic healthcare data generation. Privacy-preserving synthetic EHR, data augmentation, and de-identification.</div>
+                            <div class="article-tags">
+                                <span>VAE</span>
+                                <span>GAN</span>
+                                <span>synthetic data</span>
+                                <span>privacy</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+
+                <br><br><br>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <ul class="list-inline text-center">
+                        <li>
+                            <a href="https://twitter.com/SaccaggiGiacomo">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/in/giacomo-saccaggi-782439163/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/GiacomoSaccaggi/">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                    <p class="copyright text-muted">Copyright &copy; GiacomoSaccaggi</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="js/clean-blog.min.js"></script>
+
+</body>
+
+</html>
