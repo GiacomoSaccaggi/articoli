@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Fixing Trino connection parameter handling in ConnectorX - exposing session properties, extra credentials, and fixing partition query TLS bugs">
+    <meta name="author" content="Giacomo Saccaggi">
+
+    <title>Contributing to ConnectorX: Fixing Trino Connection Parameters</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-147261423-1');
+    </script>
+
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <style>
+        * { box-sizing: border-box; }
+        body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h1.title { font-size: 38px; }
+        h2 { font-size: 30px; } h3 { font-size: 24px; }
+        h4 { font-size: 18px; }
+        .table th:not([align]) { text-align: left; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        .builtin { color: #4ec9b0; }
+        .number { color: #b5cea8; }
+        .param-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .param-table th { background: #2d3032; color: white; padding: 10px; text-align: left; }
+        .param-table td { padding: 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .param-table tr:hover { background: #f9f9f9; }
+        .param-table td:first-child { font-family: 'Fira Code', monospace; font-size: 0.9em; color: #4a90d9; }
+        .issue-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .fix-box { background: #d4edda; border-left: 4px solid #28a745; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .test-box { background: #d1ecf1; border-left: 4px solid #17a2b8; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .diff-add { color: #28a745; }
+        .diff-del { color: #dc3545; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; font-weight: bold; }
+        .badge-bug { background: #f8d7da; color: #721c24; }
+        .badge-fix { background: #d4edda; color: #155724; }
+        .badge-pass { background: #d4edda; color: #155724; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    Menu <i class="fa fa-bars"></i>
+                </button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h2>Contributing to ConnectorX: Fixing Trino</h2>
+                        <hr class="small">
+                        <h5>Session Properties, Extra Credentials, and a Partition Bug — August 2026</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Fixing Trino Connection Parameters in ConnectorX</h1>
+<p style="text-align:center;"><em>"The fastest query is the one that doesn't fail because of a missing header."</em></p>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi · <a href="https://github.com/sfu-db/connector-x/issues/927">Issue #927</a></p>
+<hr>
+
+<h2>Context</h2>
+
+<p><a href="https://github.com/sfu-db/connector-x">ConnectorX</a> is a Rust library (2.6k stars) that loads data from databases into DataFrames at maximum speed. It's the engine behind <code>polars.read_database_uri()</code> when you set <code>engine="connectorx"</code>. It already supports Trino — you can connect, run queries, get Arrow results, and even use <code>partition_on</code> for parallel execution.</p>
+
+<p>But while exploring the codebase, I found two issues:</p>
+
+<div class="issue-box">
+<h4>Bug 1: <code>verify=false</code> ignored during partition queries</h4>
+<p>When you use <code>partition_on</code>, ConnectorX runs a <code>SELECT MIN(col), MAX(col)</code> pre-query to determine the partition range. This pre-query creates a <strong>separate client</strong> that does NOT inherit <code>verify=false</code> from the connection URL — causing TLS certificate errors on self-signed clusters.</p>
+</div>
+
+<div class="issue-box">
+<h4>Bug 2: Trino protocol parameters silently dropped</h4>
+<p>The underlying Rust library (<code>prusto</code>) supports session properties, extra credentials, client tags, source identifiers, and more. But ConnectorX never reads these from the connection URL — they are silently ignored. There is no way to set a query timeout, pass S3 credentials to a Hive connector, or tag queries for resource group routing.</p>
+</div>
+
+<h2>What Trino Supports</h2>
+
+<p>The Trino REST protocol defines a set of headers that clients can send to configure the session. Every Trino client (JDBC, Python <code>trino://</code>, dbt-trino) supports these. ConnectorX didn't — until now.</p>
+
+<table class="param-table">
+<tr><th>URL Parameter</th><th>Trino Header</th><th>What It Does</th></tr>
+<tr><td>source=X</td><td>X-Trino-Source</td><td>Identifies your application in Trino query logs and the web UI</td></tr>
+<tr><td>schema=X</td><td>X-Trino-Schema</td><td>Sets the default schema — no need to write <code>schema.table</code> everywhere</td></tr>
+<tr><td>client_tags=a,b</td><td>X-Trino-Client-Tags</td><td>Routes queries to specific Trino resource groups</td></tr>
+<tr><td>client_info=X</td><td>X-Trino-Client-Info</td><td>Metadata visible in <code>system.runtime.queries</code></td></tr>
+<tr><td>trace_token=X</td><td>X-Trino-Trace-Token</td><td>Correlates queries across distributed tracing systems</td></tr>
+<tr><td>session.K=V</td><td>X-Trino-Session: K=V</td><td>Session properties: timeouts, join strategies, memory limits</td></tr>
+<tr><td>extra_credential.K=V</td><td>X-Trino-Extra-Credential: K=V</td><td>Credentials forwarded to Trino connectors (S3 tokens, Hive auth)</td></tr>
+</table>
+
+<h2>The Fix</h2>
+
+<p>I extracted a shared <code>build_client_from_url()</code> helper function that parses all supported URL query parameters and configures the <code>prusto</code> ClientBuilder. Both <code>TrinoSource::new</code> (the main query path) and <code>trino_get_partition_range</code> (the partition pre-query) now use this single function — no code duplication.</p>
+
+<div class="fix-box">
+<h4>Key design decisions</h4>
+<ul>
+<li><strong>DRY:</strong> One helper, two call sites. The partition bug is fixed by construction — both paths always get the same configuration.</li>
+<li><strong>Backward compatible:</strong> URLs without new parameters work exactly as before.</li>
+<li><strong>Minimal:</strong> No new dependencies. <code>serde_json</code>, <code>url</code>, <code>HashMap</code> are already in scope.</li>
+<li><strong>Safe:</strong> Empty keys (<code>session.=value</code>) are silently ignored. Unknown params pass through harmlessly.</li>
+</ul>
+</div>
+
+<h3>Before</h3>
+
+<pre><span class="comment">// Only these worked:</span>
+<span class="string">"trino://user:pass@host:8080/catalog?verify=false"</span>
+<span class="comment">// No way to pass session properties, credentials, or tags.</span>
+<span class="comment">// Partition queries didn't even get verify=false.</span>
+</pre>
+
+<h3>After</h3>
+
+<pre><span class="comment">// Full Trino protocol support:</span>
+<span class="string">"trino+https://user:pass@host:443/catalog?</span>
+<span class="string">  schema=analytics&amp;</span>
+<span class="string">  source=my-etl-pipeline&amp;</span>
+<span class="string">  session.query_max_execution_time=10m&amp;</span>
+<span class="string">  session.join_distribution_type=PARTITIONED&amp;</span>
+<span class="string">  extra_credential.hive.s3.aws-access-key=AKIA...&amp;</span>
+<span class="string">  client_tags=team-data,production&amp;</span>
+<span class="string">  trace_token=req-abc-123&amp;</span>
+<span class="string">  verify=false"</span>
+</pre>
+
+<h3>With Polars</h3>
+
+<pre><span class="keyword">import</span> polars <span class="keyword">as</span> pl
+
+df = pl.read_database_uri(
+    <span class="string">"SELECT * FROM events WHERE dt = '2026-08-18'"</span>,
+    <span class="string">"trino+https://user:pass@trino.corp.com:443/hive?"</span>
+    <span class="string">"schema=analytics&amp;"</span>
+    <span class="string">"source=etl-pipeline&amp;"</span>
+    <span class="string">"session.query_max_execution_time=10m&amp;"</span>
+    <span class="string">"extra_credential.hive.s3.aws-access-key=AKIA...&amp;"</span>
+    <span class="string">"client_tags=team-data,production"</span>,
+    engine=<span class="string">"connectorx"</span>,
+    partition_on=<span class="string">"event_id"</span>,
+    partition_num=<span class="number">8</span>,
+)
+</pre>
+
+<h2>Verification</h2>
+
+<div class="test-box">
+<h4>Tests performed</h4>
+<table class="param-table">
+<tr><th>Check</th><th>Result</th></tr>
+<tr><td>cargo build --features src_trino</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>cargo fmt --all -- --check</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>cargo clippy --features src_trino</td><td><span class="badge badge-pass">PASS</span> (no new warnings)</td></tr>
+<tr><td>Unit test: full URL with all params</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Unit test: minimal URL (backward compat)</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Unit test: empty keys ignored</td><td><span class="badge badge-pass">PASS</span></td></tr>
+<tr><td>Polars integration (maturin build)</td><td><span class="badge badge-pass">PASS</span> — URL parsed, connection attempted</td></tr>
+<tr><td>Cross-platform safety</td><td><span class="badge badge-pass">PASS</span> — std Rust libs only, no OS-specific code</td></tr>
+</table>
+</div>
+
+<h2>Files Changed</h2>
+
+<table class="param-table">
+<tr><th>File</th><th>Change</th></tr>
+<tr><td>connectorx/src/sources/trino/mod.rs</td><td>+103 lines: <code>build_client_from_url()</code> helper + 3 unit tests</td></tr>
+<tr><td>connectorx/src/partition.rs</td><td>-23/+3 lines: replaced inline client construction with helper call</td></tr>
+</table>
+
+<h2>Links</h2>
+
+<ul>
+<li><a href="https://github.com/sfu-db/connector-x/issues/927">Issue #927</a> — Bug report</li>
+<li><a href="https://github.com/sfu-db/connector-x">ConnectorX repository</a></li>
+<li><a href="https://trino.io/docs/current/develop/client-protocol.html">Trino Client REST API specification</a></li>
+<li><a href="https://docs.pola.rs/api/python/stable/reference/api/polars.read_database_uri.html">Polars read_database_uri documentation</a></li>
+</ul>
+
+<hr>
+<p style="text-align:center;color:#888;font-size:0.85em;">Part of a series of contributions to ConnectorX. See also: <a href="connectorx_trino_complex_types.html">Fixing ARRAY/MAP/ROW types (#721)</a> · <a href="connectorx_limit0.html">LIMIT 0 schema discovery (#768)</a></p>
+
+    </div>
+
+    <hr>
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <p class="copyright text-muted">Copyright &copy; Giacomo Saccaggi 2026</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+</html>
