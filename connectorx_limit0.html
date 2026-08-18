@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Using LIMIT 0 instead of LIMIT 1 for schema discovery in ConnectorX">
+    <meta name="author" content="Giacomo Saccaggi">
+    <title>ConnectorX: LIMIT 0 for Schema Discovery</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','UA-147261423-1');</script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <style>
+        * { box-sizing: border-box; } body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h2 { font-size: 30px; } h3 { font-size: 24px; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; } .string { color: #ce9178; } .comment { color: #6a9955; }
+        .diff-add { color: #28a745; } .diff-del { color: #dc3545; }
+        .fix-box { background: #d4edda; border-left: 4px solid #28a745; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"><span class="sr-only">Toggle navigation</span>Menu <i class="fa fa-bars"></i></button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="site-heading">
+                <h2>ConnectorX: LIMIT 0 for Schema Discovery</h2>
+                <hr class="small">
+                <h5>A Three-Line Fix That Touches Every Database — August 2026</h5>
+            </div>
+        </div></div></div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">LIMIT 0 for Schema Discovery</h1>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi · <a href="https://github.com/sfu-db/connector-x/issues/768">Issue #768</a></p>
+<hr>
+
+<h2>The Problem</h2>
+
+<p>ConnectorX needs to know the column names and types of a query result before it allocates Arrow buffers. To discover this schema, it runs the user's query with <code>LIMIT 1</code> appended — fetching one actual data row just to inspect the column types, then discarding it.</p>
+
+<p>This works, but it's wasteful. That one row might trigger a full table scan on some databases, or read from a slow remote storage layer. Most databases support <code>LIMIT 0</code>, which returns <strong>only the column metadata</strong> without touching any data pages.</p>
+
+<h2>The Fix</h2>
+
+<p>Three lines in <code>connectorx/src/sql.rs</code>:</p>
+
+<pre><span class="comment">// Before</span>
+q.limit = Some(Expr::Value(Value::Number(<span class="diff-del">"1"</span>.to_string(), false)));
+format!(<span class="string">"{} <span class="diff-del">LIMIT 1</span>"</span>, sql.as_str())
+debug!(<span class="string">"Transformed <span class="diff-del">limit 1</span> query: {}"</span>, sql);
+
+<span class="comment">// After</span>
+q.limit = Some(Expr::Value(Value::Number(<span class="diff-add">"0"</span>.to_string(), false)));
+format!(<span class="string">"{} <span class="diff-add">LIMIT 0</span>"</span>, sql.as_str())
+debug!(<span class="string">"Transformed <span class="diff-add">limit 0</span> query: {}"</span>, sql);
+</pre>
+
+<div class="fix-box">
+<h4>Impact</h4>
+<p>Affects schema discovery for: <strong>Postgres, MySQL, Trino, ClickHouse, BigQuery, SQLite, MSSQL</strong>. Oracle uses a separate function (<code>WHERE rownum=1</code>) and is unchanged — Oracle doesn't optimize <code>LIMIT 0</code> the same way.</p>
+</div>
+
+<h2>Why This Is Safe</h2>
+
+<p><code>LIMIT 0</code> is specified in the SQL standard and supported by all databases ConnectorX targets. The result set is empty (zero rows) but the column metadata (names, types) is always returned. This is exactly what ConnectorX needs for schema discovery.</p>
+
+<h2>Links</h2>
+<ul>
+<li><a href="https://github.com/sfu-db/connector-x/issues/768">Issue #768</a></li>
+<li><a href="https://github.com/sfu-db/connector-x">ConnectorX repository</a></li>
+</ul>
+
+<hr>
+<p style="text-align:center;color:#888;font-size:0.85em;">Part of a series of contributions to ConnectorX. See also: <a href="connectorx_trino_params.html">Trino connection parameters (#927)</a> · <a href="connectorx_trino_complex_types.html">Fixing ARRAY/MAP/ROW types (#721)</a></p>
+
+    </div>
+    <hr>
+    <footer><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><p class="copyright text-muted">Copyright &copy; Giacomo Saccaggi 2026</p></div></div></div></footer>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

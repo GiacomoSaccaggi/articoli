@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Fixing ConnectorX crash on Trino ARRAY, MAP, and ROW column types">
+    <meta name="author" content="Giacomo Saccaggi">
+    <title>ConnectorX: Fixing Trino ARRAY/MAP/ROW Types</title>
+    <link rel="shortcut icon" href="https://image.flaticon.com/icons/png/512/413/413772.png" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147261423-1"></script>
+    <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','UA-147261423-1');</script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <link rel="stylesheet" media="screen and (min-width:481px)" href="cv.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/clean-blog.min.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <style>
+        * { box-sizing: border-box; } body { overflow-x: hidden; }
+        h1 { font-size: 34px; } h2 { font-size: 30px; } h3 { font-size: 24px; }
+        pre { background-color: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 14px; line-height: 1.5; }
+        code { font-family: 'Fira Code', 'Consolas', monospace; }
+        p code { background: #f0f0f0; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+        .keyword { color: #569cd6; } .string { color: #ce9178; } .comment { color: #6a9955; } .function { color: #dcdcaa; }
+        .issue-box { background: #fff3cd; border-left: 4px solid #ffc107; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+        .fix-box { background: #d4edda; border-left: 4px solid #28a745; padding: 15px 20px; margin: 20px 0; border-radius: 0 6px 6px 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"><span class="sr-only">Toggle navigation</span>Menu <i class="fa fa-bars"></i></button>
+                <a class="navbar-brand" href="https://giacomosaccaggi.github.io">Home</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://giacomosaccaggi.github.io/deep-dives">All projects</a></li>
+                    <li><a href="https://giacomosaccaggi.github.io/contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header class="intro-header" style="background-image: url('sfondo.png')">
+        <div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="site-heading">
+                <h2>ConnectorX: Fixing Trino Complex Types</h2>
+                <hr class="small">
+                <h5>ARRAY, MAP, and ROW Columns No Longer Crash — August 2026</h5>
+            </div>
+        </div></div></div>
+    </header>
+
+    <div class="container">
+
+<h1 style="text-align:center;">Fixing Trino ARRAY/MAP/ROW Types in ConnectorX</h1>
+<p style="text-align:center;font-size:0.85em;color:#888;">August 2026 · Giacomo Saccaggi · <a href="https://github.com/sfu-db/connector-x/issues/721">Issue #721</a></p>
+<hr>
+
+<h2>The Problem</h2>
+
+<p>Trino supports complex column types: <code>ARRAY</code>, <code>MAP</code>, and <code>ROW</code> (structs). When you query a table with these columns through ConnectorX, it crashes:</p>
+
+<pre><span class="comment">-- This query crashes ConnectorX:</span>
+<span class="keyword">SELECT</span> name, tags, metadata, address <span class="keyword">FROM</span> users
+<span class="comment">-- tags: ARRAY(VARCHAR)</span>
+<span class="comment">-- metadata: MAP(VARCHAR, VARCHAR)</span>
+<span class="comment">-- address: ROW(street VARCHAR, city VARCHAR, zip VARCHAR)</span>
+</pre>
+
+<div class="issue-box">
+<h4>Error: "Trino unknown value at position: (0, 1)"</h4>
+<p>The type system correctly maps ARRAY/MAP/ROW → <code>Varchar</code> (serialize as JSON string). But the parser's <code>Produce&lt;String&gt;</code> implementation only matches <code>Value::String</code>. When Trino returns <code>Value::Array([...])</code> or <code>Value::Object({...})</code> in the JSON response, it falls through to the catch-all error arm.</p>
+</div>
+
+<h2>Root Cause</h2>
+
+<p>The <code>impl_produce_text</code> macro generates the <code>Produce</code> trait implementation for text-like types. Before the fix, its match statement only handled one case:</p>
+
+<pre><span class="keyword">match</span> value {
+    Value::String(x) => { x.parse()? }  <span class="comment">// ← only this worked</span>
+    _ => <span class="function">throw!</span>(...)                   <span class="comment">// ← everything else crashed</span>
+}
+</pre>
+
+<p>But Trino's REST API returns complex types as structured JSON — not as strings. An <code>ARRAY(VARCHAR)</code> column comes back as <code>["a","b","c"]</code> (a JSON array), not as the string <code>"[\"a\",\"b\",\"c\"]"</code>.</p>
+
+<h2>The Fix</h2>
+
+<p>Add match arms for the remaining JSON value types, serializing them via <code>serde_json::to_string()</code>:</p>
+
+<pre><span class="keyword">match</span> value {
+    Value::String(x) => { x.parse()? }
+    <span class="comment">// NEW: serialize complex JSON values to string</span>
+    Value::Array(_) | Value::Object(_) | Value::Number(_) | Value::Bool(_) => {
+        serde_json::to_string(value)
+            .unwrap_or_else(|_| value.to_string())
+            .parse()?
+    }
+    _ => <span class="function">throw!</span>(...)
+}
+</pre>
+
+<div class="fix-box">
+<h4>Result</h4>
+<p>Complex columns now appear as valid JSON strings in the output DataFrame:</p>
+<ul>
+<li><code>tags</code> (ARRAY) → <code>'["rust","python","data"]'</code></li>
+<li><code>metadata</code> (MAP) → <code>'{"team":"platform","role":"eng"}'</code></li>
+<li><code>address</code> (ROW) → <code>'{"street":"123 Main","city":"SF","zip":"94102"}'</code></li>
+</ul>
+<p>Downstream code can then parse these JSON strings as needed with <code>json.loads()</code> or Polars' <code>str.json_decode()</code>.</p>
+</div>
+
+<h2>Why <code>.parse()</code>?</h2>
+
+<p>The macro is generic over both <code>String</code> and <code>char</code>. For <code>String</code>, <code>"hello".parse::&lt;String&gt;()</code> is identity. For <code>char</code>, complex types (ARRAY/MAP/ROW) are never mapped to <code>Char</code> in the type system — only single-character <code>CHAR(1)</code> columns use it, and those always arrive as <code>Value::String</code>. The <code>.parse()</code> call satisfies the macro's generic constraint without runtime cost for the <code>String</code> case.</p>
+
+<h2>Links</h2>
+<ul>
+<li><a href="https://github.com/sfu-db/connector-x/issues/721">Issue #721</a> — Original bug report</li>
+<li><a href="https://github.com/sfu-db/connector-x">ConnectorX repository</a></li>
+</ul>
+
+<hr>
+<p style="text-align:center;color:#888;font-size:0.85em;">Part of a series of contributions to ConnectorX. See also: <a href="connectorx_trino_params.html">Trino connection parameters (#927)</a> · <a href="connectorx_limit0.html">LIMIT 0 schema discovery (#768)</a></p>
+
+    </div>
+    <hr>
+    <footer><div class="container"><div class="row"><div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1"><p class="copyright text-muted">Copyright &copy; Giacomo Saccaggi 2026</p></div></div></div></footer>
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>
